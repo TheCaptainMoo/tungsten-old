@@ -28,32 +28,18 @@ namespace Tungsten_Interpreter
             public TokenList TokenList { get; set; }
             public Regex regex { get; set; }
         }
-        
-        public static IDictionary<char, string> lexTable=new Dictionary<char, string>()
-        {
-            {' ', "WS"},
-            {'[', "LeftBracket"},
-            {']', "RightBracket" },
-            {'"', "STR" },
-            {':', "Colon"}
-        };
 
         static void Main(string[] args)
         {
-            string[] _args = Console.ReadLine().Split("\t");
+            string[] _args = Console.ReadLine().Split(" "); //Console.ReadLine().Split("\n");
 
-            foreach (string _arg in _args)
-            {
-                //Console.WriteLine(_arg);
-                //Lexer(_arg);
-            }
-
-            Lexer(_args);
+            Parser(Lexer(_args).ToArray());
         }
 
-        static void Lexer(string[] args)
+        static List<string> Lexer(string[] args)
         {
             List<TokenAssign> ta = LexerInit();
+            List<string> output = new List<string>();
             string res;
 
             Console.WriteLine(args.Length);
@@ -66,11 +52,17 @@ namespace Tungsten_Interpreter
                 for (int i = 0; i < ta.Count; i++)
                 {
                     res = Regex.Replace(res, ta[i].regex.ToString(), ta[i].TokenList.ToString());
-                    Console.WriteLine(res);
+                    //Console.WriteLine(res);
                 }
+                output.Add(res);
             }
 
-            
+            foreach(string outp in output)
+            {
+                Console.WriteLine(outp);
+            }
+
+            return output;
         }
 
         static List<TokenAssign> LexerInit()
@@ -91,7 +83,21 @@ namespace Tungsten_Interpreter
 
         static void Parser(string[] parsedArgs)
         {
-            IDictionary<string, string> variables = new Dictionary<string, string>();
+            IDictionary<string, string> variableString = new Dictionary<string, string>();
+            IDictionary<string, int> variableInt = new Dictionary<string, int>();
+            IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
+
+            for(int i = 0; i < parsedArgs.Length; i++)
+            {
+                Console.WriteLine(parsedArgs[i]);
+                if(parsedArgs[i] == "STRING"){
+                    variableString.Add(parsedArgs[i+1], parsedArgs[i+2]);
+
+                    Console.WriteLine("Var name: " + parsedArgs[i + 1] + " Assignment: " + parsedArgs[i + 2]);
+                }
+            }
+
+            /*
 
             for (int i = 0; i < parsedArgs.Length; i++)
             {
@@ -120,6 +126,8 @@ namespace Tungsten_Interpreter
                     }
                 }
             }
+
+            */
         }
 
         public static double Evaluate(string expression)
