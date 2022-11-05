@@ -8,13 +8,10 @@ namespace Tungsten_Interpreter
         public enum TokenList
         {
             WS,
-            LeftBracket,
-            RightBracket,
-            MSG,
             STRING,
             INT,
             BOOL,
-            Colon
+            NL
         }
 
         public class TokenAssign
@@ -29,11 +26,31 @@ namespace Tungsten_Interpreter
             public Regex regex { get; set; }
         }
 
+        static IDictionary<int, string[]> lines = new Dictionary<int, string[]>();
+
         static void Main(string[] args)
         {
             string[] _args = Console.ReadLine().Split(" "); //Console.ReadLine().Split("\n");
 
-            Parser(Lexer(_args).ToArray());
+            //Parser(Lexer(_args).ToArray());
+            string[] lexerArr = Lexer(_args).ToArray();
+            string lexerOut = "";
+
+            foreach(string lexer in lexerArr)
+            {
+                lexerOut += lexer + "WS";
+            }
+
+            string[] line = lexerOut.Split("NLWS");
+
+            for(int i = 0; i < line.Length; i++)
+            {
+                lines.Add(i, line[i].Split("WS"));
+            }
+
+            Console.WriteLine(lexerOut);
+
+            Parser();
         }
 
         static List<string> Lexer(string[] args)
@@ -70,30 +87,51 @@ namespace Tungsten_Interpreter
             List<TokenAssign> ta = new List<TokenAssign>();
 
             ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+")));
-            ta.Add(new TokenAssign(TokenList.LeftBracket, new Regex("\\[")));
-            ta.Add(new TokenAssign(TokenList.RightBracket, new Regex("\\]")));
-            ta.Add(new TokenAssign(TokenList.MSG, new Regex('"'.ToString())));
             ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"string|string:")));
             ta.Add(new TokenAssign(TokenList.INT, new Regex(@"int|int:")));
             ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"bool|bool:")));
-            ta.Add(new TokenAssign(TokenList.Colon, new Regex(@":")));
+            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";")));
 
             return ta;
         }
 
-        static void Parser(string[] parsedArgs)
+        static void Parser()
         {
             IDictionary<string, string> variableString = new Dictionary<string, string>();
             IDictionary<string, int> variableInt = new Dictionary<string, int>();
             IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
 
-            for(int i = 0; i < parsedArgs.Length; i++)
+            /*for(int i = 0; i < parsedArgs.Length; i++)
             {
-                Console.WriteLine(parsedArgs[i]);
+                //Console.WriteLine(parsedArgs[i]);
                 if(parsedArgs[i] == "STRING"){
-                    variableString.Add(parsedArgs[i+1], parsedArgs[i+2]);
+                    //variableString.Add(parsedArgs[i+1], parsedArgs[i+2]);
 
-                    Console.WriteLine("Var name: " + parsedArgs[i + 1] + " Assignment: " + parsedArgs[i + 2]);
+                    Console.WriteLine(CalcString(parsedArgs[i + 2], '[', ']'));
+
+                    //Console.WriteLine("Var name: " + parsedArgs[i + 1] + " Assignment: " + parsedArgs[i + 2]);
+                }
+            }*/
+
+            for(int i = 0; i < lines.Count; i++)
+            {
+                string[] words = lines[i];
+
+                if (words.Length == 0)
+                {
+                    break;
+                }
+                
+                for(int j = 0; j < words.Length; j++)
+                {
+                    if (words[j] == "STRING")
+                    {
+                        variableString.Add(words[j+1], CalcString(String.Join(" ", words, j+2, words.Length - (j+2)), '[', ']'));
+
+                        Console.WriteLine(CalcString(String.Join(" ", words, j + 2, words.Length - (j + 2)), '[', ']'));
+
+                        Console.WriteLine("String Detected");
+                    }
                 }
             }
 
@@ -128,6 +166,32 @@ namespace Tungsten_Interpreter
             }
 
             */
+        }
+
+        static string CalcString(string input, char openChar, char closeChar)
+        {
+            int startPos = 0;
+            int endPos = input.Length;
+
+            for(int i = 0; i < endPos; i++)
+            {
+                if (input[i] == openChar)
+                {
+                    startPos = i + 1;
+                    break;
+                }
+            }
+
+            for(int i = endPos - 1; i >=0; i--)
+            {
+                if (input[i] == closeChar)
+                {
+                    endPos = i - startPos;
+                    break;
+                }
+            }
+
+            return input.Substring(startPos, endPos);
         }
 
         public static double Evaluate(string expression)
