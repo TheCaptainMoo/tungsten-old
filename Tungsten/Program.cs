@@ -33,6 +33,8 @@ namespace Tungsten_Interpreter
 
         static void Main(string[] args)
         {
+            reset:
+            Clean();
             string path = Console.ReadLine().Replace("\"", "");
             StreamReader sr = new StreamReader(path);
 
@@ -57,6 +59,13 @@ namespace Tungsten_Interpreter
             //Console.WriteLine(lexerOut);
 
             Parser();
+
+            goto reset;
+        }
+
+        public static void Clean()
+        {
+            lines = new Dictionary<int, string[]>();
         }
 
         static List<string> Lexer(string[] args)
