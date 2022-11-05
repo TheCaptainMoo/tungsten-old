@@ -56,7 +56,7 @@ namespace Tungsten_Interpreter
                 lines.Add(i, line[i].Split("WS"));
             }
 
-            //Console.WriteLine(lexerOut);
+            //Console.WriteLine("Lexer: " + lexerOut);
 
             Parser();
 
@@ -118,24 +118,19 @@ namespace Tungsten_Interpreter
             IDictionary<string, int> variableInt = new Dictionary<string, int>();
             IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
 
-            /*for(int i = 0; i < parsedArgs.Length; i++)
-            {
-                //Console.WriteLine(parsedArgs[i]);
-                if(parsedArgs[i] == "STRING"){
-                    //variableString.Add(parsedArgs[i+1], parsedArgs[i+2]);
-
-                    Console.WriteLine(CalcString(parsedArgs[i + 2], '[', ']'));
-
-                    //Console.WriteLine("Var name: " + parsedArgs[i + 1] + " Assignment: " + parsedArgs[i + 2]);
-                }
-            }*/
-
-
             for (int i = 0; i < lines.Count; i++)
             {
                 string[] words = lines[i];
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
+                if (words != null)
+                {
+                    try
+                    {
+                        words[0] = words[0].ToUpper();
+                    }
+                    catch { }
+                }
 
                 if (words.Length == 0)
                 {
@@ -154,14 +149,23 @@ namespace Tungsten_Interpreter
 
                 if (words[0] == "STRING")
                 {
+                    if (variableString.ContainsKey(words[1]))
+                    {
+                        variableString.Remove(words[1]);
+                        //variableString.Add(words[1], CalcString(String.Join(" ", words, 2, words.Length - 2), '[', ']'));
+                    }
                     variableString.Add(words[1], CalcString(String.Join(" ", words, 2, words.Length - 2), '[', ']'));
-
+                    
                     //Console.WriteLine(CalcString(String.Join(" ", words, j + 2, words.Length - (j + 2)), '[', ']'));
 
                     //Console.WriteLine("String Detected");
                 }
                 else if (words[0] == "INT")
                 {
+                    if (variableInt.ContainsKey(words[1]))
+                    {
+                        variableInt.Remove(words[1]);
+                    }
                     try {
                         double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
                         variableInt.Add(words[1], Convert.ToInt32(maths));
@@ -174,6 +178,10 @@ namespace Tungsten_Interpreter
                 }
                 else if (words[0] == "BOOL")
                 {
+                    if (variableBool.ContainsKey(words[1]))
+                    {
+                        variableBool.Remove(words[1]);
+                    }
                     try
                     {
                         variableBool.Add(words[1], Convert.ToBoolean(words[2]));
@@ -185,8 +193,6 @@ namespace Tungsten_Interpreter
                 }
                 else if (words[0] == "PRINT")
                 {
-                    //int key = 1;
-
                     StringBuilder sb = new StringBuilder();
 
                     for (int j = 1; j < words.Length; j++)
@@ -210,23 +216,6 @@ namespace Tungsten_Interpreter
                     }
 
                     Console.WriteLine(sb.ToString());
-
-                    /*if (variableString.ContainsKey(words[key]))
-                    {
-                        Console.Write(variableString[words[key]]);
-                    } 
-                    else if (variableBool.ContainsKey(words[key]))
-                    {
-                        Console.Write(variableBool[words[key]]);
-                    }
-                    else if (variableInt.ContainsKey(words[key]))
-                    {
-                        Console.Write(variableInt[words[key]]);
-                    }
-                    else
-                    {
-                        Console.Write(CalcString(String.Join(" ", words, key, words.Length - key), '[', ']'));
-                    }*/
                 } 
                 else if(words[0] == "MATH")
                 {
@@ -256,38 +245,6 @@ namespace Tungsten_Interpreter
                     }
                 }
             }
-
-            /*
-
-            for (int i = 0; i < parsedArgs.Length; i++)
-            {
-                if (parsedArgs[i] == "funct")
-                {
-                    Console.WriteLine("FUNCTION");
-                }
-                if(parsedArgs[i] == "math")
-                {
-                    Console.WriteLine(Evaluate(parsedArgs[i + 1] + parsedArgs[i + 2] + parsedArgs[i + 3]));
-                }
-                if (parsedArgs[i] == "var")
-                {
-                    variables.Add(parsedArgs[i + 1], parsedArgs[i + 2]);
-                    //Console.WriteLine("Var name: " + parsedArgs[i + 1] + " Assignment: " + parsedArgs[i + 2]);
-                }
-                if (parsedArgs[i] == "print")
-                {
-                    if (variables.ContainsKey(parsedArgs[i + 1]))
-                    {
-                        Console.WriteLine(variables[parsedArgs[i + 1]]);
-                    }
-                    else
-                    {
-                        Console.WriteLine(parsedArgs[i + 1]);
-                    }
-                }
-            }
-
-            */
         }
 
         static string CalcString(string input, char openChar, char closeChar)
