@@ -1,5 +1,4 @@
-﻿using System.Security.Principal;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Tungsten_Interpreter
@@ -51,7 +50,7 @@ namespace Tungsten_Interpreter
                 lines.Add(i, line[i].Split("WS"));
             }
 
-            //Console.WriteLine(lexerOut);
+            Console.WriteLine(lexerOut);
 
             Parser();
         }
@@ -89,13 +88,13 @@ namespace Tungsten_Interpreter
         {
             List<TokenAssign> ta = new List<TokenAssign>();
 
-            ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+")));
+            ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|=")));
             ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$")));
             ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$")));
             ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$")));
             ta.Add(new TokenAssign(TokenList.NL, new Regex(@";")));
-            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$")));
-            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$")));
+            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$")));
+            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$")));
 
             return ta;
         }
@@ -124,9 +123,20 @@ namespace Tungsten_Interpreter
                 string[] words = lines[i];
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
+
                 if (words.Length == 0)
                 {
                     break;
+                }
+
+                if ((words[0] == "STRING" || words[0] == "INT" || words[0] == "BOOL") && !words[1].EndsWith(':'))
+                {
+                    Console.WriteLine("Relevant Assigner ':' Expected At: '" + words[1] + "'");
+                    return;
+                }
+                else
+                {
+                    words[1] = words[1].Replace(":", "");
                 }
 
                 if (words[0] == "STRING")
@@ -165,13 +175,20 @@ namespace Tungsten_Interpreter
                     //int key = 1;
 
                     StringBuilder sb = new StringBuilder();
+                    bool additionValidate = true;
 
                     for (int j = 1; j < words.Length; j++)
                     {
+                        if ((words[j] != "+" || words[j] != "WS") && additionValidate == false)
+                        {
+                            //Console.WriteLine("Concatention Trigger Doesn't Exist Between: {0} and {1}", words[j], words[j + 1]);
+                            //return;
+                        }
+
                         if (words[j].StartsWith("["))
                         {
-                            sb.Append(CalcStringForward(String.Join(" ", words, j, words.Length-j), '[', ']'));
-                        } 
+                            sb.Append(CalcStringForward(String.Join(" ", words, j, words.Length - j), '[', ']'));
+                        }
                         else if (variableString.ContainsKey(words[j]))
                         {
                             sb.Append(variableString[words[j]] + " ");
@@ -184,6 +201,11 @@ namespace Tungsten_Interpreter
                         {
                             sb.Append(variableBool[words[j]] + " ");
                         }
+                        else if (words[j] == "+")
+                        {
+                            additionValidate = true;
+                        }
+                        additionValidate = false;
                     }
 
                     Console.WriteLine(sb.ToString());
@@ -212,8 +234,13 @@ namespace Tungsten_Interpreter
                     {
                         for(i = 1; i < words.Length; i++)
                         {
-                            if (variableInt.ContainsKey(words[i])){
+                            if (variableInt.ContainsKey(words[i])) {
                                 compute += variableInt[words[i]];
+                            } 
+                            else if (variableString.ContainsKey(words[i]))
+                            {
+                                compute = variableString[words[i]];
+                                break;
                             }
                             else
                             {
@@ -312,21 +339,22 @@ namespace Tungsten_Interpreter
             }
 
             return input.Substring(startPos, endPos);
-        }
+        }   
 
-        static int CalcCharPos(string input, int startPos, char charToFind)
+        static int CalcStringEnd(string input, int startPos, char closeChar)
         {
-            int pos = input.Length;
+            
+            int endPos = input.Length;
 
-            for (int i = 0; i < input.Length; i++)
+            for (int i = 0; i < endPos; i++)
             {
-                if (input[i] == charToFind)
+                if (input[i] == closeChar)
                 {
-                    pos = i - startPos;
+                    endPos = i - startPos;
                     break;
                 }
             }
-            return pos;
+            return endPos;
         }
 
         static int CalcCharPosArr(string[] input, int startPos, char charToFind)
@@ -337,12 +365,9 @@ namespace Tungsten_Interpreter
             foreach (string i in input)
             {
                 str = i;
-                for (int j = startPos-1; j < str.Length; j++)
+                if (i.EndsWith(charToFind))
                 {
-                    if (str[j] == charToFind)
-                    {
-                        return pos - startPos;
-                    }
+                    return pos;
                 }
                 pos++;
             }
