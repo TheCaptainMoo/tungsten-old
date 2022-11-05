@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Tungsten_Interpreter
 {
@@ -32,7 +33,10 @@ namespace Tungsten_Interpreter
 
         static void Main(string[] args)
         {
-            string[] _args = Console.ReadLine().Split(" "); //Console.ReadLine().Split("\n");
+            string path = Console.ReadLine().Replace("\"", "");
+            StreamReader sr = new StreamReader(path);
+
+            string[] _args = sr.ReadToEnd().Split(" "); //Console.ReadLine().Split("\n");
 
             //Parser(Lexer(_args).ToArray());
             string[] lexerArr = Lexer(_args).ToArray();
@@ -43,14 +47,14 @@ namespace Tungsten_Interpreter
                 lexerOut += lexer + "WS";
             }
 
-            string[] line = lexerOut.Split("NLWS");
+            string[] line = lexerOut.Split("NL");
 
             for (int i = 0; i < line.Length; i++)
             {
                 lines.Add(i, line[i].Split("WS"));
             }
 
-            Console.WriteLine(lexerOut);
+            //Console.WriteLine(lexerOut);
 
             Parser();
         }
@@ -89,12 +93,12 @@ namespace Tungsten_Interpreter
             List<TokenAssign> ta = new List<TokenAssign>();
 
             ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|=")));
-            ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$")));
-            ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$")));
-            ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$")));
-            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";")));
-            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$")));
-            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$")));
+            ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|^WSstring$")));
+            ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|^WSint$")));
+            ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|^WSbool$")));
+            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n")));
+            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|^WSprint$")));
+            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|^WSmath$")));
 
             return ta;
         }
@@ -175,37 +179,25 @@ namespace Tungsten_Interpreter
                     //int key = 1;
 
                     StringBuilder sb = new StringBuilder();
-                    bool additionValidate = true;
 
                     for (int j = 1; j < words.Length; j++)
                     {
-                        if ((words[j] != "+" || words[j] != "WS") && additionValidate == false)
-                        {
-                            //Console.WriteLine("Concatention Trigger Doesn't Exist Between: {0} and {1}", words[j], words[j + 1]);
-                            //return;
-                        }
-
                         if (words[j].StartsWith("["))
                         {
                             sb.Append(CalcStringForward(String.Join(" ", words, j, words.Length - j), '[', ']'));
                         }
                         else if (variableString.ContainsKey(words[j]))
                         {
-                            sb.Append(variableString[words[j]] + " ");
+                            sb.Append(variableString[words[j]]);
                         }
                         else if (variableInt.ContainsKey(words[j]))
                         {
-                            sb.Append(variableInt[words[j]] + " ");
+                            sb.Append(variableInt[words[j]]);
                         }
                         else if (variableBool.ContainsKey(words[j]))
                         {
-                            sb.Append(variableBool[words[j]] + " ");
+                            sb.Append(variableBool[words[j]]);
                         }
-                        else if (words[j] == "+")
-                        {
-                            additionValidate = true;
-                        }
-                        additionValidate = false;
                     }
 
                     Console.WriteLine(sb.ToString());
