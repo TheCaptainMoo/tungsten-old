@@ -1,4 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Security.Principal;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Tungsten_Interpreter
 {
@@ -134,10 +136,10 @@ namespace Tungsten_Interpreter
                     //Console.WriteLine(CalcString(String.Join(" ", words, j + 2, words.Length - (j + 2)), '[', ']'));
 
                     //Console.WriteLine("String Detected");
-                } 
+                }
                 else if (words[0] == "INT")
                 {
-                    try { 
+                    try {
                         double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
                         variableInt.Add(words[1], Convert.ToInt32(maths));
                     }
@@ -147,18 +149,61 @@ namespace Tungsten_Interpreter
                     }
                     //Console.WriteLine(variableInt[words[1]]);
                 }
+                else if (words[0] == "BOOL")
+                {
+                    try
+                    {
+                        variableBool.Add(words[1], Convert.ToBoolean(words[2]));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Unsupported Bool Type");
+                    }
+                }
                 else if (words[0] == "PRINT")
                 {
-                    int key = 1;
+                    //int key = 1;
 
-                    if (variableString.ContainsKey(words[key]))
+                    StringBuilder sb = new StringBuilder();
+
+                    for (int j = 1; j < words.Length; j++)
+                    {
+                        if (words[j].StartsWith("["))
+                        {
+                            sb.Append(CalcStringForward(String.Join(" ", words, j, words.Length-j), '[', ']'));
+                        } 
+                        else if (variableString.ContainsKey(words[j]))
+                        {
+                            sb.Append(variableString[words[j]] + " ");
+                        }
+                        else if (variableInt.ContainsKey(words[j]))
+                        {
+                            sb.Append(variableInt[words[j]] + " ");
+                        }
+                        else if (variableBool.ContainsKey(words[j]))
+                        {
+                            sb.Append(variableBool[words[j]] + " ");
+                        }
+                    }
+
+                    Console.WriteLine(sb.ToString());
+
+                    /*if (variableString.ContainsKey(words[key]))
                     {
                         Console.Write(variableString[words[key]]);
+                    } 
+                    else if (variableBool.ContainsKey(words[key]))
+                    {
+                        Console.Write(variableBool[words[key]]);
+                    }
+                    else if (variableInt.ContainsKey(words[key]))
+                    {
+                        Console.Write(variableInt[words[key]]);
                     }
                     else
                     {
                         Console.Write(CalcString(String.Join(" ", words, key, words.Length - key), '[', ']'));
-                    }
+                    }*/
                 } 
                 else if(words[0] == "MATH")
                 {
@@ -241,6 +286,68 @@ namespace Tungsten_Interpreter
             }
 
             return input.Substring(startPos, endPos);
+        }
+
+        static string CalcStringForward(string input, char openChar, char closeChar)
+        {
+            int startPos = 0;
+            int endPos = input.Length;
+
+            for (int i = 0; i < endPos; i++)
+            {
+                if (input[i] == openChar)
+                {
+                    startPos = i + 1;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < endPos; i++)
+            {
+                if (input[i] == closeChar)
+                {
+                    endPos = i - startPos;
+                    break;
+                }
+            }
+
+            return input.Substring(startPos, endPos);
+        }
+
+        static int CalcCharPos(string input, int startPos, char charToFind)
+        {
+            int pos = input.Length;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (input[i] == charToFind)
+                {
+                    pos = i - startPos;
+                    break;
+                }
+            }
+            return pos;
+        }
+
+        static int CalcCharPosArr(string[] input, int startPos, char charToFind)
+        {
+            string str = "";
+            int pos = 0;
+
+            foreach (string i in input)
+            {
+                str = i;
+                for (int j = startPos-1; j < str.Length; j++)
+                {
+                    if (str[j] == charToFind)
+                    {
+                        return pos - startPos;
+                    }
+                }
+                pos++;
+            }
+
+            return -1;
         }
 
         public static double Evaluate(string expression)
