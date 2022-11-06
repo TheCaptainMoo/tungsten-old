@@ -12,6 +12,7 @@ namespace Tungsten_Interpreter
             INT,
             BOOL,
             NL,
+            FUNCT,
             PRINT,
             MATH,
             UPDATE
@@ -29,21 +30,45 @@ namespace Tungsten_Interpreter
             public Regex regex { get; set; }
         }
 
+        public class FunctionDeclaration
+        {
+            public FunctionDeclaration(string functionN, Dictionary<string[], string[]> functionP, Dictionary<int, string[]> functionB)
+            {
+                functionName = functionN;
+                functionBody = functionB;
+                functionParameters = functionP;
+            }
+
+            public string functionName { get; set; }
+            Dictionary<int, string[]> functionBody { get; set; }
+            public Dictionary<string[], string[]> functionParameters { get; set; }
+        }
+
         static IDictionary<int, string[]> lines = new Dictionary<int, string[]>();
 
         // Runtime Parsed Variables
         static IDictionary<string, string> variableString = new Dictionary<string, string>();
         static IDictionary<string, int> variableInt = new Dictionary<string, int>();
         static IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
+        static List<FunctionDeclaration> functionDeclarations = new List<FunctionDeclaration>();
 
         static void Main(string[] args)
         {
+            string[] splitChars =
+            {
+                " ",
+                "\n",
+                "\r",
+                "\t",
+                ";"
+            };
+
             reset:
             Clean();
             string path = Console.ReadLine().Replace("\"", "");
             StreamReader sr = new StreamReader(path);
 
-            string[] _args = sr.ReadToEnd().Split(" "); //Console.ReadLine().Split("\n");
+            string[] _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries); //Console.ReadLine().Split("\n");
 
             //Parser(Lexer(_args).ToArray());
             string[] lexerArr = Lexer(_args).ToArray();
@@ -61,7 +86,7 @@ namespace Tungsten_Interpreter
                 lines.Add(i, line[i].Split("WS"));
             }
 
-            //Console.WriteLine("Lexer: " + lexerOut);
+            Console.WriteLine("Lexer: " + lexerOut);
 
             Parser();
 
@@ -99,7 +124,7 @@ namespace Tungsten_Interpreter
 
             foreach (string outp in output)
             {
-                //Console.WriteLine(outp);
+                Console.WriteLine(outp);
             }
 
             return output;
@@ -109,15 +134,16 @@ namespace Tungsten_Interpreter
         {
             List<TokenAssign> ta = new List<TokenAssign>();
 
-            ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|=")));
-            ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|^WSstring$")));
-            ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|^WSint$")));
-            ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|^WSbool$")));
-            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n")));
-            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|^WSprint$")));
-            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|^WSmath$")));
-            ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|^WSupdate$")));
-
+            ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|\t")));
+            ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|WSstring")));
+            ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|WSint")));
+            ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|WSbool")));
+            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n|\r")));
+            ta.Add(new TokenAssign(TokenList.FUNCT, new Regex(@"^funct$|WSfunct")));
+            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|WSprint")));
+            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|WSmath")));
+            ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|WSupdate")));
+            
             return ta;
         }
 
@@ -127,6 +153,7 @@ namespace Tungsten_Interpreter
             {
                 string[] words = lines[i];
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                words[0] = words[0].ToUpper();
 
                 if (words != null)
                 {
@@ -193,6 +220,63 @@ namespace Tungsten_Interpreter
                     {
                         Console.WriteLine("Unsupported Bool Type");
                     }
+                }
+                else if (words[0] == "FUNCT")
+                {
+                    IDictionary<string[], string[]> parameters = new Dictionary<string[], string[]>();
+                    IDictionary<int, string[]> body = new Dictionary<int, string[]>();
+
+                    string str = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>'); ;
+                    string[] para;
+
+                    List<string> type = new List<string>();
+                    List<string> name = new List<string>();
+
+                    para = str.Replace(",", "").Split(" ");
+                    para[0] = para[0].ToUpper();
+                    
+                    for(int j = 0; j < para.Length; j += 2)
+                    {
+                        type.Add(para[j]);
+                        name.Add(para[j+1]);
+                    }
+
+                    int startPos = 0;
+                    int endPos = 0;
+                    int index = 0;
+
+                    for(int j = i; j < lines.Count; j++)
+                    {
+                        string[] wordsInLine = lines[j];
+                        foreach (string word in wordsInLine)
+                        {
+                            foreach(char c in word)
+                            {
+                                if(c == '{')
+                                {
+                                    startPos = j;
+                                }
+
+                                if(c == '}')
+                                {
+                                    endPos = j;
+                                }
+                            }
+                        }
+                    }
+
+                    while(startPos < endPos)
+                    {
+                        body.Add(index++, lines[startPos]);
+
+                        startPos++;
+                    }
+
+                    parameters.Add(type.ToArray(), name.ToArray());
+
+                    
+
+                    Console.WriteLine();
                 }
                 else if (words[0] == "PRINT")
                 {
