@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using System.IO;
 
 namespace Tungsten_Interpreter
 {
@@ -14,7 +13,8 @@ namespace Tungsten_Interpreter
             BOOL,
             NL,
             PRINT,
-            MATH
+            MATH,
+            UPDATE
         }
 
         public class TokenAssign
@@ -30,6 +30,11 @@ namespace Tungsten_Interpreter
         }
 
         static IDictionary<int, string[]> lines = new Dictionary<int, string[]>();
+
+        // Runtime Parsed Variables
+        static IDictionary<string, string> variableString = new Dictionary<string, string>();
+        static IDictionary<string, int> variableInt = new Dictionary<string, int>();
+        static IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
 
         static void Main(string[] args)
         {
@@ -66,6 +71,9 @@ namespace Tungsten_Interpreter
         public static void Clean()
         {
             lines = new Dictionary<int, string[]>();
+            variableString = new Dictionary<string, string>();
+            variableInt = new Dictionary<string, int>();
+            variableBool = new Dictionary<string, bool>();
         }
 
         static List<string> Lexer(string[] args)
@@ -108,16 +116,13 @@ namespace Tungsten_Interpreter
             ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n")));
             ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|^WSprint$")));
             ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|^WSmath$")));
+            ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|^WSupdate$")));
 
             return ta;
         }
 
         static void Parser()
         {
-            IDictionary<string, string> variableString = new Dictionary<string, string>();
-            IDictionary<string, int> variableInt = new Dictionary<string, int>();
-            IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
-
             for (int i = 0; i < lines.Count; i++)
             {
                 string[] words = lines[i];
@@ -151,20 +156,17 @@ namespace Tungsten_Interpreter
                 {
                     if (variableString.ContainsKey(words[1]))
                     {
-                        variableString.Remove(words[1]);
-                        //variableString.Add(words[1], CalcString(String.Join(" ", words, 2, words.Length - 2), '[', ']'));
+                        Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                        return;
                     }
-                    variableString.Add(words[1], CalcString(String.Join(" ", words, 2, words.Length - 2), '[', ']'));
-                    
-                    //Console.WriteLine(CalcString(String.Join(" ", words, j + 2, words.Length - (j + 2)), '[', ']'));
-
-                    //Console.WriteLine("String Detected");
+                    variableString.Add(words[1], ParseText(words, 2));
                 }
                 else if (words[0] == "INT")
                 {
                     if (variableInt.ContainsKey(words[1]))
                     {
-                        variableInt.Remove(words[1]);
+                        Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                        return;
                     }
                     try {
                         double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
@@ -180,7 +182,8 @@ namespace Tungsten_Interpreter
                 {
                     if (variableBool.ContainsKey(words[1]))
                     {
-                        variableBool.Remove(words[1]);
+                        Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                        return;
                     }
                     try
                     {
@@ -193,48 +196,26 @@ namespace Tungsten_Interpreter
                 }
                 else if (words[0] == "PRINT")
                 {
-                    StringBuilder sb = new StringBuilder();
-
-                    for (int j = 1; j < words.Length; j++)
-                    {
-                        if (words[j].StartsWith("["))
-                        {
-                            sb.Append(CalcStringForward(String.Join(" ", words, j, words.Length - j), '[', ']'));
-                        }
-                        else if (variableString.ContainsKey(words[j]))
-                        {
-                            sb.Append(variableString[words[j]]);
-                        }
-                        else if (variableInt.ContainsKey(words[j]))
-                        {
-                            sb.Append(variableInt[words[j]]);
-                        }
-                        else if (variableBool.ContainsKey(words[j]))
-                        {
-                            sb.Append(variableBool[words[j]]);
-                        }
-                    }
-
-                    Console.WriteLine(sb.ToString());
+                    Console.WriteLine(ParseText(words, 1));
                 } 
                 else if(words[0] == "MATH")
                 {
                     string compute = "";
                     try
                     {
-                        for(i = 1; i < words.Length; i++)
+                        for(int j = 1; j < words.Length; j++)
                         {
-                            if (variableInt.ContainsKey(words[i])) {
-                                compute += variableInt[words[i]];
+                            if (variableInt.ContainsKey(words[j])) {
+                                compute += variableInt[words[j]];
                             } 
-                            else if (variableString.ContainsKey(words[i]))
+                            else if (variableString.ContainsKey(words[j]))
                             {
-                                compute = variableString[words[i]];
+                                compute = variableString[words[j]];
                                 break;
                             }
                             else
                             {
-                                compute += words[i];
+                                compute += words[j];
                             }
                         }
                         Console.WriteLine(Evaluate(compute));
@@ -242,6 +223,46 @@ namespace Tungsten_Interpreter
                     catch
                     {
                         Console.WriteLine(Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')')));
+                    }
+                }
+                else if (words[0] == "UPDATE")
+                {
+                    if (variableString.ContainsKey(words[1]))
+                    {
+                        variableString.Remove(words[1]);
+                        variableString.Add(words[1], ParseText(words, 2));
+                    } 
+                    else if (variableInt.ContainsKey(words[1]))
+                    {
+                        variableInt.Remove(words[1]);
+                        try
+                        {
+                            double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
+                            variableInt.Add(words[1], Convert.ToInt32(maths));
+                        }
+                        catch
+                        {
+                            variableInt.Add(words[1], Convert.ToInt32(words[2]));
+                        }
+                    } 
+                    else if (variableBool.ContainsKey(words[1]))
+                    {
+                        if (variableBool.ContainsKey(words[1]))
+                        {
+                            variableBool.Remove(words[1]);
+                        }
+                        try
+                        {
+                            variableBool.Add(words[1], Convert.ToBoolean(words[2]));
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Unsupported Bool Type");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Variable: " + words[1] + " Doesn't Exist");
                     }
                 }
             }
@@ -331,6 +352,33 @@ namespace Tungsten_Interpreter
             }
 
             return -1;
+        }
+
+        static string ParseText(string[] words, int startIndex)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int j = startIndex; j < words.Length; j++)
+            {
+                if (words[j].StartsWith("["))
+                {
+                    sb.Append(CalcStringForward(String.Join(" ", words, j, words.Length - j), '[', ']'));
+                }
+                else if (variableString.ContainsKey(words[j]))
+                {
+                    sb.Append(variableString[words[j]]);
+                }
+                else if (variableInt.ContainsKey(words[j]))
+                {
+                    sb.Append(variableInt[words[j]]);
+                }
+                else if (variableBool.ContainsKey(words[j]))
+                {
+                    sb.Append(variableBool[words[j]]);
+                }
+            }
+
+            return sb.ToString();
         }
 
         public static double Evaluate(string expression)
