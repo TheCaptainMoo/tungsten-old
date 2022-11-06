@@ -386,9 +386,9 @@ namespace Tungsten_Interpreter
                     for (int l = 0; l < args.Length; l++)
                     {
                         string arg = args[l];
-                        for (int j = 0; j < functionDeclarations[words[0]].functionParameters.Count; j++)
+                        /*for (int j = 0; j < functionDeclarations[words[0]].functionParameters.Count; j++)
                         {
-                            for (int k = 0; k < functionDeclarations[words[0]].functionBody[j].Length; k++)
+                            for (int k = 0; k < functionDeclarations[words[0]].functionBody.Count; k++)
                             {
                                 //Console.WriteLine(functionDeclarations[words[0]].functionBody[j][k]);
 
@@ -401,6 +401,20 @@ namespace Tungsten_Interpreter
                                 }
 
                                 //functionDeclarations[words[0]].functionBody[j][k] = 
+                            }
+                        }*/
+
+                        for(int j = 0; j < functionDeclarations[words[0]].functionBody.Count; j++)
+                        {
+                            for(int k = 0; k < functionDeclarations[words[0]].functionBody[j].Length; k++)
+                            {
+                                for(int m = 0; m < functionDeclarations[words[0]].functionParameters.Count; m++)
+                                {
+                                    if (functionDeclarations[words[0]].functionBody[j][k] == functionDeclarations[words[0]].functionParameters[l])
+                                    {
+                                        functionDeclarations[words[0]].functionBody[j][k] = arg;
+                                    }
+                                }
                             }
                         }
                     }
