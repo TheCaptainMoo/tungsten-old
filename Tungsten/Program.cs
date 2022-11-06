@@ -32,14 +32,11 @@ namespace Tungsten_Interpreter
 
         public class FunctionDeclaration
         {
-            public FunctionDeclaration(string functionN, Dictionary<string[], string[]> functionP, Dictionary<int, string[]> functionB)
+            public FunctionDeclaration(Dictionary<string[], string[]> functionP, Dictionary<int, string[]> functionB)
             {
-                functionName = functionN;
                 functionBody = functionB;
                 functionParameters = functionP;
             }
-
-            public string functionName { get; set; }
             Dictionary<int, string[]> functionBody { get; set; }
             public Dictionary<string[], string[]> functionParameters { get; set; }
         }
@@ -50,17 +47,24 @@ namespace Tungsten_Interpreter
         static IDictionary<string, string> variableString = new Dictionary<string, string>();
         static IDictionary<string, int> variableInt = new Dictionary<string, int>();
         static IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
-        static List<FunctionDeclaration> functionDeclarations = new List<FunctionDeclaration>();
+        static IDictionary<string, FunctionDeclaration> functionDeclarations = new Dictionary<string, FunctionDeclaration>();
 
         static void Main(string[] args)
         {
             string[] splitChars =
             {
                 " ",
-                "\n",
+                //"\n",
                 "\r",
                 "\t",
-                ";"
+                //";"
+            };
+
+            string[] lineChars =
+            {
+                "WS",
+                "\0",
+                "NL"
             };
 
             reset:
@@ -83,7 +87,7 @@ namespace Tungsten_Interpreter
 
             for (int i = 0; i < line.Length; i++)
             {
-                lines.Add(i, line[i].Split("WS"));
+                lines.Add(i, line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
             }
 
             Console.WriteLine("Lexer: " + lexerOut);
@@ -118,6 +122,10 @@ namespace Tungsten_Interpreter
                 {
                     res = Regex.Replace(res, ta[i].regex.ToString(), ta[i].TokenList.ToString());
                     //Console.WriteLine(res);
+                    if (res.EndsWith('{') || res.StartsWith('}'))
+                    {
+                        res += "NL";
+                    }
                 }
                 output.Add(res);
             }
@@ -153,7 +161,7 @@ namespace Tungsten_Interpreter
             {
                 string[] words = lines[i];
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-                words[0] = words[0].ToUpper();
+                //words[0] = words[0].ToUpper();
 
                 if (words != null)
                 {
@@ -176,7 +184,11 @@ namespace Tungsten_Interpreter
                 }
                 else
                 {
-                    words[1] = words[1].Replace(":", "");
+                    try
+                    {
+                        words[1] = words[1].Replace(":", "");
+                    }
+                    catch { }
                 }
 
                 if (words[0] == "STRING")
@@ -223,8 +235,8 @@ namespace Tungsten_Interpreter
                 }
                 else if (words[0] == "FUNCT")
                 {
-                    IDictionary<string[], string[]> parameters = new Dictionary<string[], string[]>();
-                    IDictionary<int, string[]> body = new Dictionary<int, string[]>();
+                    Dictionary<string[], string[]> parameters = new Dictionary<string[], string[]>();
+                    Dictionary<int, string[]> body = new Dictionary<int, string[]>();
 
                     string str = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>'); ;
                     string[] para;
@@ -259,7 +271,7 @@ namespace Tungsten_Interpreter
 
                                 if(c == '}')
                                 {
-                                    endPos = j;
+                                    endPos = j - 1;
                                 }
                             }
                         }
@@ -267,14 +279,16 @@ namespace Tungsten_Interpreter
 
                     while(startPos < endPos)
                     {
-                        body.Add(index++, lines[startPos]);
+                        body.Add(index++, lines[startPos+1]);
 
                         startPos++;
                     }
 
                     parameters.Add(type.ToArray(), name.ToArray());
 
-                    
+                    functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(parameters, body));
+
+                    i = endPos+1;
 
                     Console.WriteLine();
                 }
@@ -348,6 +362,10 @@ namespace Tungsten_Interpreter
                     {
                         Console.WriteLine("Variable: " + words[1] + " Doesn't Exist");
                     }
+                }
+                else if (functionDeclarations.ContainsKey(words[0]))
+                {
+                    Console.WriteLine("You found a function");
                 }
             }
         }
