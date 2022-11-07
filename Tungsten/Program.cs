@@ -16,7 +16,8 @@ namespace Tungsten_Interpreter
             FUNCT,
             PRINT,
             MATH,
-            UPDATE
+            UPDATE,
+            DELETE
         }
 
         public class TokenAssign
@@ -31,15 +32,27 @@ namespace Tungsten_Interpreter
             public Regex regex { get; set; }
         }
 
-        public class FunctionDeclaration
+        /*public class FunctionDeclaration
         {
-            public FunctionDeclaration(/*Dictionary<string[], string[]>*/List<string> functionP, Dictionary<int, string[]> functionB)
+            public FunctionDeclaration(/*Dictionary<string[], string[]>List<string> functionP, Dictionary<int, string[]> functionB)
             {
                 functionBody = functionB;
                 functionParameters = functionP;
             }
-            public Dictionary<int, string[]> functionBody { get; set; }
-            public /*Dictionary<string[], string[]>*/ List<string> functionParameters { get; set; }
+            public Dictionary<int, string[]> functionBody { get; }
+            public /*Dictionary<string[], string[]> List<string> functionParameters { get; }
+        }*/
+
+        public readonly struct FunctionDeclaration
+        {
+            public FunctionDeclaration(List<string> functionP, Dictionary<int, string[]> functionB)
+            {
+                functionBody = functionB;
+                functionParameters = functionP;
+            }
+
+            public readonly List<string> functionParameters { get; init; }
+            public readonly Dictionary<int, string[]> functionBody { get; init; }
         }
 
         static IDictionary<int, string[]> lines = new Dictionary<int, string[]>();
@@ -91,7 +104,7 @@ namespace Tungsten_Interpreter
                 lines.Add(i, line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
             }
 
-            Console.WriteLine("Lexer: " + lexerOut);
+            //Console.WriteLine("Lexer: " + lexerOut);
 
             Parser();
 
@@ -104,6 +117,7 @@ namespace Tungsten_Interpreter
             variableString = new Dictionary<string, string>();
             variableInt = new Dictionary<string, int>();
             variableBool = new Dictionary<string, bool>();
+            functionDeclarations = new Dictionary<string, FunctionDeclaration>();
         }
 
         static List<string> Lexer(string[] args)
@@ -147,11 +161,12 @@ namespace Tungsten_Interpreter
             ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|WSstring")));
             ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|WSint")));
             ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|WSbool")));
-            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n|\r")));
+            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n+|\r+|[\r\n]+|\*\/")));
             ta.Add(new TokenAssign(TokenList.FUNCT, new Regex(@"^funct$|WSfunct")));
             ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|WSprint")));
             ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|WSmath")));
             ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|WSupdate")));
+            ta.Add(new TokenAssign(TokenList.DELETE, new Regex(@"^delete$|WSdelete")));
             
             return ta;
         }
@@ -160,9 +175,9 @@ namespace Tungsten_Interpreter
         {
             for (int i = 0; i < lines.Count; i++)
             {
+                zero:
                 string[] words = lines[i];
 
-                functParse:
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
                 //words[0] = words[0].ToUpper();
 
@@ -175,9 +190,17 @@ namespace Tungsten_Interpreter
                     catch { }
                 }
 
-                if (words.Length == 0)
+                if (words.Length == 0 || words[0].StartsWith("/*"))
                 {
-                    break;
+                    if(i >= lines.Count || i == lines.Count-1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                    goto zero;
                 }
 
                 if ((words[0] == "STRING" || words[0] == "INT" || words[0] == "BOOL") && !words[1].EndsWith(':'))
@@ -293,6 +316,7 @@ namespace Tungsten_Interpreter
                     //parameters.Add(type.ToArray(), name.ToArray());
 
                     functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
+                    //functionDeclarations.Add("ILOVETODEBUG", new FunctionDeclaration(name, body));
 
                     i = endPos+1;
 
@@ -351,10 +375,7 @@ namespace Tungsten_Interpreter
                     } 
                     else if (variableBool.ContainsKey(words[1]))
                     {
-                        if (variableBool.ContainsKey(words[1]))
-                        {
-                            variableBool.Remove(words[1]);
-                        }
+                        variableBool.Remove(words[1]);
                         try
                         {
                             variableBool.Add(words[1], Convert.ToBoolean(words[2]));
@@ -369,45 +390,47 @@ namespace Tungsten_Interpreter
                         Console.WriteLine("Variable: " + words[1] + " Doesn't Exist");
                     }
                 }
+                else if (words[0] == "DELETE")
+                {
+                    string[] args = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '(', ')').Replace(",", "").Split(" ");
+                    foreach (string arg in args)
+                    {
+                        if (variableString.ContainsKey(arg))
+                        {
+                            variableString.Remove(arg);
+                        } 
+                        else if (variableInt.ContainsKey(arg))
+                        {
+                            variableInt.Remove(arg);
+                        }
+                        else if (variableBool.ContainsKey(arg))
+                        {
+                            variableBool.Remove(arg);
+                        }
+                        else
+                        {
+                            Console.WriteLine("{0} Doesn't Exist", arg);
+                        }
+                    }
+                }
                 else if (functionDeclarations.ContainsKey(words[0]))
                 {
-                    Console.WriteLine("You found a function");
+                    //Console.WriteLine("You found a function");
                     string[] args = ParseText(words, 0, '<', '>').Split(",");
-
-                    //Console.WriteLine(args);
-
-                    for(int j = 0; j < args.Length; j++)
-                    {
-                        // Replace All Mentions Of Parameters With Args 
-                    }
+                    List<string[]> outputList = new List<string[]>();
+                    List<string[]> values = new List<string[]>();
 
                     int index = 0;
 
-                    for (int l = 0; l < args.Length; l++)
+                    /*for (int l = 0; l < args.Length; l++)
                     {
-                        string arg = args[l];
-                        /*for (int j = 0; j < functionDeclarations[words[0]].functionParameters.Count; j++)
-                        {
-                            for (int k = 0; k < functionDeclarations[words[0]].functionBody.Count; k++)
-                            {
-                                //Console.WriteLine(functionDeclarations[words[0]].functionBody[j][k]);
-
-                                //Console.WriteLine("Parameters: " + functionDeclarations[words[0]].functionParameters[l]);
-
-                                if(functionDeclarations[words[0]].functionBody[j][k] == functionDeclarations[words[0]].functionParameters[l])
-                                {
-                                    //Console.WriteLine("Replace With: " + arg);
-                                    functionDeclarations[words[0]].functionBody[j][k] = arg;
-                                }
-
-                                //functionDeclarations[words[0]].functionBody[j][k] = 
-                            }
-                        }*/
+                        string arg = args[l].Trim();
 
                         for(int j = 0; j < functionDeclarations[words[0]].functionBody.Count; j++)
                         {
                             for(int k = 0; k < functionDeclarations[words[0]].functionBody[j].Length; k++)
                             {
+                                //outputList.Add(functionDeclarations[words[0]].functionBody[j]);
                                 for(int m = 0; m < functionDeclarations[words[0]].functionParameters.Count; m++)
                                 {
                                     if (functionDeclarations[words[0]].functionBody[j][k] == functionDeclarations[words[0]].functionParameters[l])
@@ -417,13 +440,39 @@ namespace Tungsten_Interpreter
                                 }
                             }
                         }
+                    }*/
+
+                    for (int k = 0; k < functionDeclarations[words[0]].functionBody.Count; k++)
+                    {
+                        values.Add(functionDeclarations[words[0]].functionBody[k]);
+                        outputList.Add(values[0]);
+                        values.RemoveAt(0);
+                    }
+
+                    for (int l = 0; l < args.Length; l++)
+                    {
+                        string arg = args[l].Trim();
+                        for (int k = 0; k < outputList.Count; k++)
+                        {
+                            for (int j = 0; j < outputList[k].Length; j++)
+                            {
+                                for(int h = 0; h < outputList[k][j].Length; h++)
+                                {
+                                    if (outputList[k][j] == functionDeclarations[words[0]].functionParameters[l])
+                                    {
+                                        outputList[k][j] = arg;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     for (int j = 0; j < functionDeclarations[words[0]].functionBody.Count; j++) {
-                        lines.Add(lines.Count, functionDeclarations[words[0]].functionBody[j]);
+                        //lines.Add(lines.Count, functionDeclarations[words[0]].functionBody[j]);
+                        lines.Add(lines.Count, outputList[j]);
                     }
 
-                    //goto functParse;
+                    outputList = new List<string[]>();
                 }
             }
         }
@@ -479,40 +528,6 @@ namespace Tungsten_Interpreter
 
             return input.Substring(startPos, endPos);
         }   
-
-        static int CalcStringEnd(string input, int startPos, char closeChar)
-        {
-            
-            int endPos = input.Length;
-
-            for (int i = 0; i < endPos; i++)
-            {
-                if (input[i] == closeChar)
-                {
-                    endPos = i - startPos;
-                    break;
-                }
-            }
-            return endPos;
-        }
-
-        static int CalcCharPosArr(string[] input, int startPos, char charToFind)
-        {
-            string str = "";
-            int pos = 0;
-
-            foreach (string i in input)
-            {
-                str = i;
-                if (i.EndsWith(charToFind))
-                {
-                    return pos;
-                }
-                pos++;
-            }
-
-            return -1;
-        }
 
         static string ParseText(string[] words, int startIndex, char startsWith, char endsWith)
         {
