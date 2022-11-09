@@ -17,7 +17,8 @@ namespace Tungsten_Interpreter
             PRINT,
             MATH,
             UPDATE,
-            DELETE
+            DELETE,
+            INPUT
         }
 
         public class TokenAssign
@@ -157,7 +158,7 @@ namespace Tungsten_Interpreter
 
             foreach (string outp in output)
             {
-                Console.WriteLine(outp);
+                //Console.WriteLine(outp);
             }
 
             return output;
@@ -177,7 +178,8 @@ namespace Tungsten_Interpreter
             ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|WSmath")));
             ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|WSupdate")));
             ta.Add(new TokenAssign(TokenList.DELETE, new Regex(@"^delete$|WSdelete")));
-            
+            ta.Add(new TokenAssign(TokenList.INPUT, new Regex(@"^input$|WSinput|=>")));
+
             return ta;
         }
 
@@ -344,7 +346,7 @@ namespace Tungsten_Interpreter
                 {
                     Console.WriteLine(ParseText(words, 1, '[', ']'));
                 } 
-                else if(words[0] == "MATH")
+                else if (words[0] == "MATH")
                 {
                     string compute = "";
                     try
@@ -431,6 +433,63 @@ namespace Tungsten_Interpreter
                         {
                             Console.WriteLine("{0} Doesn't Exist", arg);
                         }
+                    }
+                }
+                else if (words[0] == "INPUT")
+                {
+                    if(words[1] == "STRING")
+                    {
+                        if (variableString.ContainsKey(words[2]))
+                        {
+                            Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                            return;
+                        }
+
+                        string[] input = Console.ReadLine().Split(" ");
+                        input[0] = "[" + input[0];
+                        input[input.Length - 1] = input[input.Length - 1] + "]";
+
+                        variableString.Add(words[2], ParseText(input, 0, '[', ']'));
+                    }
+                    else if (words[1] == "INT"){
+                        if (variableInt.ContainsKey(words[2]))
+                        {
+                            Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                            return;
+                        }
+
+                        string[] input = Console.ReadLine().Split(" ");
+                        try
+                        {
+                            double maths = Evaluate(CalcString(String.Join(" ", input, 0, input.Length), '(', ')'));
+                            variableInt.Add(words[2], Convert.ToInt32(maths));
+                        }
+                        catch
+                        {
+                            variableInt.Add(words[2], Convert.ToInt32(input[0]));
+                        }
+                    }
+                    else if (words[1] == "BOOL")
+                    {
+                        if (variableBool.ContainsKey(words[1]))
+                        {
+                            Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                            return;
+                        }
+
+                        string input = Console.ReadLine();
+                        try
+                        {
+                            variableBool.Add(words[2], Convert.ToBoolean(input));
+                        }
+                        catch
+                        {
+                            Console.WriteLine("Unsupported Bool Type");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unrecognised Type: {0}", words[1]);
                     }
                 }
                 else if (/*functionDeclarations.ContainsKey(words[0])*/functionParameters.ContainsKey(words[0]))
