@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection.Metadata;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -32,18 +32,26 @@ namespace Tungsten_Interpreter
             public Regex regex { get; set; }
         }
 
-        /*public class FunctionDeclaration
+        public class FunctionParam
         {
-            public FunctionDeclaration(/*Dictionary<string[], string[]>List<string> functionP, Dictionary<int, string[]> functionB)
+            public FunctionParam(List<string> parameters)
             {
-                functionBody = functionB;
-                functionParameters = functionP;
+                Parameters = parameters;
             }
-            public Dictionary<int, string[]> functionBody { get; }
-            public /*Dictionary<string[], string[]> List<string> functionParameters { get; }
-        }*/
+            public List<string> Parameters { get; set; }
+        }
 
-        public readonly struct FunctionDeclaration
+        public class FunctionBody
+        {
+            public FunctionBody(Dictionary<int, string[]> body)
+            {
+                Body = body;
+            }
+
+            public Dictionary<int, string[]> Body { get; set; }
+        }
+
+        /*public class FunctionDeclaration
         {
             public FunctionDeclaration(List<string> functionP, Dictionary<int, string[]> functionB)
             {
@@ -51,17 +59,18 @@ namespace Tungsten_Interpreter
                 functionParameters = functionP;
             }
 
-            public readonly List<string> functionParameters { get; init; }
-            public readonly Dictionary<int, string[]> functionBody { get; init; }
-        }
+            public List<string> functionParameters { get; set; }
+            public Dictionary<int, string[]> functionBody { get; set; }
+        }*/
 
-        static IDictionary<int, string[]> lines = new Dictionary<int, string[]>();
+        //static IDictionary<int, string[]> lines = new Dictionary<int, string[]>();
+        static List<string[]> lines = new List<string[]>();
 
         // Runtime Parsed Variables
         static IDictionary<string, string> variableString = new Dictionary<string, string>();
         static IDictionary<string, int> variableInt = new Dictionary<string, int>();
         static IDictionary<string, bool> variableBool = new Dictionary<string, bool>();
-        static IDictionary<string, FunctionDeclaration> functionDeclarations = new Dictionary<string, FunctionDeclaration>();
+        //static IDictionary<string, FunctionDeclaration> functionDeclarations = new Dictionary<string, FunctionDeclaration>();
 
         static void Main(string[] args)
         {
@@ -101,7 +110,7 @@ namespace Tungsten_Interpreter
 
             for (int i = 0; i < line.Length; i++)
             {
-                lines.Add(i, line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
+                lines.Add(/*i, */line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
             }
 
             //Console.WriteLine("Lexer: " + lexerOut);
@@ -113,11 +122,12 @@ namespace Tungsten_Interpreter
 
         public static void Clean()
         {
-            lines = new Dictionary<int, string[]>();
+            //lines = new Dictionary<int, string[]>();
+            lines = new List<string[]>();
             variableString = new Dictionary<string, string>();
             variableInt = new Dictionary<string, int>();
             variableBool = new Dictionary<string, bool>();
-            functionDeclarations = new Dictionary<string, FunctionDeclaration>();
+            //functionDeclarations = new Dictionary<string, FunctionDeclaration>();
         }
 
         static List<string> Lexer(string[] args)
@@ -173,6 +183,11 @@ namespace Tungsten_Interpreter
 
         static void Parser()
         {
+            //IDictionary<string, FunctionDeclaration> functionDeclarations = new Dictionary<string, FunctionDeclaration>();
+
+            IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
+            IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
+
             for (int i = 0; i < lines.Count; i++)
             {
                 zero:
@@ -315,8 +330,11 @@ namespace Tungsten_Interpreter
 
                     //parameters.Add(type.ToArray(), name.ToArray());
 
-                    functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
+                    //functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
                     //functionDeclarations.Add("ILOVETODEBUG", new FunctionDeclaration(name, body));
+
+                    functionParameters.Add(words[1].ToUpper(), new FunctionParam(name));
+                    functionBody.Add(words[1].ToUpper(), new FunctionBody(body));
 
                     i = endPos+1;
 
@@ -392,7 +410,9 @@ namespace Tungsten_Interpreter
                 }
                 else if (words[0] == "DELETE")
                 {
-                    string[] args = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '(', ')').Replace(",", "").Split(" ");
+                    string[] args = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '(', ')').Replace(",", " ").Split(" ");
+                    args = args.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
                     foreach (string arg in args)
                     {
                         if (variableString.ContainsKey(arg))
@@ -413,14 +433,14 @@ namespace Tungsten_Interpreter
                         }
                     }
                 }
-                else if (functionDeclarations.ContainsKey(words[0]))
+                else if (/*functionDeclarations.ContainsKey(words[0])*/functionParameters.ContainsKey(words[0]))
                 {
                     //Console.WriteLine("You found a function");
                     string[] args = ParseText(words, 0, '<', '>').Split(",");
                     List<string[]> outputList = new List<string[]>();
-                    List<string[]> values = new List<string[]>();
+                    lines.RemoveAt(i);
 
-                    int index = 0;
+                    //Console.WriteLine(bodyClone.Body[0][0]);
 
                     /*for (int l = 0; l < args.Length; l++)
                     {
@@ -442,11 +462,9 @@ namespace Tungsten_Interpreter
                         }
                     }*/
 
-                    for (int k = 0; k < functionDeclarations[words[0]].functionBody.Count; k++)
+                    for (int k = 0; k < functionBody[words[0]].Body.Count; k++)
                     {
-                        values.Add(functionDeclarations[words[0]].functionBody[k]);
-                        outputList.Add(values[0]);
-                        values.RemoveAt(0);
+                        outputList.Add(functionBody[words[0]].Body[k]);
                     }
 
                     for (int l = 0; l < args.Length; l++)
@@ -458,23 +476,30 @@ namespace Tungsten_Interpreter
                             {
                                 for(int h = 0; h < outputList[k][j].Length; h++)
                                 {
-                                    if (outputList[k][j] == functionDeclarations[words[0]].functionParameters[l])
+                                    if (outputList[k][j] == /*functionDeclarations[words[0]].functionParameters[l]*/ functionParameters[words[0]].Parameters[l])
                                     {
                                         outputList[k][j] = arg;
+                                        if (k == outputList.Count - 1)
+                                        {
+                                            functionParameters[words[0]].Parameters[l] = arg;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
 
-                    for (int j = 0; j < functionDeclarations[words[0]].functionBody.Count; j++) {
+                    for (int j = 0; j < functionBody[words[0]].Body.Count; j++) {
                         //lines.Add(lines.Count, functionDeclarations[words[0]].functionBody[j]);
-                        lines.Add(lines.Count, outputList[j]);
+                        //lines.Add(lines.Count, outputList[j]);
+                        lines.Insert(i + j, outputList[j]);
                     }
 
+                    i--;
                     outputList = new List<string[]>();
                 }
             }
+            //functionDeclarations = new Dictionary<string, FunctionDeclaration>();
         }
 
         static string CalcString(string input, char openChar, char closeChar)
@@ -563,6 +588,6 @@ namespace Tungsten_Interpreter
             System.Data.DataRow row = table.NewRow();
             table.Rows.Add(row);
             return double.Parse((string)row["expression"]);
-        }      
+        }
     }
 }
