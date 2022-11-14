@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Tungsten_Interpreter
@@ -234,155 +233,23 @@ namespace Tungsten_Interpreter
                     catch { }
                 }
 
-                if (words[0] == "STRING")
+                switch (words[0])
                 {
-                    if (variableString.ContainsKey(words[1]))
-                    {
-                        Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
-                        return;
-                    }
-                    variableString.Add(words[1], ParseText(words, 2, '[', ']'));
-                }
-                else if (words[0] == "INT")
-                {
-                    if (variableInt.ContainsKey(words[1]))
-                    {
-                        Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
-                        return;
-                    }
-                    try {
-                        double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
-                        variableInt.Add(words[1], Convert.ToInt32(maths));
-                    }
-                    catch
-                    {
-                        variableInt.Add(words[1], Convert.ToInt32(words[2]));
-                    }
-                    //Console.WriteLine(variableInt[words[1]]);
-                }
-                else if (words[0] == "BOOL")
-                {
-                    if (variableBool.ContainsKey(words[1]))
-                    {
-                        Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
-                        return;
-                    }
-                    try
-                    {
-                        variableBool.Add(words[1], Convert.ToBoolean(words[2]));
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Unsupported Bool Type");
-                    }
-                }
-                else if (words[0] == "FUNCT")
-                {
-                    //Dictionary<string[], string[]> parameters = new Dictionary<string[], string[]>();
-                    List<string> parameters = new List<string>();
-
-                    Dictionary<int, string[]> body = new Dictionary<int, string[]>();
-
-                    string str = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>'); ;
-                    string[] para;
-
-                    //List<string> type = new List<string>();
-                    List<string> name = new List<string>();
-
-                    para = str.Replace(",", "").Split(" ");
-                    para[0] = para[0].ToUpper();
-                    
-                    for(int j = 0; j < para.Length; j += 2)
-                    {
-                        //type.Add(para[j]);
-                        //name.Add(para[j+1]);
-                        name.Add(para[j + 1]);
-                    }
-
-                    int startPos = 0;
-                    int endPos = 0;
-                    int index = 0;
-
-                    for(int j = i; j < lines.Count; j++)
-                    {
-                        string[] wordsInLine = lines[j];
-                        foreach (string word in wordsInLine)
-                        {
-                            foreach(char c in word)
-                            {
-                                if(c == '{')
-                                {
-                                    startPos = j;
-                                }
-
-                                if(c == '}')
-                                {
-                                    endPos = j - 1;
-                                }
-                            }
-                        }
-                    }
-
-                    while(startPos < endPos)
-                    {
-                        body.Add(index++, lines[startPos+1]);
-
-                        startPos++;
-                    }
-
-                    //parameters.Add(type.ToArray(), name.ToArray());
-
-                    //functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
-                    //functionDeclarations.Add("ILOVETODEBUG", new FunctionDeclaration(name, body));
-
-                    functionParameters.Add(words[1].ToUpper(), new FunctionParam(name));
-                    functionBody.Add(words[1].ToUpper(), new FunctionBody(body));
-
-                    i = endPos+1;
-
-                    Console.WriteLine();
-                }
-                else if (words[0] == "PRINT")
-                {
-                    Console.WriteLine(ParseText(words, 1, '[', ']'));
-                } 
-                else if (words[0] == "MATH")
-                {
-                    string compute = "";
-                    try
-                    {
-                        for(int j = 1; j < words.Length; j++)
-                        {
-                            if (variableInt.ContainsKey(words[j])) {
-                                compute += variableInt[words[j]];
-                            } 
-                            else if (variableString.ContainsKey(words[j]))
-                            {
-                                compute = variableString[words[j]];
-                                break;
-                            }
-                            else
-                            {
-                                compute += words[j];
-                            }
-                        }
-                        Console.WriteLine(Evaluate(compute));
-                    }
-                    catch
-                    {
-                        Console.WriteLine(Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')')));
-                    }
-                }
-                else if (words[0] == "UPDATE")
-                {
-                    if (variableString.ContainsKey(words[1]))
-                    {
-                        variableString.Remove(words[1]);
+                    #region Variable Creation
+                    case "STRING":
+                        #region String Varibles
+                        if (Exist(words, variableString, 1))
+                            return;
+                        
                         variableString.Add(words[1], ParseText(words, 2, '[', ']'));
-                    } 
-                    else if (variableInt.ContainsKey(words[1]))
-                    {
-                        variableInt.Remove(words[1]);
+                        #endregion
+                        break;
+
+                    case "INT":
+                        #region Integer Variables
+                        if (Exist(words, variableInt, 1))
+                            return;
+                        
                         try
                         {
                             double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
@@ -392,10 +259,14 @@ namespace Tungsten_Interpreter
                         {
                             variableInt.Add(words[1], Convert.ToInt32(words[2]));
                         }
-                    } 
-                    else if (variableBool.ContainsKey(words[1]))
-                    {
-                        variableBool.Remove(words[1]);
+                        #endregion
+                        break;
+
+                    case "BOOL":
+                        #region Boolean Variables
+                        if (Exist(words, variableBool, 1))
+                            return;
+                        
                         try
                         {
                             variableBool.Add(words[1], Convert.ToBoolean(words[2]));
@@ -404,95 +275,241 @@ namespace Tungsten_Interpreter
                         {
                             Console.WriteLine("Unsupported Bool Type");
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Variable: " + words[1] + " Doesn't Exist");
-                    }
-                }
-                else if (words[0] == "DELETE")
-                {
-                    string[] args = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '(', ')').Replace(",", " ").Split(" ");
-                    args = args.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+                        #endregion
+                        break;
+                    #endregion
 
-                    foreach (string arg in args)
-                    {
-                        if (variableString.ContainsKey(arg))
+                    #region Variable Modification
+                    case "UPDATE":
+                        #region Update Variables
+                        if (variableString.ContainsKey(words[1]))
                         {
-                            variableString.Remove(arg);
-                        } 
-                        else if (variableInt.ContainsKey(arg))
-                        {
-                            variableInt.Remove(arg);
+                            variableString.Remove(words[1]);
+                            variableString.Add(words[1], ParseText(words, 2, '[', ']'));
                         }
-                        else if (variableBool.ContainsKey(arg))
+                        else if (variableInt.ContainsKey(words[1]))
                         {
-                            variableBool.Remove(arg);
+                            variableInt.Remove(words[1]);
+                            try
+                            {
+                                double maths = Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
+                                variableInt.Add(words[1], Convert.ToInt32(maths));
+                            }
+                            catch
+                            {
+                                variableInt.Add(words[1], Convert.ToInt32(words[2]));
+                            }
+                        }
+                        else if (variableBool.ContainsKey(words[1]))
+                        {
+                            variableBool.Remove(words[1]);
+                            try
+                            {
+                                variableBool.Add(words[1], Convert.ToBoolean(words[2]));
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Unsupported Bool Type");
+                            }
                         }
                         else
                         {
-                            Console.WriteLine("{0} Doesn't Exist", arg);
+                            Console.WriteLine("Variable: " + words[1] + " Doesn't Exist");
                         }
-                    }
-                }
-                else if (words[0] == "INPUT")
-                {
-                    if(words[1] == "STRING")
-                    {
-                        if (variableString.ContainsKey(words[2]))
+                        #endregion
+                        break;
+
+                    case "DELETE":
+                        #region Delete Variables
+                        string[] args = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '(', ')').Replace(",", " ").Split(" ");
+                        args = args.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
+                        foreach (string arg in args)
                         {
-                            Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
-                            return;
+                            if (variableString.ContainsKey(arg))
+                            {
+                                variableString.Remove(arg);
+                            }
+                            else if (variableInt.ContainsKey(arg))
+                            {
+                                variableInt.Remove(arg);
+                            }
+                            else if (variableBool.ContainsKey(arg))
+                            {
+                                variableBool.Remove(arg);
+                            }
+                            else
+                            {
+                                Console.WriteLine("{0} Doesn't Exist", arg);
+                            }
                         }
+                        #endregion
+                        break;
 
-                        string[] input = Console.ReadLine().Split(" ");
-                        input[0] = "[" + input[0];
-                        input[input.Length - 1] = input[input.Length - 1] + "]";
-
-                        variableString.Add(words[2], ParseText(input, 0, '[', ']'));
-                    }
-                    else if (words[1] == "INT"){
-                        if (variableInt.ContainsKey(words[2]))
+                    case "INPUT":
+                        #region Input Variables
+                        if (words[1] == "STRING")
                         {
-                            Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
-                            return;
-                        }
+                            if (variableString.ContainsKey(words[2]))
+                            {
+                                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                                return;
+                            }
 
-                        string[] input = Console.ReadLine().Split(" ");
+                            string[] input = Console.ReadLine().Split(" ");
+                            input[0] = "[" + input[0];
+                            input[input.Length - 1] = input[input.Length - 1] + "]";
+
+                            variableString.Add(words[2], ParseText(input, 0, '[', ']'));
+                        }
+                        else if (words[1] == "INT")
+                        {
+                            if (variableInt.ContainsKey(words[2]))
+                            {
+                                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                                return;
+                            }
+
+                            string[] input = Console.ReadLine().Split(" ");
+                            try
+                            {
+                                double maths = Evaluate(CalcString(String.Join(" ", input, 0, input.Length), '(', ')'));
+                                variableInt.Add(words[2], Convert.ToInt32(maths));
+                            }
+                            catch
+                            {
+                                variableInt.Add(words[2], Convert.ToInt32(input[0]));
+                            }
+                        }
+                        else if (words[1] == "BOOL")
+                        {
+                            if (variableBool.ContainsKey(words[1]))
+                            {
+                                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                                return;
+                            }
+
+                            string input = Console.ReadLine();
+                            try
+                            {
+                                variableBool.Add(words[2], Convert.ToBoolean(input));
+                            }
+                            catch
+                            {
+                                Console.WriteLine("Unsupported Bool Type");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unrecognised Type: {0}", words[1]);
+                        }
+                        #endregion 
+                        // Needs Refactoring
+                        break;
+                    #endregion
+
+                    case "MATH":
+                        #region Maths Operations
+                        string compute = "";
                         try
                         {
-                            double maths = Evaluate(CalcString(String.Join(" ", input, 0, input.Length), '(', ')'));
-                            variableInt.Add(words[2], Convert.ToInt32(maths));
+                            for (int j = 1; j < words.Length; j++)
+                            {
+                                if (variableInt.ContainsKey(words[j]))
+                                {
+                                    compute += variableInt[words[j]];
+                                }
+                                else if (variableString.ContainsKey(words[j]))
+                                {
+                                    compute = variableString[words[j]];
+                                    break;
+                                }
+                                else
+                                {
+                                    compute += words[j];
+                                }
+                            }
+                            Console.WriteLine(Evaluate(compute));
                         }
                         catch
                         {
-                            variableInt.Add(words[2], Convert.ToInt32(input[0]));
+                            Console.WriteLine(Evaluate(CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')')));
                         }
-                    }
-                    else if (words[1] == "BOOL")
-                    {
-                        if (variableBool.ContainsKey(words[1]))
+                        #endregion
+                        break;
+
+                    case "FUNCT":
+                        #region Functions
+                        //Dictionary<string[], string[]> parameters = new Dictionary<string[], string[]>();
+                        List<string> parameters = new List<string>();
+
+                        Dictionary<int, string[]> body = new Dictionary<int, string[]>();
+
+                        string str = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>'); ;
+                        string[] para;
+
+                        //List<string> type = new List<string>();
+                        List<string> name = new List<string>();
+
+                        para = str.Replace(",", "").Split(" ");
+                        para[0] = para[0].ToUpper();
+
+                        for (int j = 0; j < para.Length; j += 2)
                         {
-                            Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
-                            return;
+                            //type.Add(para[j]);
+                            //name.Add(para[j+1]);
+                            name.Add(para[j + 1]);
                         }
 
-                        string input = Console.ReadLine();
-                        try
+                        int startPos = 0;
+                        int endPos = 0;
+                        int index = 0;
+
+                        for (int j = i; j < lines.Count; j++)
                         {
-                            variableBool.Add(words[2], Convert.ToBoolean(input));
+                            string[] wordsInLine = lines[j];
+                            foreach (string word in wordsInLine)
+                            {
+                                foreach (char c in word)
+                                {
+                                    if (c == '{')
+                                    {
+                                        startPos = j;
+                                    }
+
+                                    if (c == '}')
+                                    {
+                                        endPos = j - 1;
+                                    }
+                                }
+                            }
                         }
-                        catch
+
+                        while (startPos < endPos)
                         {
-                            Console.WriteLine("Unsupported Bool Type");
+                            body.Add(index++, lines[startPos + 1]);
+
+                            startPos++;
                         }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Unrecognised Type: {0}", words[1]);
-                    }
+
+                        //parameters.Add(type.ToArray(), name.ToArray());
+
+                        //functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
+                        //functionDeclarations.Add("ILOVETODEBUG", new FunctionDeclaration(name, body));
+
+                        functionParameters.Add(words[1].ToUpper(), new FunctionParam(name));
+                        functionBody.Add(words[1].ToUpper(), new FunctionBody(body));
+
+                        i = endPos + 1;
+                        #endregion
+                        break;
+
+                    case "PRINT":
+                        Console.WriteLine(ParseText(words, 1, '[', ']'));
+                        break;
                 }
-                else if (/*functionDeclarations.ContainsKey(words[0])*/functionParameters.ContainsKey(words[0]))
+
+                if (/*functionDeclarations.ContainsKey(words[0])*/functionParameters.ContainsKey(words[0]))
                 {
                     //Console.WriteLine("You found a function");
                     string[] args = ParseText(words, 0, '<', '>').Split(",");
@@ -647,6 +664,16 @@ namespace Tungsten_Interpreter
             System.Data.DataRow row = table.NewRow();
             table.Rows.Add(row);
             return double.Parse((string)row["expression"]);
+        }
+
+        public static bool Exist<T>(string[] content, IDictionary<string, T> value, int checkIndex)
+        {
+            if (value.ContainsKey(content[checkIndex]))
+            {
+                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + content[checkIndex]);
+                return true;
+            }
+            return false;
         }
     }
 }
