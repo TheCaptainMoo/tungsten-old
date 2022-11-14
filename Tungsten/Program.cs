@@ -17,7 +17,9 @@ namespace Tungsten_Interpreter
             MATH,
             UPDATE,
             DELETE,
-            INPUT
+            INPUT,
+            WHILE,
+            RWHILE //Repeat While 
         }
 
         public class TokenAssign
@@ -178,20 +180,25 @@ namespace Tungsten_Interpreter
             ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|WSupdate")));
             ta.Add(new TokenAssign(TokenList.DELETE, new Regex(@"^delete$|WSdelete")));
             ta.Add(new TokenAssign(TokenList.INPUT, new Regex(@"^input$|WSinput|=>")));
+            ta.Add(new TokenAssign(TokenList.WHILE, new Regex(@"^while$|WSwhile")));
 
             return ta;
         }
 
         static void Parser()
         {
-            //IDictionary<string, FunctionDeclaration> functionDeclarations = new Dictionary<string, FunctionDeclaration>();
-
             IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
             IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
+
+            IDictionary<string, IDictionary<int, string[]>> whileBody = new Dictionary<string, IDictionary<int, string[]>>();
+
+            int wStartPos = 0;
+            int wEndPos = 0;
 
             for (int i = 0; i < lines.Count; i++)
             {
                 zero:
+                #region Cleaning & Init
                 string[] words = lines[i];
 
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
@@ -232,7 +239,9 @@ namespace Tungsten_Interpreter
                     }
                     catch { }
                 }
+                #endregion
 
+                #region Parsing
                 switch (words[0])
                 {
                     #region Variable Creation
@@ -280,8 +289,11 @@ namespace Tungsten_Interpreter
                     #endregion
 
                     #region Variable Modification
-                    case "UPDATE":
+                    case "UPDATE": // REFACTOR AND MODIFY TO SUPPORT VARIABLE INPUT
                         #region Update Variables
+
+                        words = VariableConversion(words, 2);
+
                         if (variableString.ContainsKey(words[1]))
                         {
                             variableString.Remove(words[1]);
@@ -350,11 +362,8 @@ namespace Tungsten_Interpreter
                         #region Input Variables
                         if (words[1] == "STRING")
                         {
-                            if (variableString.ContainsKey(words[2]))
-                            {
-                                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                            if (Exist(words, variableString, 2))
                                 return;
-                            }
 
                             string[] input = Console.ReadLine().Split(" ");
                             input[0] = "[" + input[0];
@@ -364,11 +373,8 @@ namespace Tungsten_Interpreter
                         }
                         else if (words[1] == "INT")
                         {
-                            if (variableInt.ContainsKey(words[2]))
-                            {
-                                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                            if (Exist(words, variableInt, 2))
                                 return;
-                            }
 
                             string[] input = Console.ReadLine().Split(" ");
                             try
@@ -383,11 +389,8 @@ namespace Tungsten_Interpreter
                         }
                         else if (words[1] == "BOOL")
                         {
-                            if (variableBool.ContainsKey(words[1]))
-                            {
-                                Console.WriteLine("Please Use The 'update' Keyword To Reassign: " + words[1]);
+                            if (Exist(words, variableBool, 2))
                                 return;
-                            }
 
                             string input = Console.ReadLine();
                             try
@@ -404,10 +407,10 @@ namespace Tungsten_Interpreter
                             Console.WriteLine("Unrecognised Type: {0}", words[1]);
                         }
                         #endregion 
-                        // Needs Refactoring
                         break;
                     #endregion
 
+                    #region System
                     case "MATH":
                         #region Maths Operations
                         string compute = "";
@@ -507,36 +510,78 @@ namespace Tungsten_Interpreter
                     case "PRINT":
                         Console.WriteLine(ParseText(words, 1, '[', ']'));
                         break;
-                }
 
-                if (/*functionDeclarations.ContainsKey(words[0])*/functionParameters.ContainsKey(words[0]))
-                {
-                    //Console.WriteLine("You found a function");
-                    string[] args = ParseText(words, 0, '<', '>').Split(",");
-                    List<string[]> outputList = new List<string[]>();
-                    lines.RemoveAt(i);
+                    case "WHILE":
+                        #region While Loops
 
-                    //Console.WriteLine(bodyClone.Body[0][0]);
+                        string[] whileStr = CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>').Split(" ");
+                        List<string> modifier = whileStr.ToList<string>();
 
-                    /*for (int l = 0; l < args.Length; l++)
-                    {
-                        string arg = args[l].Trim();
-
-                        for(int j = 0; j < functionDeclarations[words[0]].functionBody.Count; j++)
+                        for (int j = 0; j < whileStr.Length; j++)//---------------------------------------------------------------------------------- REFACTORING
                         {
-                            for(int k = 0; k < functionDeclarations[words[0]].functionBody[j].Length; k++)
+                            if (variableString.ContainsKey(whileStr[j]))
                             {
-                                //outputList.Add(functionDeclarations[words[0]].functionBody[j]);
-                                for(int m = 0; m < functionDeclarations[words[0]].functionParameters.Count; m++)
+                                modifier[j] = variableString[whileStr[j]];
+                            }
+                            else if (variableInt.ContainsKey(whileStr[j]))
+                            {
+                                modifier[j] = variableInt[whileStr[j]].ToString();
+                            }
+                            else if (variableBool.ContainsKey(whileStr[j]))
+                            {
+                                modifier[j] = variableBool[whileStr[j]].ToString();
+                            }
+                        }
+
+                        //Console.WriteLine(Operation(modifier[0], modifier[1], modifier[2]));
+
+                        for (int j = i; j < lines.Count; j++)
+                        {
+                            string[] wordsInLine = lines[j];
+                            foreach (string word in wordsInLine)
+                            {
+                                foreach (char c in word)
                                 {
-                                    if (functionDeclarations[words[0]].functionBody[j][k] == functionDeclarations[words[0]].functionParameters[l])
+                                    if (c == '{')
                                     {
-                                        functionDeclarations[words[0]].functionBody[j][k] = arg;
+                                        wStartPos = j;
+                                    }
+
+                                    if (c == '}')
+                                    {
+                                        wEndPos = j;
                                     }
                                 }
                             }
                         }
-                    }*/
+
+                        if (Operation(modifier[0], modifier[1], modifier[2]))
+                        {
+                            lines[wEndPos][0] = lines[wEndPos][0].Replace("}", "RWHILE");
+                        }
+                        else
+                        {
+                            lines[wEndPos][0] = lines[wEndPos][0].Replace("RWHILE", "}NL");
+                        }
+
+                        //Console.WriteLine();
+                        
+                        #endregion
+                        break;
+
+                    case "RWHILE":
+
+                        i = wStartPos - 1;
+
+                        break;
+                    #endregion
+                }
+
+                if (functionParameters.ContainsKey(words[0]))
+                {
+                    string[] args = ParseText(words, 0, '<', '>').Split(",");
+                    List<string[]> outputList = new List<string[]>();
+                    lines.RemoveAt(i);
 
                     for (int k = 0; k < functionBody[words[0]].Body.Count; k++)
                     {
@@ -566,16 +611,14 @@ namespace Tungsten_Interpreter
                     }
 
                     for (int j = 0; j < functionBody[words[0]].Body.Count; j++) {
-                        //lines.Add(lines.Count, functionDeclarations[words[0]].functionBody[j]);
-                        //lines.Add(lines.Count, outputList[j]);
                         lines.Insert(i + j, outputList[j]);
                     }
 
                     i--;
-                    outputList = new List<string[]>();
+                    //outputList = new List<string[]>();
                 }
+                #endregion
             }
-            //functionDeclarations = new Dictionary<string, FunctionDeclaration>();
         }
 
         static string CalcString(string input, char openChar, char closeChar)
@@ -674,6 +717,96 @@ namespace Tungsten_Interpreter
                 return true;
             }
             return false;
+        }
+
+        public static bool Operation<T>(T val1, string op, T val2)
+        {
+            string v1 = val1.ToString();
+            string v2 = val2.ToString();
+
+            switch (op)
+            {
+                case "==":
+                    if(v1 == v2)
+                    {
+                        return true;
+                    }
+                    break;
+
+                case "!=":
+                    if (v1 != v2)
+                    {
+                        return true;
+                    }
+                    break;
+
+                case "<=":
+                    try
+                    {
+                        if (int.Parse(v1) + 1 <= int.Parse(v2))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    } 
+                    catch
+                    {
+                        Console.WriteLine("Cannot Compute String To Integer At {0} {1} {2}", v1, op, v2);
+                        return false;
+                    }
+
+                case ">=":
+                    try
+                    {
+                        if (int.Parse(v1) + 1 >= int.Parse(v2))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Cannot Compute String To Integer At {0} {1} {2}", v1, op, v2);
+                        return false;
+                    }
+
+                default:
+                    Console.WriteLine("Unknown Operator ({2}) Between {0} and {1}", val1, val2, op);
+                    return false;
+            }
+
+            return false;
+        }
+
+        public static string[] VariableConversion(string[] input, int startIndex)
+        {
+            for(int i = 0; i < input.Length; i++)
+            {
+                //input[i] = input[i].Trim().Replace("(", "").Replace(")", "");
+            }
+
+            for (int i = startIndex; i < input.Length; i++)
+            {
+                if (variableString.ContainsKey(input[i]))
+                {
+                    input[i] = variableString[input[i]];
+                }
+                else if (variableInt.ContainsKey(input[i]))
+                {
+                    input[i] = variableInt[input[i]].ToString();
+                }
+                else if (variableBool.ContainsKey(input[i]))
+                {
+                    input[i] = variableBool[input[i]].ToString();
+                }
+            }
+            return input;
         }
     }
 }
