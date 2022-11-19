@@ -21,7 +21,7 @@ namespace Tungsten_Interpreter
             public int endPos;
         }
 
-        static List<string[]> lines = new List<string[]>();
+        //static List<string[]> lines = new List<string[]>();
 
         // Loop Variables
         static IDictionary<int, WhileLoop> whileLoopInfo = new Dictionary<int, WhileLoop>();
@@ -64,7 +64,7 @@ namespace Tungsten_Interpreter
 
             for (int i = 0; i < line.Length; i++)
             {
-                lines.Add(/*i, */line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
+                VariableSetup.lines.Add(/*i, */line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
             }
 
             //Console.WriteLine("Lexer: " + lexerOut);
@@ -76,14 +76,11 @@ namespace Tungsten_Interpreter
 
         public static void Clean()
         {
-            lines = new List<string[]>();
+            VariableSetup.lines = new List<string[]>();
         }
 
         static void Parser()
         {
-            IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
-            IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
-
             IDictionary<int, int> startLine = new Dictionary<int, int>();
 
             bool lineCancel = false;
@@ -94,11 +91,11 @@ namespace Tungsten_Interpreter
             int ifStartPos = 0;
             int ifEndPos = 0;
 
-            for (int i = 0; i < lines.Count; i++)
+            for (int i = 0; i < VariableSetup.lines.Count; i++)
             {
             zero:
                 #region Cleaning & Init
-                string[] words = lines[i];
+                string[] words = VariableSetup.lines[i];
 
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
                 //words[0] = words[0].ToUpper();
@@ -114,7 +111,7 @@ namespace Tungsten_Interpreter
 
                 if (words.Length == 0 || words[0].StartsWith("/*"))
                 {
-                    if (i >= lines.Count || i == lines.Count - 1)
+                    if (i >= VariableSetup.lines.Count || i == VariableSetup.lines.Count - 1)
                     {
                         break;
                     }
@@ -173,270 +170,6 @@ namespace Tungsten_Interpreter
 
                 switch (words[0])
                 {
-                    #region Variable Creation
-                    case "STRING":
-                        #region String Varibles
-
-                        /*if (Exist(words, variableString, 1))
-                            return;
-
-                        variableString.Add(words[1], ParseText(words, 2, '[', ']'));*/
-
-                        //VariableSetup.AddEntry(words[1], TextMethods.ParseText(words, 2, '[', ']'));
-                        //Console.WriteLine(VariableSetup.globalVar[words[1]]);
-
-                        #endregion
-                        break;
-
-                    case "INT":
-                        #region Integer Variables
-                        //if (Exist(words, variableInt, 1))
-                            //return;
-
-                        /*try
-                        {
-                            double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
-                            //variableInt.Add(words[1], Convert.ToInt32(maths));
-                            VariableSetup.AddEntry(words[1], Convert.ToInt32(maths));
-                        }
-                        catch
-                        {
-                            //variableInt.Add(words[1], Convert.ToInt32(words[2]));
-                            VariableSetup.AddEntry(words[1], Convert.ToInt32(words[2]));
-                        }*/
-                        #endregion
-                        break;
-
-                    case "BOOL":
-                        #region Boolean Variables
-                        //if (Exist(words, variableBool, 1))
-                            //return;
-
-                        /*try
-                        {
-                            //variableBool.Add(words[1], Convert.ToBoolean(words[2]));
-                            VariableSetup.AddEntry(words[1], Convert.ToBoolean(words[2]));
-                        }
-                        catch
-                        {
-                            Console.WriteLine("Unsupported Bool Type");
-                        }*/
-                        #endregion
-                        break;
-                    #endregion
-
-                    #region Variable Modification
-                    case "UPDATE": // REFACTOR AND MODIFY TO SUPPORT VARIABLE INPUT
-                        #region Update Variables
-
-                        /*words = VariableSetup.Convert(words, 2);
-
-                        switch (words[2])
-                        {
-                            case "STRING":
-                                VariableSetup.UpdateEntry(words[3], words[4]);
-                                break;
-
-                            case "INT":
-                                try
-                                {
-                                    double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')'));
-                                    VariableSetup.UpdateEntry(words[3], maths);
-                                }
-                                catch
-                                {
-                                    VariableSetup.UpdateEntry(words[3], words[4]);
-                                }
-                                break;
-
-                            case "BOOL":
-                                try
-                                {
-                                    VariableSetup.UpdateEntry(words[3], Convert.ToBoolean(words[4]));
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("Unsupported Bool Type");
-                                }
-                                break;
-                        }*/
-                        #endregion
-                        break;
-
-                    case "DELETE":
-                        #region Delete Variables
-                        /*string[] args = TextMethods.CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '(', ')').Replace(",", " ").Split(" ");
-                        args = args.Where(x => !string.IsNullOrEmpty(x)).ToArray();
-
-                        foreach (string arg in args)
-                        {
-                            VariableSetup.RemoveEntry(arg);
-                        }*/
-                        #endregion
-                        break;
-
-                    case "INPUT":
-                        #region Input Variables
-                        /*switch (words[1])
-                        {
-                            case "STRING":
-                                #region String Input
-                                //if (Exist(words, variableString, 2))
-                                    //return;
-
-                                string[] inputStr = Console.ReadLine().Split(" ");
-                                inputStr[0] = "[" + inputStr[0];
-                                inputStr[inputStr.Length - 1] = inputStr[inputStr.Length - 1] + "]";
-
-                                //variableString.Add(words[2], ParseText(inputStr, 0, '[', ']'));
-                                VariableSetup.AddEntry(words[2], TextMethods.ParseText(inputStr, 0, '[', ']'));
-                                #endregion
-                                break;
-
-                            case "INT":
-                                #region Int Input
-                                //if (Exist(words, variableInt, 2))
-                                    //return;
-
-                                string[] inputInt = Console.ReadLine().Split(" ");
-                                try
-                                {
-                                    double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", inputInt, 0, inputInt.Length), '(', ')'));
-                                    //variableInt.Add(words[2], Convert.ToInt32(maths));
-                                    VariableSetup.AddEntry(words[2], Convert.ToInt32(maths));
-                                }
-                                catch
-                                {
-                                    //variableInt.Add(words[2], Convert.ToInt32(inputInt[0]));
-                                    VariableSetup.AddEntry(words[2], Convert.ToInt32(inputInt[0]));
-                                }
-                                #endregion
-                                break;
-
-                            case "BOOL":
-                                #region Bool Input
-                                //if (Exist(words, variableBool, 2))
-                                    //return;
-
-                                string inputBool = Console.ReadLine();
-                                try
-                                {
-                                    //variableBool.Add(words[2], Convert.ToBoolean(inputBool));
-                                    VariableSetup.AddEntry(words[2], Convert.ToBoolean(inputBool));
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("Unsupported Bool Type");
-                                }
-                                #endregion
-                                break;
-
-                            default:
-                                Console.WriteLine("Unrecognised Type: {0}", words[1]);
-                                break;
-                        }*/
-
-                        #endregion 
-                        break;
-                    #endregion
-
-                    #region System
-                    case "MATH":
-                        #region Maths Operations
-                        /*string compute = "";
-                        try
-                        {
-                            for (int j = 1; j < words.Length; j++)
-                            {
-                                if (VariableSetup.globalVar.ContainsKey(words[j]))
-                                {
-                                    compute += VariableSetup.globalVar[words[j]];
-                                }
-                                else
-                                {
-                                    compute += words[j];
-                                }
-                            }
-                            Console.WriteLine(Maths.Evaluate(compute));
-                        }
-                        catch
-                        {
-                            Console.WriteLine(Maths.Evaluate(TextMethods.CalcString(String.Join(" ", words, 1, words.Length - 1), '(', ')')));
-                        }*/
-                        #endregion
-                        break;
-
-                    case "FUNCT":
-                        #region Functions
-                        //Dictionary<string[], string[]> parameters = new Dictionary<string[], string[]>();
-                        List<string> parameters = new List<string>();
-
-                        Dictionary<int, string[]> body = new Dictionary<int, string[]>();
-
-                        string str = TextMethods.CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>'); ;
-                        string[] para;
-
-                        //List<string> type = new List<string>();
-                        List<string> name = new List<string>();
-
-                        para = str.Replace(",", "").Split(" ");
-                        para[0] = para[0].ToUpper();
-
-                        for (int j = 0; j < para.Length; j += 2)
-                        {
-                            //type.Add(para[j]);
-                            //name.Add(para[j+1]);
-                            name.Add(para[j + 1]);
-                        }
-
-                        int startPos = 0;
-                        int endPos = 0;
-                        int index = 0;
-
-                        for (int j = i; j < lines.Count; j++)
-                        {
-                            string[] wordsInLine = lines[j];
-                            foreach (string word in wordsInLine)
-                            {
-                                foreach (char c in word)
-                                {
-                                    if (c == '{')
-                                    {
-                                        startPos = j;
-                                    }
-
-                                    if (c == '}')
-                                    {
-                                        endPos = j - 1;
-                                    }
-                                }
-                            }
-                        }
-
-                        while (startPos < endPos)
-                        {
-                            body.Add(index++, lines[startPos + 1]);
-
-                            startPos++;
-                        }
-
-                        //parameters.Add(type.ToArray(), name.ToArray());
-
-                        //functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
-                        //functionDeclarations.Add("ILOVETODEBUG", new FunctionDeclaration(name, body));
-
-                        functionParameters.Add(words[1].ToUpper(), new FunctionParam(name));
-                        functionBody.Add(words[1].ToUpper(), new FunctionBody(body));
-
-                        i = endPos + 1;
-                        #endregion
-                        break;
-
-                    case "PRINT":
-                        //Console.WriteLine(TextMethods.ParseText(words, 1, '[', ']'));
-                        //Print.Execute(words);
-                        break;
-
                     case "WHILE":
                         #region While Loops
 
@@ -463,9 +196,9 @@ namespace Tungsten_Interpreter
 
                         if (Check.Operation(modifier[0], modifier[1], modifier[2]))
                         {
-                            for (int j = i; j < lines.Count; j++)
+                            for (int j = i; j < VariableSetup.lines.Count; j++)
                             {
-                                string[] wordsInLine = lines[j];
+                                string[] wordsInLine = VariableSetup.lines[j];
                                 for (int k = 0; k < wordsInLine.Length; k++)//(string word in wordsInLine)
                                 {
                                     /*if (word == "RWHILE")
@@ -592,9 +325,9 @@ namespace Tungsten_Interpreter
                         string[] ifStr = TextMethods.CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>').Split(" ");
                         List<string> ifModifier = VariableSetup.Convert(ifStr, 0).ToList(); /*whileStr.ToList<string>()*/;
 
-                        for (int j = i; j < lines.Count; j++)
+                        for (int j = i; j < VariableSetup.lines.Count; j++)
                         {
-                            string[] wordsInLine = lines[j];
+                            string[] wordsInLine = VariableSetup.lines[j];
                             foreach (string word in wordsInLine)
                             {
                                 foreach (char c in word)
@@ -621,15 +354,15 @@ namespace Tungsten_Interpreter
                         #endregion
                 }
 
-                if (functionParameters.ContainsKey(words[0]))
+                if (VariableSetup.functionParameters.ContainsKey(words[0]))
                 {
                     string[] args = TextMethods.ParseText(words, 0, '<', '>').Split(",");
                     List<string[]> outputList = new List<string[]>();
-                    lines.RemoveAt(i);
+                    VariableSetup.lines.RemoveAt(i);
 
-                    for (int k = 0; k < functionBody[words[0]].Body.Count; k++)
+                    for (int k = 0; k < VariableSetup.functionBody[words[0]].Body.Count; k++)
                     {
-                        outputList.Add(functionBody[words[0]].Body[k]);
+                        outputList.Add(VariableSetup.functionBody[words[0]].Body[k]);
                     }
 
                     for (int l = 0; l < args.Length; l++)
@@ -641,12 +374,12 @@ namespace Tungsten_Interpreter
                             {
                                 for (int h = 0; h < outputList[k][j].Length; h++)
                                 {
-                                    if (outputList[k][j] == /*functionDeclarations[words[0]].functionParameters[l]*/ functionParameters[words[0]].Parameters[l])
+                                    if (outputList[k][j] == /*functionDeclarations[words[0]].functionParameters[l]*/ VariableSetup.functionParameters[words[0]].Parameters[l])
                                     {
                                         outputList[k][j] = arg;
                                         if (k == outputList.Count - 1)
                                         {
-                                            functionParameters[words[0]].Parameters[l] = arg;
+                                            VariableSetup.functionParameters[words[0]].Parameters[l] = arg;
                                         }
                                     }
                                 }
@@ -654,15 +387,14 @@ namespace Tungsten_Interpreter
                         }
                     }
 
-                    for (int j = 0; j < functionBody[words[0]].Body.Count; j++)
+                    for (int j = 0; j < VariableSetup.functionBody[words[0]].Body.Count; j++)
                     {
-                        lines.Insert(i + j, outputList[j]);
+                        VariableSetup.lines.Insert(i + j, outputList[j]);
                     }
 
                     i--;
                     //outputList = new List<string[]>();
                 }
-                #endregion
             }
         } 
 

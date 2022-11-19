@@ -1,10 +1,15 @@
 ﻿using System.Collections;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 
 namespace Tungsten_Interpreter.Utilities.Variables
 {
     public class VariableSetup
     {
         public static Hashtable globalVar = new Hashtable();
+        public static List<string[]> lines = new List<string[]>();
+
+        public static IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
+        public static IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
 
         public static void AddEntry<T>(string name, T value)
         {
