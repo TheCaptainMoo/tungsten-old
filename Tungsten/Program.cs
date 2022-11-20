@@ -173,9 +173,9 @@ namespace Tungsten_Interpreter
                     case "WHILE":
                         #region While Loops
 
-                        string[] whileStr = TextMethods.CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>').Split(" ");
-                        List<string> modifier = VariableSetup.Convert(whileStr, 0).ToList(); /*whileStr.ToList<string>()*/
-                        /*for (int j = 0; j < whileStr.Length; j++)//---------------------------------------------------------------------------------- REFACTORING
+                        /*string[] whileStr = TextMethods.CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>').Split(" ");
+                        List<string> modifier = VariableSetup.Convert(whileStr, 0).ToList(); /*whileStr.ToList<string>()
+                        for (int j = 0; j < whileStr.Length; j++)//---------------------------------------------------------------------------------- REFACTORING
                         {
                             if (variableString.ContainsKey(whileStr[j]))
                             {
@@ -189,7 +189,7 @@ namespace Tungsten_Interpreter
                             {
                                 modifier[j] = variableBool[whileStr[j]].ToString();
                             }
-                        }*/
+                        }
 
                         //int whileIndex = 0;
                         //Console.WriteLine(Operation(modifier[0], modifier[1], modifier[2]));
@@ -206,7 +206,7 @@ namespace Tungsten_Interpreter
                                         //bracketNum--;
                                         //Console.WriteLine("BN:" + bracketNum);
                                         goto whileLoopRedirect;
-                                    }*/
+                                    }
                                     if(wordsInLine[k] == "SB")
                                     {
                                         if (startLine.ContainsKey(Convert.ToInt32(wordsInLine[k + 1])))
@@ -251,7 +251,7 @@ namespace Tungsten_Interpreter
                                             wEndPos = j;
                                             goto whileLoopRedirect;
                                         }
-                                    }*/
+                                    }
                                 }
                             }
                         }
@@ -261,7 +261,7 @@ namespace Tungsten_Interpreter
                         {
                             lines[wEndPos][0] = lines[wEndPos][0].Replace("}", "RWHILE");
                         }
-                        else*/ if(!Check.Operation(modifier[0], modifier[1], modifier[2]))
+                        else if(!Check.Operation(modifier[0], modifier[1], modifier[2]))
                         {
                             //Console.WriteLine("Skip To End");
                             //lineCancel[whileIndex] = true;
@@ -269,7 +269,7 @@ namespace Tungsten_Interpreter
                         }
 
                         //Console.WriteLine();
-
+                        */
                         #endregion
                         break;
 
@@ -278,7 +278,7 @@ namespace Tungsten_Interpreter
                         break;*/
 
                     case "WEB":
-                        if (lineCancel != true)
+                        /*if (lineCancel != true)
                         {
                             i = startLine[Convert.ToInt32(words[1])] - 1;
                         }
@@ -288,7 +288,7 @@ namespace Tungsten_Interpreter
                             Console.WriteLine("Close While Loop");
                             //i = startLine[Convert.ToInt32(words[1])] - 1;
                         }
-                        lineCancel = false;
+                        lineCancel = false;*/
                         break;
 
                    /* case "SB":
@@ -396,15 +396,6 @@ namespace Tungsten_Interpreter
                     //outputList = new List<string[]>();
                 }
             }
-        } 
-
-        /*public static double Evaluate(string expression)
-        {
-            System.Data.DataTable table = new System.Data.DataTable();
-            table.Columns.Add("expression", string.Empty.GetType(), expression);
-            System.Data.DataRow row = table.NewRow();
-            table.Rows.Add(row);
-            return double.Parse((string)row["expression"]);
-        }*/
+        }
     }
 }

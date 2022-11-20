@@ -8,8 +8,13 @@ namespace Tungsten_Interpreter.Utilities.Variables
         public static Hashtable globalVar = new Hashtable();
         public static List<string[]> lines = new List<string[]>();
 
+        //Function Variables
         public static IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
         public static IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
+
+        //While Variables
+        public static IDictionary<int, int> whileStartPosition = new Dictionary<int, int>();
+        public static IDictionary<int, int> whileEndPosition = new Dictionary<int, int>();
 
         public static void AddEntry<T>(string name, T value)
         {
@@ -66,7 +71,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             {
                 if (globalVar.ContainsKey(inputList[i]))
                 {
-                    input[i] = input[i].Replace(inputList[i], (string)globalVar[inputList[i]]);
+                    input[i] = input[i].Replace(inputList[i], globalVar[inputList[i]].ToString());
                 }
             }
 

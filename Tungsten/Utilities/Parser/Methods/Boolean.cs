@@ -26,7 +26,7 @@
                 case "<=":
                     try
                     {
-                        if (int.Parse(v1) + 1 <= int.Parse(v2))
+                        if (int.Parse(v1)/* + 1*/ <= int.Parse(v2))
                         {
                             return true;
                         }
@@ -44,7 +44,7 @@
                 case ">=":
                     try
                     {
-                        if (int.Parse(v1) + 1 >= int.Parse(v2))
+                        if (int.Parse(v1)/* + 1*/ >= int.Parse(v2))
                         {
                             return true;
                         }
@@ -62,7 +62,7 @@
                 case "<":
                     try
                     {
-                        if (int.Parse(v1) + 1 < int.Parse(v2))
+                        if (int.Parse(v1)/* + 1*/ < int.Parse(v2))
                         {
                             return true;
                         }
@@ -80,7 +80,7 @@
                 case ">":
                     try
                     {
-                        if (int.Parse(v1) + 1 > int.Parse(v2))
+                        if (int.Parse(v1)/* + 1*/ > int.Parse(v2))
                         {
                             return true;
                         }
