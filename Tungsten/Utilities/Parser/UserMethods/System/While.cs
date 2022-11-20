@@ -30,8 +30,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
             int startIndex = -1;
 
+            
+
             for(int i = lineNumber; i < VariableSetup.lines.Count; i++)
             {
+                
                 string[] wordsInLine = VariableSetup.lines[i];
                 for(int j = 0; j < wordsInLine.Length; j++)
                 {
@@ -44,12 +47,18 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         }
                         catch
                         {
-                            VariableSetup.whileStartPosition[j] = startPos;
+                            //VariableSetup.whileStartPosition[j] = startPos;
                         }
 
                         if(startIndex == -1)
                         {
                             startIndex = Convert.ToInt32(wordsInLine[j + 1]);
+                        }
+
+                        else if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
+                        {
+                            Console.WriteLine("KILL LOOP");
+                            return VariableSetup.whileEndPosition[startIndex] + 2;
                         }
                     }
                     else if(wordsInLine[j] == "EB" || wordsInLine[j] == "WEB")
@@ -61,7 +70,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         }
                         catch
                         {
-                            VariableSetup.whileEndPosition[j] = endPos;
+                            //VariableSetup.whileEndPosition[j] = endPos;
                         }
 
                         if(Check.Operation(modifier[0], modifier[1], modifier[2]))
@@ -75,9 +84,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         else
                         {
                             Console.WriteLine("EXIT");
-                            return endPos + 1;
+                            //return endPos + 1;
+                            return Convert.ToInt32(VariableSetup.whileEndPosition[Convert.ToInt32(wordsInLine[j + 1])]) + 1;
                         }
-                    }
+                    } 
                 }
             }
 
@@ -134,7 +144,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             }*/
             else
             {
-                return endPos;
+                return endPos + 1;
             }
         }
     }
