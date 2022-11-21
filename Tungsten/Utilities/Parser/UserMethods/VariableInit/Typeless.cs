@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.VariableInit
 {
-    internal class Typeless : IMethod
+    internal class Typeless : IMethod, IUsing
     {
         public string Name { get; set; } = "TL";
+        public string Path { get; set; } = "Variables";
 
         public void Execute(string[] para)
         {

@@ -5,9 +5,10 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class While : ILineInteractable
+    public class While : ILineInteractable, IUsing
     {
         public string Name { get; set; } = "WHILE";
+        public string Path { get; set; } = "System";
 
         public int lineExecute(string[] para, int lineNumber)
         {

@@ -2,9 +2,10 @@
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class BooleanCreation : IMethod
+    public class BooleanCreation : IMethod, IUsing
     {
         public string Name { get; set; } = "BOOL";
+        public string Path { get; set; } = "Variables";
 
         public void Execute(string[] para)
         {

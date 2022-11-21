@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Reflection;
+using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 
 namespace Tungsten_Interpreter.Utilities.Variables
@@ -6,6 +8,9 @@ namespace Tungsten_Interpreter.Utilities.Variables
     public class VariableSetup
     {
         public static Hashtable globalVar = new Hashtable();
+        //public static List<string> usingPath = new List<string>();
+        public static List<string> usingMethods = new List<string>() { "ACTIVATE" };
+
         public static List<string[]> lines = new List<string[]>();
 
         //Function Variables
@@ -81,6 +86,8 @@ namespace Tungsten_Interpreter.Utilities.Variables
         public static void Clean()
         {
             globalVar = new Hashtable();
+            //usingPath = new List<string>();
+            usingMethods = new List<string>() { "ACTIVATE" };
             lines = new List<string[]>();
 
             functionParameters = new Dictionary<string, FunctionParam>();

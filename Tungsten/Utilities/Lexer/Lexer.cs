@@ -22,7 +22,8 @@ namespace Lexer
             WHILE,
             IF,
             SB, //Start Bracket
-            EB //End Bracket
+            EB, //End Bracket
+            ACTIVATE
         }
 
         public class TokenAssign
@@ -57,6 +58,7 @@ namespace Lexer
             ta.Add(new TokenAssign(TokenList.IF, new Regex(@"^if$|WSif")));
             ta.Add(new TokenAssign(TokenList.SB, new Regex(@"{|WS{")));
             ta.Add(new TokenAssign(TokenList.EB, new Regex(@"}|WS}")));
+            ta.Add(new TokenAssign(TokenList.ACTIVATE, new Regex(@"activate|\$")));
 
             return ta;
         }

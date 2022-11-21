@@ -2,6 +2,7 @@
 using System.Reflection;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
+using Tungsten_Interpreter.Utilities.Parser.UserMethods.System;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter
@@ -118,9 +119,13 @@ namespace Tungsten_Interpreter
                                             && t.GetConstructor(Type.EmptyTypes) != null
                                    select Activator.CreateInstance(t) as ILineInteractable;
 
+                
+
                 foreach (var method in methods)
                 {
-                    //Console.WriteLine("INSTANCE DETECTED: " + instance);
+                    if (!VariableSetup.usingMethods.Contains(method.Name))
+                        continue;
+
                     if (words[0] == method.Name)
                     {
                         method.Execute(words);
@@ -129,6 +134,9 @@ namespace Tungsten_Interpreter
 
                 foreach (var method in linedMethods)
                 {
+                    if (!VariableSetup.usingMethods.Contains(method.Name))
+                        continue;
+
                     if (words[0] == method.Name)
                     {
                         i = method.lineExecute(words, i);

@@ -4,9 +4,10 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class IntegerCreation : IMethod
+    public class IntegerCreation : IMethod, IUsing
     {
         public string Name { get; set; } = "INT";
+        public string Path { get; set; } = "Variables";
 
         public void Execute(string[] para)
         {

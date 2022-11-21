@@ -3,9 +3,10 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class VariableUpdate : IMethod
+    public class VariableUpdate : IMethod, IUsing
     {
         public string Name { get; set; } = "UPDATE";
+        public string Path { get; set; } = "Variables";
 
         public void Execute(string[] para)
         {

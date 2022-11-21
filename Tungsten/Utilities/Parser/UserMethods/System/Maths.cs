@@ -3,9 +3,10 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class Math : IMethod
+    public class Math : IMethod, IUsing
     {
         public string Name { get; set; } = "MATH";
+        public string Path { get; set; } = "System";
 
         public void Execute(string[] para)
         {

@@ -7,9 +7,10 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 {
-    internal class WhileEB : ILineInteractable
+    internal class WhileEB : ILineInteractable, IUsing
     {
         public string Name { get; set; } = "WEB";
+        public string Path { get; set; } = "System";
 
         public int lineExecute(string[] para, int startLine)
         {

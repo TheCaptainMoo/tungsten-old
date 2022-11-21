@@ -3,9 +3,11 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class Function : ILineInteractable
+    public class Function : ILineInteractable, IUsing
     {
         public string Name { get; set; } = "FUNCT";
+
+        public string Path { get; set; } = "System";
 
         public int lineExecute(string[] words, int lineNumber)
         {
