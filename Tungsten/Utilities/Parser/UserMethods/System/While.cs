@@ -11,26 +11,13 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public int lineExecute(string[] para, int lineNumber)
         {
-            string[] whileStr = TextMethods.CalcStringForward(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" ");
+            string[] whileStr = TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" ");
             List<string> modifier = VariableSetup.Convert(whileStr, 0).ToList();        
-
-            //var methods = from t in Assembly.GetExecutingAssembly().GetTypes()
-            //              where t.GetInterfaces().Contains(typeof(IMethod))
-            //                       && t.GetConstructor(Type.EmptyTypes) != null
-            //              select Activator.CreateInstance(t) as IMethod;
-
-            //LINQ For Obtaining All Line Interactable Methods
-            //var linedMethods = from t in Assembly.GetExecutingAssembly().GetTypes()
-            //                   where t.GetInterfaces().Contains(typeof(ILineInteractable))
-            //                            && t.GetConstructor(Type.EmptyTypes) != null
-            //                   select Activator.CreateInstance(t) as ILineInteractable;
 
             int startPos = 0;
             int endPos = 0;
 
             int startIndex = -1;
-
-            
 
             for(int i = lineNumber; i < VariableSetup.lines.Count; i++)
             {
@@ -38,7 +25,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 string[] wordsInLine = VariableSetup.lines[i];
                 for(int j = 0; j < wordsInLine.Length; j++)
                 {
-                    if(wordsInLine[j] == "SB")
+                    if (wordsInLine[j] == "SB" && startIndex <= -1)
+                    {
+                        startIndex = Convert.ToInt32(wordsInLine[j + 1]);
+                    }
+                    if (wordsInLine[j] == "SB" && Convert.ToInt32(wordsInLine[j + 1]) == startIndex)
                     {
                         startPos = i;
                         try
@@ -49,19 +40,13 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         {
                             //VariableSetup.whileStartPosition[j] = startPos;
                         }
-
-                        if(startIndex == -1)
+                        if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
                         {
-                            startIndex = Convert.ToInt32(wordsInLine[j + 1]);
-                        }
-
-                        else if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
-                        {
-                            Console.WriteLine("KILL LOOP");
+                            //Console.WriteLine("KILL LOOP");
                             return VariableSetup.whileEndPosition[startIndex] + 2;
                         }
                     }
-                    else if(wordsInLine[j] == "EB" || wordsInLine[j] == "WEB")
+                    else if((wordsInLine[j] == "EB" || wordsInLine[j] == "WEB") && Convert.ToInt32(wordsInLine[j+1]) == startIndex)
                     {
                         endPos = i-1;
                         try
@@ -83,7 +68,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         }
                         else
                         {
-                            Console.WriteLine("EXIT");
+                            //Console.WriteLine("EXIT");
                             //return endPos + 1;
                             return Convert.ToInt32(VariableSetup.whileEndPosition[Convert.ToInt32(wordsInLine[j + 1])]) + 1;
                         }

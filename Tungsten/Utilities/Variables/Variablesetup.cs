@@ -59,7 +59,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             {
                 for (int j = 0; j < inputList[i].Length; j++)
                 {
-                    if (inputList[i][j] == '(' || inputList[i][j] == ')')
+                    if (inputList[i][j] == '(' || inputList[i][j] == ')' || inputList[i][j] == '[' || inputList[i][j] == ']')
                     {
                         //Console.WriteLine("Found Bracket");
                         inputList[i] = inputList[i].Remove(j, 1);
@@ -76,6 +76,18 @@ namespace Tungsten_Interpreter.Utilities.Variables
             }
 
             return input;
+        }
+    
+        public static void Clean()
+        {
+            globalVar = new Hashtable();
+            lines = new List<string[]>();
+
+            functionParameters = new Dictionary<string, FunctionParam>();
+            functionBody = new Dictionary<string, FunctionBody>();
+
+            whileStartPosition = new Dictionary<int, int>();
+            whileEndPosition = new Dictionary<int, int>();
         }
     }
 }

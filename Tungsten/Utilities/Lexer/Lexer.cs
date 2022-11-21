@@ -11,6 +11,7 @@ namespace Lexer
             STRING,
             INT,
             BOOL,
+            TL, //Typeless Variable
             NL, //New Line
             FUNCT,
             PRINT,
@@ -19,7 +20,6 @@ namespace Lexer
             DELETE,
             INPUT,
             WHILE,
-            RWHILE, //Repeat While 
             IF,
             SB, //Start Bracket
             EB //End Bracket
@@ -45,6 +45,7 @@ namespace Lexer
             ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|WSstring")));
             ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|WSint")));
             ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|WSbool")));
+            ta.Add(new TokenAssign(TokenList.TL, new Regex(@"^var$|^var:$|WSvar|#")));
             ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n+|\r+|[\r\n]+|\*\/")));
             ta.Add(new TokenAssign(TokenList.FUNCT, new Regex(@"^funct$|WSfunct")));
             ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|WSprint")));
@@ -90,21 +91,23 @@ namespace Lexer
                 if (res.EndsWith("NLSB"))
                 {
                     res += "WS" + bracketNum + "NL";
+                    Console.WriteLine("LINE BRACKET: " + bracketNum);
                     bracketNum++;
                 }
                 else if (res.StartsWith("EB") || res.StartsWith("NLEB") || res.StartsWith("WSNL"))
                 {
                     bracketNum--;
+                    Console.WriteLine("LINE BRACKET: " + bracketNum);
                     res += "WS" + bracketNum + "NL";
                 }
 
                 output.Add(res);
             }
 
-            foreach (string outp in output)
+            /*foreach (string outp in output)
             {
                 Console.WriteLine(outp);
-            }
+            }*/
 
             return output;
         }
