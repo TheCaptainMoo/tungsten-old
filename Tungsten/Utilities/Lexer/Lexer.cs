@@ -9,12 +9,14 @@ namespace Lexer
         {
             WS, //Whitespace
             STRING,
+            //STRINGMAT,
             INT,
             BOOL,
             TL, //Typeless Variable
             NL, //New Line
             FUNCT,
             PRINT,
+            PRINTIN,
             MATH,
             UPDATE,
             DELETE,
@@ -44,12 +46,14 @@ namespace Lexer
 
             ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|\t")));
             ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|WSstring")));
+            //ta.Add(new TokenAssign(TokenList.STRING[], new Regex(@"^string\[\]$|^string\[\]:$|WSstring\[\]")));
             ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|WSint")));
             ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|WSbool")));
             ta.Add(new TokenAssign(TokenList.TL, new Regex(@"^var$|^var:$|WSvar|#")));
             ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n+|\r+|[\r\n]+|\*\/")));
             ta.Add(new TokenAssign(TokenList.FUNCT, new Regex(@"^funct$|WSfunct")));
             ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|WSprint")));
+            ta.Add(new TokenAssign(TokenList.PRINTIN, new Regex(@"^printin$|^printin:$|WSprintin")));
             ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|WSmath")));
             ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|WSupdate")));
             ta.Add(new TokenAssign(TokenList.DELETE, new Regex(@"^delete$|WSdelete")));

@@ -1,5 +1,6 @@
 ﻿using Lexer;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods.System;
@@ -59,7 +60,62 @@ namespace Tungsten_Interpreter
 
         static void Parser()
         {
-            for (int i = 0; i < VariableSetup.lines.Count; i++)
+            #region Preprocessing
+            Using u = new Using();
+            int index = 0;
+
+            for(int i = 0; i < VariableSetup.lines.Count; i++)
+            {
+                Span<string> words = VariableSetup.lines[i];
+                if(words != null && words.Length != 0 && !words[0].StartsWith("/*"))
+                {
+                    if (words[0] == "ACTIVATE")
+                    {
+                        u.Execute(words.ToArray());
+                    }
+                    else
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+            }
+
+            //LINQ For Obtaining All Methods
+            var methods = from t in Assembly.GetExecutingAssembly().GetTypes()
+                          where t.GetInterfaces().Contains(typeof(IMethod))
+                                   && t.GetConstructor(Type.EmptyTypes) != null
+                          select Activator.CreateInstance(t) as IMethod;
+
+            List<IMethod> methodsOut = new List<IMethod>();
+
+            foreach (IMethod method in methods)
+            {
+                if (!VariableSetup.usingMethods.Contains(method.Name))
+                    continue;
+                methodsOut.Add(method);
+            }
+
+            //LINQ For Obtaining All Line Interactable Methods
+            var linedMethods = from t in Assembly.GetExecutingAssembly().GetTypes()
+                               where t.GetInterfaces().Contains(typeof(ILineInteractable))
+                                        && t.GetConstructor(Type.EmptyTypes) != null
+                               select Activator.CreateInstance(t) as ILineInteractable;
+
+            List<ILineInteractable> linedMethodsOut = new List<ILineInteractable>();
+
+            foreach (ILineInteractable method in linedMethods)
+            {
+                if (!VariableSetup.usingMethods.Contains(method.Name))
+                    continue;
+                linedMethodsOut.Add(method);
+            }
+            #endregion
+
+            Span<IMethod> spanMOut = CollectionsMarshal.AsSpan(methodsOut);
+            Span<ILineInteractable> spanLOut = CollectionsMarshal.AsSpan(linedMethodsOut);
+
+            for (int i = index; i < VariableSetup.lines.Count; i++)
             {
             zero:
                 #region Cleaning & Init
@@ -107,39 +163,20 @@ namespace Tungsten_Interpreter
                 #endregion
 
                 #region Parsing
-                //LINQ For Obtaining All Methods
-                var methods = from t in Assembly.GetExecutingAssembly().GetTypes()
-                                where t.GetInterfaces().Contains(typeof(IMethod))
-                                         && t.GetConstructor(Type.EmptyTypes) != null
-                                select Activator.CreateInstance(t) as IMethod;
-
-                //LINQ For Obtaining All Line Interactable Methods
-                var linedMethods = from t in Assembly.GetExecutingAssembly().GetTypes()
-                                   where t.GetInterfaces().Contains(typeof(ILineInteractable))
-                                            && t.GetConstructor(Type.EmptyTypes) != null
-                                   select Activator.CreateInstance(t) as ILineInteractable;
-
-                
-
-                foreach (var method in methods)
+ 
+                for(int j = 0; j < spanMOut.Length; j++)
                 {
-                    if (!VariableSetup.usingMethods.Contains(method.Name))
-                        continue;
-
-                    if (words[0] == method.Name)
+                    if (words[0] == spanMOut[j].Name)
                     {
-                        method.Execute(words);
+                        spanMOut[j].Execute(words);
                     }
                 }
 
-                foreach (var method in linedMethods)
+                for (int j = 0; j < spanLOut.Length; j++)
                 {
-                    if (!VariableSetup.usingMethods.Contains(method.Name))
-                        continue;
-
-                    if (words[0] == method.Name)
+                    if (words[0] == spanLOut[j].Name)
                     {
-                        i = method.lineExecute(words, i);
+                        spanLOut[j].lineExecute(words, i);
                     }
                 }
 
@@ -187,5 +224,6 @@ namespace Tungsten_Interpreter
                 #endregion
             }
         }
+    
     }
 }
