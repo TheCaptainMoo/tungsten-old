@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
@@ -79,18 +80,13 @@ namespace Tungsten_Interpreter.Utilities.Variables
 
             for(int i = startIndex; i < input.Length; i++)
             {
-                //Console.WriteLine(globalVar[inputList[i].Length]);
-
                 if (globalVar.ContainsKey(inputList[i]))
                 {
                     try
                     {
                         // Handle String[]
-                        //string[] val = globalVar[inputList[i]] as string[];
-                        //input[i] = val[System.Convert.ToInt32(input[i+1].Substring(1, input[i+1].Length-2))];
-                        //input[i + 1] = "";
                         string[] val = (string[])globalVar[inputList[i]];
-                        input[i] = val[System.Convert.ToInt32(TextMethods.CalcString(input[i], '<', '>'))];
+                        input[i] = Regex.Replace(input[i].Replace(inputList[i], val[System.Convert.ToInt32(TextMethods.CalcString(input[i], '<', '>'))]), @"<[0-9]>", "") ;
                     }
                     catch
                     {

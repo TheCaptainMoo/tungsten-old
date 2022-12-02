@@ -4,9 +4,9 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class StringMatrixCreation : IMethod, IUsing
+    public class MatrixCreation : IMethod, IUsing
     {
-        public string Name { get; set; } = "STRING[]";
+        public string Name { get; set; } = "MATRIX";
         public string Path { get; set; } = "Variables.Matrix";
 
         public void Execute(string[] para)
