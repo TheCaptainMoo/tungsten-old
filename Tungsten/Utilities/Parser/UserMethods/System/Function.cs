@@ -11,55 +11,41 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public int lineExecute(string[] words, int lineNumber)
         {
-            List<string> parameters = new List<string>();
-
-            Dictionary<int, string[]> body = new Dictionary<int, string[]>();
+            List<string[]> body = new List<string[]>();
+            List<string> name = new List<string>();
 
             string str = TextMethods.CalcStringForward(String.Join(" ", words, 1, words.Length - 1), '<', '>'); ;
             string[] para;
 
-            //List<string> type = new List<string>();
-            List<string> name = new List<string>();
-
             para = str.Replace(",", "").Split(" ");
-            para[0] = para[0].ToUpper();
+            //para[0] = para[0].ToUpper();
 
-            for (int j = 0; j < para.Length; j += 2)
+            for (int j = 0; j < para.Length; j++)
             {
-                //type.Add(para[j]);
-                //name.Add(para[j+1]);
-                name.Add(para[j + 1]);
+                name.Add(para[j]);
             }
 
             int startPos = 0;
             int endPos = 0;
-            int index = 0;
+
+            int startIndex = -1;
 
             for (int j = lineNumber; j < VariableSetup.lines.Count; j++)
             {
                 string[] wordsInLine = VariableSetup.lines[j];
-                /*foreach (string word in wordsInLine)
-                {
-                    foreach (char c in word)
-                    {
-                        if (c == '{')
-                        {
-                            startPos = j;
-                        }
 
-                        if (c == '}')
-                        {
-                            endPos = j - 1;
-                        }
-                    }
-                }*/
                 for(int i = 0; i < wordsInLine.Length; i++)
                 {
-                    if (wordsInLine[i] == "SB")
+                    if (wordsInLine[i] == "SB" && startIndex <= -1)
+                    {
+                        startIndex = Convert.ToInt32(wordsInLine[i + 1]);
+                    }
+
+                    if (wordsInLine[i] == "SB" && Convert.ToInt32(wordsInLine[i+1]) == startIndex)
                     {
                         startPos = j;
                     } 
-                    else if(wordsInLine[i] == "EB")
+                    else if(wordsInLine[i] == "EB" && Convert.ToInt32(wordsInLine[i + 1]) == startIndex)
                     {
                         endPos = j - 1;
                     }
@@ -68,7 +54,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
             while (startPos < endPos)
             {
-                body.Add(index++, VariableSetup.lines[startPos + 1]);
+                body.Add(VariableSetup.lines[startPos + 1]);
 
                 startPos++;
             }

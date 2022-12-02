@@ -97,23 +97,23 @@ namespace Lexer
                 if (res.EndsWith("NLSB"))
                 {
                     res += "WS" + bracketNum + "NL";
-                    Console.WriteLine("LINE BRACKET: " + bracketNum);
+                    //Console.WriteLine("LINE BRACKET: " + bracketNum);
                     bracketNum++;
                 }
                 else if (res.StartsWith("EB") || res.StartsWith("NLEB") || res.StartsWith("WSNL"))
                 {
                     bracketNum--;
-                    Console.WriteLine("LINE BRACKET: " + bracketNum);
+                    //Console.WriteLine("LINE BRACKET: " + bracketNum);
                     res += "WS" + bracketNum + "NL";
                 }
 
                 output.Add(res);
             }
 
-            foreach (string outp in output)
+            /*foreach (string outp in output)
             {
                 Console.WriteLine(outp);
-            }
+            }*/
 
             return output;
         }

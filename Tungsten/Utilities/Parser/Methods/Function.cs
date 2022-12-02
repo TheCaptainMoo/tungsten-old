@@ -11,11 +11,11 @@
 
     public class FunctionBody
     {
-        public FunctionBody(Dictionary<int, string[]> body)
+        public FunctionBody(List<string[]> body)
         {
             Body = body;
         }
 
-        public Dictionary<int, string[]> Body { get; set; }
+        public List<string[]> Body { get; set; }
     }
 }

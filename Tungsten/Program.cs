@@ -176,7 +176,7 @@ namespace Tungsten_Interpreter
                 {
                     if (words[0] == spanLOut[j].Name)
                     {
-                        spanLOut[j].lineExecute(words, i);
+                        i = spanLOut[j].lineExecute(words, i);
                     }
                 }
 
@@ -198,17 +198,17 @@ namespace Tungsten_Interpreter
                         {
                             for (int j = 0; j < outputList[k].Length; j++)
                             {
-                                for (int h = 0; h < outputList[k][j].Length; h++)
+                                //for (int h = 0; h < outputList[k][j].Length; h++)
+                                //{
+                                if (outputList[k][j] == /*functionDeclarations[words[0]].functionParameters[l]*/ VariableSetup.functionParameters[words[0]].Parameters[l])
                                 {
-                                    if (outputList[k][j] == /*functionDeclarations[words[0]].functionParameters[l]*/ VariableSetup.functionParameters[words[0]].Parameters[l])
+                                    outputList[k][j] = arg;
+                                    if (k == outputList.Count - 1)
                                     {
-                                        outputList[k][j] = arg;
-                                        if (k == outputList.Count - 1)
-                                        {
-                                            VariableSetup.functionParameters[words[0]].Parameters[l] = arg;
-                                        }
+                                        VariableSetup.functionParameters[words[0]].Parameters[l] = arg;
                                     }
                                 }
+                                //}
                             }
                         }
                     }
