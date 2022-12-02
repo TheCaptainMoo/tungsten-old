@@ -10,7 +10,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public void Execute(string[] para)
         {
-            string[] args = TextMethods.CalcStringForward(String.Join(" ", para, 1, para.Length - 1), '(', ')').Replace(",", " ").Split(" ");
+            string[] args = TextMethods.CalcStringForward(String.Join(" ", para, 1, para.Length - 1), '<', '>').Replace(",", " ").Split(" ");
             args = args.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
             foreach (string arg in args)

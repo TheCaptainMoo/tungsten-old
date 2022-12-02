@@ -75,9 +75,6 @@ namespace Lexer
 
             int bracketNum = 0;
 
-            //Console.WriteLine(args.Length);
-
-
             //Lex Values
             foreach (string arg in args)
             {
@@ -85,11 +82,8 @@ namespace Lexer
                 for (int i = 0; i < ta.Count; i++)
                 {
                     res = Regex.Replace(res, ta[i].regex.ToString(), ta[i].TokenList.ToString());
-                    //Console.WriteLine(res);
                     if (res.EndsWith("SB") || res.StartsWith("EB"))
                     {
-                        //bracketNum++;
-                        //Console.WriteLine("BN: " + bracketNum);
                         res = res.Insert(res.Length - 2, "NL");
                         break;
                     }
@@ -97,13 +91,11 @@ namespace Lexer
                 if (res.EndsWith("NLSB"))
                 {
                     res += "WS" + bracketNum + "NL";
-                    //Console.WriteLine("LINE BRACKET: " + bracketNum);
                     bracketNum++;
                 }
                 else if (res.StartsWith("EB") || res.StartsWith("NLEB") || res.StartsWith("WSNL"))
                 {
                     bracketNum--;
-                    //Console.WriteLine("LINE BRACKET: " + bracketNum);
                     res += "WS" + bracketNum + "NL";
                 }
 

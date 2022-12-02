@@ -18,7 +18,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             string[] para;
 
             para = str.Replace(",", "").Split(" ");
-            //para[0] = para[0].ToUpper();
 
             for (int j = 0; j < para.Length; j++)
             {
@@ -58,11 +57,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
                 startPos++;
             }
-
-            //parameters.Add(type.ToArray(), name.ToArray());
-
-            //functionDeclarations.Add(words[1].ToUpper(), new FunctionDeclaration(name, body));
-            //functionDeclarations.Add("ILOVETODEBUG", new FunctionDeclaration(name, body));
 
             VariableSetup.functionParameters.Add(words[1].ToUpper(), new FunctionParam(name));
             VariableSetup.functionBody.Add(words[1].ToUpper(), new FunctionBody(body));

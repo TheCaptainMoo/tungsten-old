@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tungsten_Interpreter.Utilities.Parser
+﻿namespace Tungsten_Interpreter.Utilities.Parser
 {
     internal interface IUsing
     {

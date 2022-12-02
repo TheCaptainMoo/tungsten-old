@@ -11,7 +11,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public void Execute(string[] para)
         {
             VariableSetup.AddEntry(para[1], TextMethods.ParseText(para, 2, '[', ']'));
-            //Console.WriteLine(VariableSetup.globalVar[para[1]]);
         }
     }
 }

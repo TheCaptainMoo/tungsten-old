@@ -18,7 +18,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 {
                     if (VariableSetup.globalVar.ContainsKey(para[j].Replace("(", "").Replace(")", "")) || VariableSetup.globalVar.ContainsKey(Regex.Replace(para[j].Replace("(", "").Replace(")", ""), @"<[0-9]>", "")))
                     {
-                        //compute += VariableSetup.globalVar[para[j]];
                         compute += VariableSetup.Convert(para, j);
                     }
                     else
