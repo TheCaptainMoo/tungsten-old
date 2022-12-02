@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.Methods
@@ -63,13 +64,19 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             for (int j = startIndex; j < words.Length; j++)
             {
+                if (words[j] == null)
+                    continue;
+
                 if (words[j].StartsWith(startsWith))
                 {
                     sb.Append(TextMethods.CalcStringForward(String.Join(" ", words, j, words.Length - j), startsWith, endsWith));
                 }
-                else if (VariableSetup.globalVar.ContainsKey(words[j]))
+                else if (VariableSetup.globalVar.ContainsKey(words[j]) || VariableSetup.globalVar.ContainsKey(Regex.Replace(words[j], @"<[0-9]>", "")))
                 {
-                    sb.Append(VariableSetup.globalVar[words[j]]);
+                    //sb.Append(VariableSetup.globalVar[words[j]]);
+                    string[] output = VariableSetup.Convert(words, 0);
+                    sb.Append(String.Join("", output, j, output.Length-j));
+                    //sb.Append(VariableSetup.Convert(words, 0));
                 }
             }
 

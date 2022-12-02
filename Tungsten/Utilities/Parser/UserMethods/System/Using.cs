@@ -24,7 +24,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
                     //VariableSetup.usingPath.Add(path);
                     //Console.WriteLine("Path: " + path + " Was Activated");
                     VariableSetup.usingMethods.Add(u.Name);
-                    Console.WriteLine(u.Name);
+                    //Console.WriteLine(u.Name);
                 }
             }
         }

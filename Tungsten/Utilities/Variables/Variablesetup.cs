@@ -62,6 +62,11 @@ namespace Tungsten_Interpreter.Utilities.Variables
             List<string> inputList = input.ToList();
             for (int i = 0; i < inputList.Count; i++)
             {
+                if (TextMethods.CalcString(inputList[i], '<', '>') != inputList[i])
+                {
+                    inputList[i] = inputList[i].Replace("<" + TextMethods.CalcString(inputList[i], '<', '>') + ">", "");
+                }
+
                 for (int j = 0; j < inputList[i].Length; j++)
                 {
                     if (inputList[i][j] == '(' || inputList[i][j] == ')' || inputList[i][j] == '[' || inputList[i][j] == ']')
@@ -74,15 +79,40 @@ namespace Tungsten_Interpreter.Utilities.Variables
 
             for(int i = startIndex; i < input.Length; i++)
             {
+                //Console.WriteLine(globalVar[inputList[i].Length]);
+
                 if (globalVar.ContainsKey(inputList[i]))
                 {
-                    input[i] = input[i].Replace(inputList[i], globalVar[inputList[i]].ToString());
+                    try
+                    {
+                        // Handle String[]
+                        //string[] val = globalVar[inputList[i]] as string[];
+                        //input[i] = val[System.Convert.ToInt32(input[i+1].Substring(1, input[i+1].Length-2))];
+                        //input[i + 1] = "";
+                        string[] val = (string[])globalVar[inputList[i]];
+                        input[i] = val[System.Convert.ToInt32(TextMethods.CalcString(input[i], '<', '>'))];
+                    }
+                    catch
+                    {
+                        // Handle Non-Array
+                        input[i] = input[i].Replace(inputList[i], globalVar[inputList[i]].ToString());
+                    }
                 }
             }
 
             return input;
         }
     
+        public static string Convert(string input)
+        {
+            if (globalVar.ContainsKey(input))
+            {
+                return globalVar[input].ToString();
+            }
+
+            return input;
+        }
+
         public static void Clean()
         {
             globalVar = new Hashtable();

@@ -22,6 +22,18 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             }
 
             VariableSetup.AddEntry(para[1], value.ToArray());
+
+            try
+            {
+                string[] val = VariableSetup.globalVar[para[1]] as string[];
+                //Console.WriteLine(val.Length);
+                //Console.WriteLine(val[1]);
+                //Console.WriteLine(VariableSetup.globalVar[para[1]]);
+            }
+            catch
+            {
+
+            }
             
             //foreach(DictionaryEntry item in VariableSetup.globalVar)
             //{
