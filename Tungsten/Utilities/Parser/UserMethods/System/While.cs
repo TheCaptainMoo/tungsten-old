@@ -10,6 +10,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public int lineExecute(string[] para, int lineNumber)
         {
+            // Initialise Variables
             string[] whileStr = TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" ");
             List<string> modifier = VariableSetup.Convert(whileStr, 0).ToList();        
 
@@ -18,6 +19,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
             int startIndex = -1;
 
+            // Run Through While Loop Body | Find Start & End Positions
             for(int i = lineNumber; i < VariableSetup.lines.Count; i++)
             {
                 

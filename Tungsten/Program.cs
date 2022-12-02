@@ -10,6 +10,7 @@ namespace Tungsten_Interpreter
 {
     internal class Program
     {
+        // Program Entry Point | Executes Lexer & Parser
         static void Main(string[] args)
         {
             string[] splitChars =
@@ -57,6 +58,7 @@ namespace Tungsten_Interpreter
 
         static void Parser()
         {
+            // Generates Valid Using Statements
             #region Preprocessing
             Using u = new Using();
             int index = 0;
@@ -112,9 +114,11 @@ namespace Tungsten_Interpreter
             Span<IMethod> spanMOut = CollectionsMarshal.AsSpan(methodsOut);
             Span<ILineInteractable> spanLOut = CollectionsMarshal.AsSpan(linedMethodsOut);
 
+            // Loops Through Each Line
             for (int i = index; i < VariableSetup.lines.Count; i++)
             {
             zero:
+                // Cleans Lexer Input
                 #region Cleaning & Init
                 string[] words = VariableSetup.lines[i];
 
@@ -158,6 +162,7 @@ namespace Tungsten_Interpreter
                 }
                 #endregion
 
+                // Runs Code
                 #region Parsing
  
                 for(int j = 0; j < spanMOut.Length; j++)

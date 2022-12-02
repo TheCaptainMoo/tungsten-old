@@ -6,19 +6,21 @@ namespace Tungsten_Interpreter.Utilities.Variables
 {
     public class VariableSetup
     {
-        public static Hashtable globalVar = new Hashtable();
-        public static List<string> usingMethods = new List<string>() { "ACTIVATE" };
+        // Misc Variables
+        public static Hashtable globalVar = new Hashtable(); // Memory
+        public static List<string> usingMethods = new List<string>() { "ACTIVATE" }; // List of Using Methods
 
-        public static List<string[]> lines = new List<string[]>();
+        public static List<string[]> lines = new List<string[]>(); // Lines of Code
 
-        //Function Variables
+        // Function Variables
         public static IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
         public static IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
 
-        //While Variables
+        // While Variables
         public static IDictionary<int, int> whileStartPosition = new Dictionary<int, int>();
         public static IDictionary<int, int> whileEndPosition = new Dictionary<int, int>();
 
+        // Adds a Value into Memory
         public static void AddEntry<T>(string name, T value)
         {
             if (globalVar.ContainsKey(name))
@@ -31,6 +33,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             }
         }
 
+        // Deletes a Value from Memory
         public static void RemoveEntry(string name)
         {
             if (globalVar.ContainsKey(name))
@@ -43,6 +46,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             }
         }
 
+        // Updates a Value from Memory
         public static void UpdateEntry<T>(string name, T newValue)
         {
             if (globalVar.ContainsKey(name))
@@ -55,6 +59,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             }
         }
 
+        // Converts Array of Variable Names into Values
         public static string[] Convert(string[] input, int startIndex)
         {
             List<string> inputList = input.ToList();
@@ -94,7 +99,9 @@ namespace Tungsten_Interpreter.Utilities.Variables
 
             return input;
         }
-    
+
+        // Converts a Variable Name into Value
+        [Obsolete]
         public static string Convert(string input)
         {
             if (globalVar.ContainsKey(input))
@@ -105,6 +112,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             return input;
         }
 
+        // Cleans Memory
         public static void Clean()
         {
             globalVar = new Hashtable();

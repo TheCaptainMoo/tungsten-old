@@ -8,6 +8,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "UPDATE";
         public string Path { get; set; } = "Variables";
 
+        // Formats & Modifies Variables
         public void Execute(string[] para)
         {
             para = VariableSetup.Convert(para, 3);

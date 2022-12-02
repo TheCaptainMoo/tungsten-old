@@ -8,6 +8,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.VariableInit
         public string Name { get; set; } = "TL";
         public string Path { get; set; } = "Variables";
 
+        // Creates a Typeless Variable in Memory
         public void Execute(string[] para)
         {
             List<string> param = para.ToList();

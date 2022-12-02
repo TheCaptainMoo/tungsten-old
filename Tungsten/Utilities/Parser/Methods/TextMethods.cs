@@ -6,6 +6,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 {
     public class TextMethods
     {
+        // Gets a Substring Between 2 Characters
         public static string CalcString(string input, char openChar, char closeChar)
         {
             int startPos = 0;
@@ -32,6 +33,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             return input.Substring(startPos, endPos);
         }
 
+        // Gets a Substring Between 2 Characters In A Forward Motion
         public static string CalcStringForward(string input, char openChar, char closeChar)
         {
             int startPos = 0;
@@ -58,6 +60,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             return input.Substring(startPos, endPos);
         }
 
+        // Parses Text Array Between 2 Characters
         public static string ParseText(string[] words, int startIndex, char startsWith, char endsWith)
         {
             StringBuilder sb = new StringBuilder();

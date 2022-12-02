@@ -9,6 +9,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "MATRIX";
         public string Path { get; set; } = "Variables.Matrix";
 
+        // Creates a 'Matrix' (Array) in Memory
         public void Execute(string[] para)
         {
             List<string> value = new List<string>();

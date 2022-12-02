@@ -7,6 +7,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "BOOL";
         public string Path { get; set; } = "Variables";
 
+        // Creates a Boolean in Memory 
         public void Execute(string[] para)
         {
             try

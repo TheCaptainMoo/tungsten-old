@@ -9,6 +9,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "INT";
         public string Path { get; set; } = "Variables";
 
+        // Creates an Integer in Memorys
         public void Execute(string[] para)
         {
             try

@@ -8,6 +8,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "INPUT";
         public string Path { get; set; } = "Variables";
 
+        // Allows 'ReadLine' Input from Users
         public void Execute(string[] para)
         {
             switch (para[1])

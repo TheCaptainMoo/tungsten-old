@@ -8,6 +8,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "STRING";
         public string Path { get; set; } = "Variables";
 
+        // Creates a String in Memory
         public void Execute(string[] para)
         {
             VariableSetup.AddEntry(para[1], TextMethods.ParseText(para, 2, '[', ']'));

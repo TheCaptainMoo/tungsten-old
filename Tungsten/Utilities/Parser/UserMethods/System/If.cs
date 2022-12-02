@@ -10,9 +10,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 
         public int lineExecute(string[] para, int startLine)
         {
+            // Basic Formatting
             string[] ifStr = TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" ");
             List<string> modifier = VariableSetup.Convert(ifStr, 0).ToList();
 
+            // Running If Statement
             if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
             {
                 for(int i = startLine; i < VariableSetup.lines.Count; i++)

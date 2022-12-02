@@ -4,9 +4,11 @@
     {
         public static bool Operation<T>(T val1, string op, T val2)
         {
+            // Convert the Generic into Strings
             string v1 = val1.ToString();
             string v2 = val2.ToString();
 
+            // Switch Statement For Each Accepted Operation
             switch (op)
             {
                 case "==":

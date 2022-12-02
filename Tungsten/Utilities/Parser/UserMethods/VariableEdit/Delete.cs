@@ -8,6 +8,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "DELETE";
         public string Path { get; set; } = "Variables";
 
+        // Removes Variables from Memory
         public void Execute(string[] para)
         {
             string[] args = TextMethods.CalcStringForward(String.Join(" ", para, 1, para.Length - 1), '<', '>').Replace(",", " ").Split(" ");

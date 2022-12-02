@@ -5,6 +5,7 @@ namespace Lexer
 {
     class TungstenLexer
     {
+        // Keywords
         public enum TokenList
         {
             WS, //Whitespace
@@ -28,6 +29,7 @@ namespace Lexer
             ACTIVATE
         }
 
+        // Template For Creating Tokens
         public class TokenAssign
         {
             public TokenAssign(TokenList tokenList, Regex regex)
@@ -42,6 +44,7 @@ namespace Lexer
 
         static List<TokenAssign> LexerInit()
         {
+            // List of Tokens & Relevant Syntax
             List<TokenAssign> ta = new List<TokenAssign>();
 
             ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|\t")));
@@ -81,6 +84,7 @@ namespace Lexer
                 res = arg;
                 for (int i = 0; i < ta.Count; i++)
                 {
+                    // Replace Syntax With Token
                     res = Regex.Replace(res, ta[i].regex.ToString(), ta[i].TokenList.ToString());
                     if (res.EndsWith("SB") || res.StartsWith("EB"))
                     {
@@ -88,6 +92,8 @@ namespace Lexer
                         break;
                     }
                 }
+
+                // Code For Tokenising 
                 if (res.EndsWith("NLSB"))
                 {
                     res += "WS" + bracketNum + "NL";
