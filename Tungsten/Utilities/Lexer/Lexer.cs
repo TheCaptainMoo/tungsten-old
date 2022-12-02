@@ -46,7 +46,7 @@ namespace Lexer
 
             ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|\t")));
             ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|WSstring")));
-            ta.Add(new TokenAssign(TokenList.MATRIX, new Regex(@"^var\[\]$|^var\[\]:$|WSvar\[\]|#\[\]")));
+            ta.Add(new TokenAssign(TokenList.MATRIX, new Regex(@"^mat$|^mat:$|WSmat|#\[\]")));
             ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|WSint")));
             ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|WSbool")));
             ta.Add(new TokenAssign(TokenList.TL, new Regex(@"^var$|^var:$|WSvar|#")));
