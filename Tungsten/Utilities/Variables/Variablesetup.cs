@@ -101,13 +101,39 @@ namespace Tungsten_Interpreter.Utilities.Variables
         }
 
         // Converts a Variable Name into Value
-        [Obsolete]
         public static string Convert(string input)
         {
-            if (globalVar.ContainsKey(input))
+            string comparator = input;
+            if(TextMethods.CalcString(comparator, '<', '>') !=  comparator)
             {
-                return globalVar[input].ToString();
+                comparator = comparator.Replace("<" + TextMethods.CalcString(comparator, '<', '>') + ">", "");
             }
+
+            for(int i = 0; i < comparator.Length; i++)
+            {
+                if (comparator[i] == '(' || comparator[i] == ')' || comparator[i] == '[' || comparator[i] == ']')
+                {
+                    comparator = comparator.Remove(i, 1);
+                }
+            }
+
+            try
+            {
+                // Handle String[]
+                string[] val = (string[])globalVar[comparator];
+                input = Regex.Replace(input.Replace(comparator, val[System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))]), @"<[0-9]>", "");
+            }
+            catch
+            {
+                // Handle Non-Array
+                input = input.Replace(comparator, globalVar[comparator].ToString());
+            }
+
+
+            //if (globalVar.ContainsKey(input))
+            //{
+            //   return globalVar[input].ToString();
+            //}
 
             return input;
         }
