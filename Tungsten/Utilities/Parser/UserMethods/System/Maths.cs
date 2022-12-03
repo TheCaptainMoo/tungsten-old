@@ -4,6 +4,7 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
+    [Obsolete]
     public class Math : IMethod, IUsing
     {
         public string Name { get; set; } = "MATH";

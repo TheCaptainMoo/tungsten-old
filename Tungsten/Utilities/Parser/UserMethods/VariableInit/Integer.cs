@@ -14,7 +14,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         {
             try
             {
-                double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '(', ')'));
+                double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", VariableSetup.Convert(para, 2), 1, para.Length - 1), '(', ')'));
                 VariableSetup.AddEntry(para[1], Convert.ToInt32(maths));
             }
             catch
