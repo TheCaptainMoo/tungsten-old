@@ -202,11 +202,12 @@ namespace Tungsten_Interpreter
                                 if (outputList[k][j] == VariableSetup.functionParameters[words[0]].Parameters[l])
                                 {
                                     outputList[k][j] = arg;
-                                    if (k == outputList.Count - 1)
-                                    {
-                                        VariableSetup.functionParameters[words[0]].Parameters[l] = arg;
-                                    }
                                 }
+                            }
+
+                            if (k == outputList.Count - 1)
+                            {
+                                VariableSetup.functionParameters[words[0]].Parameters[l] = arg;
                             }
                         }
                     }

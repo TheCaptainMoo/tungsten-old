@@ -65,9 +65,12 @@ namespace Tungsten_Interpreter.Utilities.Variables
             List<string> inputList = input.ToList();
             for (int i = 0; i < inputList.Count; i++)
             {
-                if (TextMethods.CalcString(inputList[i], '<', '>') != inputList[i])
+                if (inputList[i].EndsWith('>'))
                 {
-                    inputList[i] = inputList[i].Replace("<" + TextMethods.CalcString(inputList[i], '<', '>') + ">", "");
+                    if (TextMethods.CalcString(inputList[i], '<', '>') != inputList[i])
+                    {
+                        inputList[i] = inputList[i].Replace("<" + TextMethods.CalcString(inputList[i], '<', '>') + ">", "");
+                    }
                 }
 
                 for (int j = 0; j < inputList[i].Length; j++)
