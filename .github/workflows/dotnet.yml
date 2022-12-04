@@ -24,5 +24,9 @@ jobs:
       run: dotnet restore Tungsten/TungstenInterpreter.csproj
     - name: Build
       run: dotnet build Tungsten/TungstenInterpreter.csproj --configuration Release --no-restore
-    - name: Publish
-      run: dotnet publish Tungsten/TungstenInterpreter.csproj --configuration Release --no-restore -o Interpreter/Release/net6.0-windows7.0
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: Tungsten/Interpreter/Release/net6.0-windows7.0
+      
