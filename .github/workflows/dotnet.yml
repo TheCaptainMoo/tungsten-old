@@ -20,5 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
+    - name: Restore Dependencies
+      run: dotnet restore Tungsten/TungstenInterpreter.csproj
     - name: Build
-      run: dotnet build Tungsten/Tungsten_Interpreter.csproj --configuration Release --no-restore
+      run: dotnet build Tungsten/TungstenInterpreter.csproj --configuration Release --no-restore
+    - name: Publish
+      run: dotnet publish Tungsten/TungstenInterpreter.csproj --configuration Release --no-restore -o Interpreter/Release/net6.0-windows7.0
