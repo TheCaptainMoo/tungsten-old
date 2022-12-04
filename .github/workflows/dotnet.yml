@@ -24,3 +24,5 @@ jobs:
       run: dotnet restore Tungsten/TungstenInterpreter.csproj
     - name: Build
       run: dotnet build Tungsten/TungstenInterpreter.csproj --configuration Release --no-restore
+    - name: Publish
+      run: dotnet publish Tungsten/TungstenInterpreter.csproj --configuration Release --no-restore -o Interpreter/Release/net6.0-windows7.0
