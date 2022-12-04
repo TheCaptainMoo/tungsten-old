@@ -41,6 +41,19 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         Console.WriteLine("Unsupported Bool Type");
                     }
                     break;
+                case "MATRIX":
+                    List<string> value = new List<string>();
+
+                    value = TextMethods.ParseText(para, 3, '<', '>').Split(",").ToList();
+
+                    for (int i = 0; i < value.Count; i++)
+                    {
+                        value[i] = value[i].Trim();
+                        value[i] = value[i].Substring(1, value[i].Length - 2);
+                    }
+
+                    VariableSetup.UpdateEntry(para[2], value.ToArray());
+                    break;
             }
         }
     }

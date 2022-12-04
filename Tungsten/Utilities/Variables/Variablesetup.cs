@@ -126,7 +126,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
                 string[] val = (string[])globalVar[comparator];
                 input = Regex.Replace(input.Replace(comparator, val[System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))]), @"<[0-9]>", "");
             }
-            catch
+            catch (Exception e)
             {
                 // Handle Non-Array
                 input = input.Replace(comparator, globalVar[comparator].ToString());
@@ -141,6 +141,28 @@ namespace Tungsten_Interpreter.Utilities.Variables
             return input;
         }
 
+        // Formats Input To Be Readable
+        public static string[] Format(string[] input, int startIndex)
+        {
+            string[] removeable = {
+                ">",
+                "<",
+                ",",
+                "(",
+                ")"
+            };
+
+            for (int i = startIndex; i < input.Length; i++)
+            {
+                for (int j = 0; j < removeable.Length; j++)
+                {
+                    input[i] = input[i].Replace(removeable[j], "");
+                }
+            }
+
+            return input;
+        } 
+        
         // Cleans Memory
         public static void Clean()
         {

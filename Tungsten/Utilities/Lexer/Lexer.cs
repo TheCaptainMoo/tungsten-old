@@ -108,10 +108,12 @@ namespace Lexer
                 output.Add(res);
             }
 
-            /*foreach (string outp in output)
+            #if DEBUG
+            foreach (string outp in output)
             {
                 Console.WriteLine(outp);
-            }*/
+            }
+            #endif
 
             return output;
         }
