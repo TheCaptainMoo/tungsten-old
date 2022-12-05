@@ -14,29 +14,30 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         {
             List<string> value = new List<string>();
 
-            para = VariableSetup.Format(para, 2);
+            //para = VariableSetup.Format(para, 2);
+            List<string> param = VariableSetup.Format(para, 2).ToList();
 
-            for(int i = 2; i < para.Length; i++)
+            string output;
+            for (int i = 2; i < para.Length; i++)
             {
-                if (para[i].StartsWith('[') && para[i].EndsWith("]"))
+                value.Add(TextMethods.CalcStringForward(String.Join(" ", param), '[', ']'));
+
+                param.RemoveAt(2);
+
+                if (param.Count <= 3)
                 {
-                    para[i] = para[i].Trim();
-                    para[i] = para[i].Substring(1, para[i].Length - 2);
-                    value.Add(para[i]);
-                }
-                else
-                {
-                    value.Add(VariableSetup.Convert(para[i]));
+                    //Console.WriteLine("End Matrix Write");
+                    break;
                 }
             }
 
             //value = TextMethods.ParseText(VariableSetup.Convert(para, 2), 2, '<', '>').Split(",").ToList();
 
-            for(int i = 0; i < value.Count; i++)
-            {
-                value[i] = value[i].Trim();
+            //for(int i = 0; i < value.Count; i++)
+            //{
+            //    value[i] = value[i].Trim();
                 //value[i] = value[i].Substring(1, value[i].Length - 2);
-            }
+            //}
 
             VariableSetup.AddEntry(para[1], value.ToArray());
         }

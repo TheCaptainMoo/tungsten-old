@@ -53,6 +53,8 @@ namespace Tungsten_Interpreter
 
             Parser();
 
+            sr.Close();
+
             goto reset;
         }
 
