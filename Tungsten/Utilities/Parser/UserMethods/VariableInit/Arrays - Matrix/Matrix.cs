@@ -17,12 +17,24 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             //para = VariableSetup.Format(para, 2);
             List<string> param = VariableSetup.Format(para, 2).ToList();
 
-            string output;
             for (int i = 2; i < para.Length; i++)
             {
                 value.Add(TextMethods.CalcStringForward(String.Join(" ", param), '[', ']'));
 
-                param.RemoveAt(2);
+                if (param[2].EndsWith(']'))
+                {
+                    param.RemoveAt(2);
+                }
+                else
+                {
+                    while (!param[2].EndsWith(']')) {
+                        param.RemoveAt(2);
+                    }
+                    param.RemoveAt(2);
+                }              
+
+                //param.Remove("[" + TextMethods.CalcStringForward(String.Join(" ", param), '[', ']') + "]");
+                //param.RemoveAt(2);
 
                 if (param.Count <= 3)
                 {

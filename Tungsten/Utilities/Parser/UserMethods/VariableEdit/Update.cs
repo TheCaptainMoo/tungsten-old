@@ -43,15 +43,35 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     break;
                 case "MATRIX":
                     List<string> value = new List<string>();
+                    List<string> param = VariableSetup.Format(para, 2).ToList();
+                    param.RemoveAt(0);
 
-                    value = TextMethods.ParseText(para, 3, '<', '>').Split(",").ToList();
-
-                    for (int i = 0; i < value.Count; i++)
+                    for (int i = 2; i < para.Length; i++)
                     {
-                        value[i] = value[i].Trim();
-                        value[i] = value[i].Substring(1, value[i].Length - 2);
-                    }
+                        value.Add(TextMethods.CalcStringForward(String.Join(" ", param), '[', ']'));
 
+                        if (param[2].EndsWith(']'))
+                        {
+                            param.RemoveAt(2);
+                        }
+                        else
+                        {
+                            while (!param[2].EndsWith(']'))
+                            {
+                                param.RemoveAt(2);
+                            }
+                            param.RemoveAt(2);
+                        }
+
+                        //param.Remove("[" + TextMethods.CalcStringForward(String.Join(" ", param), '[', ']') + "]");
+                        //param.RemoveAt(2);
+
+                        if (param.Count <= 3)
+                        {
+                            //Console.WriteLine("End Matrix Write");
+                            break;
+                        }
+                    }
                     VariableSetup.UpdateEntry(para[2], value.ToArray());
                     break;
             }
