@@ -1,12 +1,14 @@
 ﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 {
-    internal class Using : IMethod
+    internal class Using : IMethod, ILexer
     {
         public string Name { get; set; } = "ACTIVATE";
+        public Regex RegexCode { get; set; } = new Regex(@"activate|\$");
 
         // Gets All Methods With a Path
         public static IEnumerable<IUsing> usings = from t in Assembly.GetExecutingAssembly().GetTypes()

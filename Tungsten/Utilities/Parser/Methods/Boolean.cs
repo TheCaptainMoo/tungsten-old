@@ -1,6 +1,6 @@
 ﻿namespace Tungsten_Interpreter.Utilities.Parser.Methods
 {
-    public class Check
+    internal static class Check
     {
         public static bool Operation<T>(T val1, string op, T val2)
         {

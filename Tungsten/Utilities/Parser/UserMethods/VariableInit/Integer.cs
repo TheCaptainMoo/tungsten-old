@@ -1,13 +1,15 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class IntegerCreation : IMethod, IUsing
+    public class IntegerCreation : IMethod, IUsing, ILexer
     {
         public string Name { get; set; } = "INT";
         public string Path { get; set; } = "Variables";
+        public Regex RegexCode { get; set; } = new Regex(@"^int$|^int:$|WSint");
 
         // Creates an Integer in Memorys
         public void Execute(string[] para)

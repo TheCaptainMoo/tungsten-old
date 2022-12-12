@@ -122,7 +122,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
 
             try
             {
-                // Handle String[]
+                // Handle Matrix[]
                 string[] val = (string[])globalVar[comparator];
                 input = Regex.Replace(input.Replace(comparator, val[System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))]), @"<[0-9]>", "");
             }

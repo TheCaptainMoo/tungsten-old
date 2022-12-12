@@ -1,13 +1,14 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class Function : ILineInteractable, IUsing
+    public class Function : ILineInteractable, IUsing, ILexer
     {
         public string Name { get; set; } = "FUNCT";
-
         public string Path { get; set; } = "System";
+        public Regex RegexCode { get; set; } = new Regex(@"^funct$|WSfunct");
 
         // Generate Function and Save Parameters & Body to Memory
         public int lineExecute(string[] words, int lineNumber)

@@ -1,12 +1,14 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.VariableInit
 {
-    internal class Typeless : IMethod, IUsing
+    public class Typeless : IMethod, IUsing, ILexer
     {
         public string Name { get; set; } = "TL";
         public string Path { get; set; } = "Variables";
+        public Regex RegexCode { get; set; } = new Regex(@"^var$|^var:$|WSvar|#");
 
         // Creates a Typeless Variable in Memory
         public void Execute(string[] para)

@@ -1,11 +1,13 @@
-﻿using Tungsten_Interpreter.Utilities.Variables;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class BooleanCreation : IMethod, IUsing
+    public class BooleanCreation : IMethod, IUsing, ILexer
     {
         public string Name { get; set; } = "BOOL";
         public string Path { get; set; } = "Variables";
+        public Regex RegexCode { get; set; } = new Regex(@"^bool$|^bool:$|WSbool");
 
         // Creates a Boolean in Memory 
         public void Execute(string[] para)

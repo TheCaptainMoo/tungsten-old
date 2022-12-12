@@ -1,12 +1,14 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class VariableUpdate : IMethod, IUsing
-    {
+    public class VariableUpdate : IMethod, IUsing, ILexer
+    { 
         public string Name { get; set; } = "UPDATE";
         public string Path { get; set; } = "Variables";
+        public Regex RegexCode { get; set; } = new Regex(@"^update$|WSupdate");
 
         // Formats & Modifies Variables
         public void Execute(string[] para)

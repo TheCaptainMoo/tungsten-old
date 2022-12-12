@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser;
 
 namespace Lexer
 {
-    class TungstenLexer
+    public class TungstenLexer
     {
         // Keywords
         public enum TokenList
@@ -30,7 +32,7 @@ namespace Lexer
         }
 
         // Template For Creating Tokens
-        public class TokenAssign
+        /*public class TokenAssign
         {
             public TokenAssign(TokenList tokenList, Regex regex)
             {
@@ -40,32 +42,43 @@ namespace Lexer
 
             public TokenList TokenList { get; set; }
             public Regex regex { get; set; }
+        }*/
+
+        public sealed class TokenAssign
+        {
+            public TokenAssign(string token, Regex regex) 
+            { 
+                Token = token;
+                this.regex = regex;
+            }
+
+            public string Token { get; set; }
+            public Regex regex { get; set; }
         }
 
         static List<TokenAssign> LexerInit()
         {
             // List of Tokens & Relevant Syntax
-            List<TokenAssign> ta = new List<TokenAssign>();
 
-            ta.Add(new TokenAssign(TokenList.WS, new Regex(@"\s+|\t")));
-            ta.Add(new TokenAssign(TokenList.STRING, new Regex(@"^string$|^string:$|WSstring")));
-            ta.Add(new TokenAssign(TokenList.MATRIX, new Regex(@"^mat$|^mat:$|WSmat|#\[\]")));
-            ta.Add(new TokenAssign(TokenList.INT, new Regex(@"^int$|^int:$|WSint")));
-            ta.Add(new TokenAssign(TokenList.BOOL, new Regex(@"^bool$|^bool:$|WSbool")));
-            ta.Add(new TokenAssign(TokenList.TL, new Regex(@"^var$|^var:$|WSvar|#")));
-            ta.Add(new TokenAssign(TokenList.NL, new Regex(@";|\n+|\r+|[\r\n]+|\*\/")));
-            ta.Add(new TokenAssign(TokenList.FUNCT, new Regex(@"^funct$|WSfunct")));
-            ta.Add(new TokenAssign(TokenList.PRINT, new Regex(@"^print$|^print:$|WSprint")));
-            ta.Add(new TokenAssign(TokenList.PRINTIN, new Regex(@"^printin$|^printin:$|WSprintin")));
-            ta.Add(new TokenAssign(TokenList.MATH, new Regex(@"^math$|^math:$|WSmath")));
-            ta.Add(new TokenAssign(TokenList.UPDATE, new Regex(@"^update$|WSupdate")));
-            ta.Add(new TokenAssign(TokenList.DELETE, new Regex(@"^delete$|WSdelete")));
-            ta.Add(new TokenAssign(TokenList.INPUT, new Regex(@"^input$|WSinput|=>")));
-            ta.Add(new TokenAssign(TokenList.WHILE, new Regex(@"^while$|WSwhile")));
-            ta.Add(new TokenAssign(TokenList.IF, new Regex(@"^if$|WSif")));
-            ta.Add(new TokenAssign(TokenList.SB, new Regex(@"{|WS{")));
-            ta.Add(new TokenAssign(TokenList.EB, new Regex(@"}|WS}")));
-            ta.Add(new TokenAssign(TokenList.ACTIVATE, new Regex(@"activate|\$")));
+            // Handle Syntax
+            List<TokenAssign> ta = new List<TokenAssign>()
+            {
+                new TokenAssign("WS", new Regex(@"\s+|\t")),
+                new TokenAssign("NL", new Regex(@";|\n+|\r+|[\r\n]+|\*\/")),
+                new TokenAssign("SB", new Regex(@"{|WS{")),
+                new TokenAssign("EB", new Regex(@"}|WS}"))
+            };
+
+            // Handle Keywords
+            var tokens = from t in Assembly.GetExecutingAssembly().GetTypes()
+                          where t.GetInterfaces().Contains(typeof(ILexer))
+                                   && t.GetConstructor(Type.EmptyTypes) != null
+                          select Activator.CreateInstance(t) as ILexer;
+
+            foreach (var t in tokens)
+            {
+                ta.Add(new TokenAssign(t.Name, t.RegexCode));
+            }
 
             return ta;
         }
@@ -85,7 +98,7 @@ namespace Lexer
                 for (int i = 0; i < ta.Count; i++)
                 {
                     // Replace Syntax With Token
-                    res = Regex.Replace(res, ta[i].regex.ToString(), ta[i].TokenList.ToString());
+                    res = Regex.Replace(res, ta[i].regex.ToString(), /*ta[i].TokenList.ToString()*/ ta[i].Token);
                     if (res.EndsWith("SB") || res.StartsWith("EB"))
                     {
                         res = res.Insert(res.Length - 2, "NL");

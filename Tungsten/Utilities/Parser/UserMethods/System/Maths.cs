@@ -5,10 +5,11 @@ using Tungsten_Interpreter.Utilities.Variables;
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
     [Obsolete]
-    public class Math : IMethod, IUsing
+    public class Math : IMethod, IUsing, ILexer
     {
         public string Name { get; set; } = "MATH";
         public string Path { get; set; } = "System";
+        public Regex RegexCode { get; set; } = new Regex(@"^math$|^math:$|WSmath");
 
         public void Execute(string[] para)
         {

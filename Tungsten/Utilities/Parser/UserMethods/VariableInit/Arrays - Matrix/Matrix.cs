@@ -1,13 +1,15 @@
 ﻿using System.Collections;
+using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class MatrixCreation : IMethod, IUsing
+    public class MatrixCreation : IMethod, IUsing, ILexer
     {
         public string Name { get; set; } = "MATRIX";
         public string Path { get; set; } = "Variables.Matrix";
+        public Regex RegexCode { get; set; } = new Regex(@"^mat$|^mat:$|WSmat|#\[\]");
 
         // Creates a 'Matrix' (Array) in Memory
         public void Execute(string[] para)

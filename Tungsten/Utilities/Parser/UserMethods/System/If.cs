@@ -1,12 +1,14 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 {
-    internal class IfStatement : ILineInteractable, IUsing
+    public class IfStatement : ILineInteractable, IUsing, ILexer
     {
         public string Name { get; set; } = "IF";
         public string Path { get; set; } = "System";
+        public Regex RegexCode { get; set; } = new Regex(@"^if$|WSif");
 
         public int lineExecute(string[] para, int startLine)
         {

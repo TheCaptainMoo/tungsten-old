@@ -1,12 +1,14 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class VariableInput : IMethod, IUsing
+    public class VariableInput : IMethod, IUsing, ILexer
     {
         public string Name { get; set; } = "INPUT";
         public string Path { get; set; } = "Variables";
+        public Regex RegexCode { get; set; } = new Regex(@"^input$|WSinput|=>");
 
         // Allows 'ReadLine' Input from Users
         public void Execute(string[] para)

@@ -1,12 +1,14 @@
-﻿using Tungsten_Interpreter.Utilities.Parser.Methods;
+﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class While : ILineInteractable, IUsing
+    public class While : ILineInteractable, IUsing, ILexer
     {
         public string Name { get; set; } = "WHILE";
         public string Path { get; set; } = "System";
+        public Regex RegexCode { get; set; } = new Regex(@"^while$|WSwhile");
 
         public int lineExecute(string[] para, int lineNumber)
         {
