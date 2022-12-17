@@ -90,7 +90,16 @@ namespace Tungsten_Interpreter.Utilities.Variables
                     {
                         // Handle String[]
                         string[] val = (string[])globalVar[inputList[i]];
-                        input[i] = Regex.Replace(input[i].Replace(inputList[i], val[System.Convert.ToInt32(TextMethods.CalcString(input[i], '<', '>'))]), @"<[0-9]>", "") ;
+                        //input[i] = Regex.Replace(input[i].Replace(inputList[i], val[System.Convert.ToInt32(TextMethods.CalcString(input[i], '<', '>'))]), @"<[0-9]>", "") ;
+
+                        if (int.TryParse(TextMethods.CalcString(input[i], '<', '>'), out int num))
+                        {
+                            input[i] = Regex.Replace(input[i].Replace(inputList[i], val[/*System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))*/num]), @"<[0-9]+>", "");
+                        }
+                        else
+                        {
+                            input[i] = Regex.Replace(input[i].Replace(inputList[i], val[System.Convert.ToInt32(globalVar[TextMethods.CalcString(input[i], '<', '>')])]), @"<[a-zA-Z]+>", "");
+                        }
                     }
                     catch
                     {
@@ -124,7 +133,13 @@ namespace Tungsten_Interpreter.Utilities.Variables
             {
                 // Handle Matrix[]
                 string[] val = (string[])globalVar[comparator];
-                input = Regex.Replace(input.Replace(comparator, val[System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))]), @"<[0-9]>", "");
+                if (int.TryParse(TextMethods.CalcString(input, '<', '>'), out int num)) {
+                    input = Regex.Replace(input.Replace(comparator, val[/*System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))*/num]), @"<[0-9]+>", "");
+                }
+                else
+                {
+                    input = Regex.Replace(input.Replace(comparator, val[System.Convert.ToInt32(globalVar[TextMethods.CalcString(input, '<', '>')])]), @"<[a-zA-Z]+>", "");
+                }
             }
             catch (Exception e)
             {

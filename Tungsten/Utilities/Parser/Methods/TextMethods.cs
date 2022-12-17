@@ -74,7 +74,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 {
                     sb.Append(TextMethods.CalcStringForward(String.Join(" ", words, j, words.Length - j), startsWith, endsWith));
                 }
-                else if (VariableSetup.globalVar.ContainsKey(words[j]) || VariableSetup.globalVar.ContainsKey(Regex.Replace(words[j], @"<[0-9]>", "")))
+                else if (VariableSetup.globalVar.ContainsKey(words[j]) || VariableSetup.globalVar.ContainsKey(Regex.Replace(words[j], @"<[0-9]+>|<[a-zA-Z]+>", "")))
                 {
                     sb.Append(VariableSetup.Convert(words[j]));
                 }
