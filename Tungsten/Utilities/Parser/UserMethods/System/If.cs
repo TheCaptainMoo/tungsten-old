@@ -16,6 +16,21 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
             string[] ifStr = TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" ");
             List<string> modifier = VariableSetup.Convert(ifStr, 0).ToList();
 
+            // String Check
+            for (int i = 0; i < 3; i++)
+            {
+                if (modifier[i].StartsWith('['))
+                {
+                    modifier[i] = TextMethods.ParseText(ifStr, i, '[', ']');
+
+                    while (!modifier[i+1].EndsWith(']'))
+                    {
+                        modifier.RemoveAt(i+1);
+                    }
+                    modifier.RemoveAt(i+1);
+                }
+            }
+
             // Running If Statement
             if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
             {
