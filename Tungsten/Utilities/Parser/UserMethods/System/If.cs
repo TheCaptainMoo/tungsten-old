@@ -23,6 +23,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
                 {
                     modifier[i] = TextMethods.ParseText(ifStr, i, '[', ']');
 
+                    if (i + 1 >= 3)
+                        break;
+
                     while (!modifier[i+1].EndsWith(']'))
                     {
                         modifier.RemoveAt(i+1);
