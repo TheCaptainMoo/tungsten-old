@@ -191,6 +191,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
 
             whileStartPosition = new Dictionary<int, int>();
             whileEndPosition = new Dictionary<int, int>();
+            whileSetup = new Dictionary<int, bool>();
         }
     }
 }
