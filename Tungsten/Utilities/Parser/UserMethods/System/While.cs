@@ -13,8 +13,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public int lineExecute(string[] para, int lineNumber)
         {
             // Initialise Variables
-            string[] whileStr = TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" ");
-            List<string> modifier = VariableSetup.Convert(whileStr, 0).ToList();        
+            Span<string> modifier = VariableSetup.Convert(TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '<', '>').Split(" "), 0).AsSpan();
 
             int startPos = 0;
             int endPos = 0;
@@ -22,61 +21,71 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             int startIndex = -1;
 
             // Run Through While Loop Body | Find Start & End Positions
-            for(int i = lineNumber; i < VariableSetup.lines.Count; i++)
+            if (!VariableSetup.whileSetup.ContainsKey(int.Parse(VariableSetup.lines[lineNumber + 1][1])))
             {
-                
-                string[] wordsInLine = VariableSetup.lines[i];
-                for(int j = 0; j < wordsInLine.Length; j++)
+                if (VariableSetup.whileStartPosition.ContainsKey(int.Parse(VariableSetup.lines[lineNumber + 1][1])) && VariableSetup.whileEndPosition.ContainsKey(int.Parse(VariableSetup.lines[lineNumber + 1][1])))
                 {
-                    if (wordsInLine[j] == "SB" && startIndex <= -1)
-                    {
-                        startIndex = Convert.ToInt32(wordsInLine[j + 1]);
-                    }
-                    if (wordsInLine[j] == "SB" && Convert.ToInt32(wordsInLine[j + 1]) == startIndex)
-                    {
-                        startPos = i;
-                        try
-                        {
-                            VariableSetup.whileStartPosition.Add(Convert.ToInt32(wordsInLine[j + 1]), startPos);
-                        }
-                        catch { }
-                        if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
-                        {
-                            return VariableSetup.whileEndPosition[startIndex] + 2;
-                        }
-                    }
-                    else if((wordsInLine[j] == "EB" || wordsInLine[j] == "WEB") && Convert.ToInt32(wordsInLine[j+1]) == startIndex)
-                    {
-                        endPos = i-1;
-                        try
-                        {
-                            VariableSetup.whileEndPosition.Add(Convert.ToInt32(wordsInLine[j + 1]), endPos);
-                        }
-                        catch { }
+                    VariableSetup.whileSetup.Add(int.Parse(VariableSetup.lines[lineNumber + 1][1]), true);
+                }
 
-                        if(Check.Operation(modifier[0], modifier[1], modifier[2]))
+                for (int i = lineNumber; i < VariableSetup.lines.Count; i++)
+                {
+
+                    string[] wordsInLine = VariableSetup.lines[i];
+                    for (int j = 0; j < wordsInLine.Length; j++)
+                    {
+                        if (wordsInLine[j] == "SB" && startIndex <= -1)
                         {
-                            wordsInLine[j] = "WEB";
-                            if (Convert.ToInt32(wordsInLine[j+1]) == startIndex)
+                            startIndex = Convert.ToInt32(wordsInLine[j + 1]);
+                        }
+                        if (wordsInLine[j] == "SB" && Convert.ToInt32(wordsInLine[j + 1]) == startIndex)
+                        {
+                            startPos = i;
+                            try
                             {
-                                return startPos;
+                                VariableSetup.whileStartPosition.Add(Convert.ToInt32(wordsInLine[j + 1]), startPos);
+                            }
+                            catch { }
+                            if (!Check.Operation(modifier[0], modifier[1], modifier[2]))
+                            {
+                                return VariableSetup.whileEndPosition[startIndex] + 2;
                             }
                         }
-                        else
+                        else if ((wordsInLine[j] == "EB" || wordsInLine[j] == "WEB") && Convert.ToInt32(wordsInLine[j + 1]) == startIndex)
                         {
-                            return Convert.ToInt32(VariableSetup.whileEndPosition[Convert.ToInt32(wordsInLine[j + 1])]) + 1;
+                            endPos = i - 1;
+                            try
+                            {
+                                VariableSetup.whileEndPosition.Add(Convert.ToInt32(wordsInLine[j + 1]), endPos);
+                            }
+                            catch { }
+
+                            if (Check.Operation(modifier[0], modifier[1], modifier[2]))
+                            {
+                                wordsInLine[j] = "WEB";
+                                if (Convert.ToInt32(wordsInLine[j + 1]) == startIndex)
+                                {
+                                    return startPos;
+                                }
+                            }
+                            else
+                            {
+                                return Convert.ToInt32(VariableSetup.whileEndPosition[Convert.ToInt32(wordsInLine[j + 1])]) + 1;
+                            }
                         }
-                    } 
+                    }
                 }
+
+                
             }
 
             if(Check.Operation(modifier[0], modifier[1], modifier[2]))
             {
-                return startPos;
+                return VariableSetup.whileStartPosition[int.Parse(VariableSetup.lines[lineNumber + 1][1])];
             }
             else
             {
-                return endPos + 1;
+                return VariableSetup.whileEndPosition[int.Parse(VariableSetup.lines[lineNumber + 1][1])] + 1;
             }
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Lexer;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods.System;
@@ -10,52 +9,72 @@ namespace Tungsten_Interpreter
 {
     internal class Program
     {
+        public static readonly string[] splitChars = 
+        {
+            " ",
+            //"\n",
+            "\r",
+            "\t",
+            //";"
+        };
+
+        public static readonly string[] lineChars =
+        {
+            "WS",
+            "\0",
+            "NL"
+        };
+
+        public static Dictionary<string, IMethod> methods = new Dictionary<string, IMethod>();
+        public static Dictionary<string, ILineInteractable> linedMethods = new Dictionary<string, ILineInteractable>();
+
         // Program Entry Point | Executes Lexer & Parser
         static void Main(string[] args)
         {
-            string[] splitChars =
+            // Get Methods
+            foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
             {
-                " ",
-                //"\n",
-                "\r",
-                "\t",
-                //";"
-            };
+                if (type.GetInterfaces().Contains(typeof(IMethod)) && type.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    IMethod method = (IMethod)Activator.CreateInstance(type);
+                    methods.Add(method.Name, method);
+                }
 
-            string[] lineChars =
-            {
-                "WS",
-                "\0",
-                "NL"
-            };
-
-            reset:
-            VariableSetup.Clean();
-            string path = Console.ReadLine().Replace("\"", "");
-            StreamReader sr = new StreamReader(path);
-
-            string[] _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
-
-            string[] lexerArr = TungstenLexer.Lexer(_args).ToArray();
-            string lexerOut = "";
-
-            foreach (string lexer in lexerArr)
-            {
-                lexerOut += lexer + "WS";
+                if (type.GetInterfaces().Contains(typeof(ILineInteractable)) && type.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    ILineInteractable linedMethod = (ILineInteractable)Activator.CreateInstance(type);
+                    linedMethods.Add(linedMethod.Name, linedMethod);
+                }
             }
 
-            string[] line = lexerOut.Split("NL");
-
-            for (int i = 0; i < line.Length; i++)
+            // Loop For Each Script
+            while (true)
             {
-                VariableSetup.lines.Add(/*i, */line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
+                VariableSetup.Clean();
+                string path = Console.ReadLine().Replace("\"", "");
+                StreamReader sr = new StreamReader(path);
+
+                string[] _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+
+                sr.Close();
+
+                string[] lexerArr = TungstenLexer.Lexer(_args).ToArray();
+                string lexerOut = "";
+
+                foreach (string lexer in lexerArr)
+                {
+                    lexerOut += lexer + "WS";
+                }
+
+                string[] line = lexerOut.Split("NL");
+
+                for (int i = 0; i < line.Length; i++)
+                {
+                    VariableSetup.lines.Add(/*i, */line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                Parser();
             }
-
-            Parser();
-
-            sr.Close();
-
-            goto reset;
         }
 
         static void Parser()
@@ -82,39 +101,7 @@ namespace Tungsten_Interpreter
                 }
             }
 
-            //LINQ For Obtaining All Methods
-            var methods = from t in Assembly.GetExecutingAssembly().GetTypes()
-                          where t.GetInterfaces().Contains(typeof(IMethod))
-                                   && t.GetConstructor(Type.EmptyTypes) != null
-                          select Activator.CreateInstance(t) as IMethod;
-
-            List<IMethod> methodsOut = new List<IMethod>();
-
-            foreach (IMethod method in methods)
-            {
-                if (!VariableSetup.usingMethods.Contains(method.Name))
-                    continue;
-                methodsOut.Add(method);
-            }
-
-            //LINQ For Obtaining All Line Interactable Methods
-            var linedMethods = from t in Assembly.GetExecutingAssembly().GetTypes()
-                               where t.GetInterfaces().Contains(typeof(ILineInteractable))
-                                        && t.GetConstructor(Type.EmptyTypes) != null
-                               select Activator.CreateInstance(t) as ILineInteractable;
-
-            List<ILineInteractable> linedMethodsOut = new List<ILineInteractable>();
-
-            foreach (ILineInteractable method in linedMethods)
-            {
-                if (!VariableSetup.usingMethods.Contains(method.Name))
-                    continue;
-                linedMethodsOut.Add(method);
-            }
             #endregion
-
-            Span<IMethod> spanMOut = CollectionsMarshal.AsSpan(methodsOut);
-            Span<ILineInteractable> spanLOut = CollectionsMarshal.AsSpan(linedMethodsOut);
 
             // Loops Through Each Line
             for (int i = index; i < VariableSetup.lines.Count; i++)
@@ -166,21 +153,15 @@ namespace Tungsten_Interpreter
 
                 // Runs Code
                 #region Parsing
- 
-                for(int j = 0; j < spanMOut.Length; j++)
+
+                if (methods.ContainsKey(words[0]))
                 {
-                    if (words[0] == spanMOut[j].Name)
-                    {
-                        spanMOut[j].Execute(words);
-                    }
+                    methods[words[0]].Execute(words);
                 }
 
-                for (int j = 0; j < spanLOut.Length; j++)
+                if (linedMethods.ContainsKey(words[0]))
                 {
-                    if (words[0] == spanLOut[j].Name)
-                    {
-                        i = spanLOut[j].lineExecute(words, i);
-                    }
+                    i = linedMethods[words[0]].lineExecute(words, i);
                 }
 
                 if (VariableSetup.functionParameters.ContainsKey(words[0]))
@@ -223,6 +204,7 @@ namespace Tungsten_Interpreter
                 }
                 #endregion
             }
+
         }
     
     }

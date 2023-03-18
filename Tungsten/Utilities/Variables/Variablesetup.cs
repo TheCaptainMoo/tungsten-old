@@ -19,6 +19,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
         // While Variables
         public static IDictionary<int, int> whileStartPosition = new Dictionary<int, int>();
         public static IDictionary<int, int> whileEndPosition = new Dictionary<int, int>();
+        public static IDictionary<int, bool> whileSetup = new Dictionary<int, bool>();
 
         // Adds a Value into Memory
         public static void AddEntry<T>(string name, T value)
