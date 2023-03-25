@@ -7,30 +7,56 @@ namespace Tungsten_Interpreter.Utilities.Variables
     public class VariableSetup
     {
         // Misc Variables
-        public static Hashtable globalVar = new Hashtable(); // Memory
+        //public static Hashtable globalVar = new Hashtable(); // Memory
+        public static Dictionary<string, /*Memory<byte>*/ Variable> globalVar = new Dictionary<string, Variable>();
         public static List<string> usingMethods = new List<string>() { "ACTIVATE" }; // List of Using Methods
 
         public static List<string[]> lines = new List<string[]>(); // Lines of Code
 
         // Function Variables
-        public static IDictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
-        public static IDictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
+        public static Dictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
+        public static Dictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
 
         // While Variables
-        public static IDictionary<int, int> whileStartPosition = new Dictionary<int, int>();
-        public static IDictionary<int, int> whileEndPosition = new Dictionary<int, int>();
-        public static IDictionary<int, bool> whileSetup = new Dictionary<int, bool>();
+        public static Dictionary<int, int> whileStartPosition = new Dictionary<int, int>();
+        public static Dictionary<int, int> whileEndPosition = new Dictionary<int, int>();
+        public static Dictionary<int, bool> whileSetup = new Dictionary<int, bool>();
+
+        public struct Variable
+        {
+            public Variable(VariableTypes Type, Memory<byte> Data)
+            {
+                type = Type;
+                data = Data;
+            }
+
+            public VariableTypes type;
+            public Memory<byte> data;
+        }
+
+        public enum VariableTypes
+        {
+            Typeless,
+            String,
+            Int,
+            Boolean,
+            Matrix
+        }
 
         // Adds a Value into Memory
-        public static void AddEntry<T>(string name, T value)
+        public static void AddEntry(string name, VariableTypes type, byte[] value)
         {
             if (globalVar.ContainsKey(name))
             {
-                Console.WriteLine("Use 'update' to edit: " + name);
+                //Console.WriteLine("Use 'update' to edit: " + name);
+                //globalVar[name] = new Memory<byte>(value);
+                globalVar[name] = new Variable(type, value);
             }
             else
             {
-                globalVar.Add(name, value);
+                //globalVar.Add(name, value);
+                //globalVar.Add(name, new Memory<byte>(value));
+                globalVar.Add(name, new Variable(type, value));
             }
         }
 
@@ -48,11 +74,14 @@ namespace Tungsten_Interpreter.Utilities.Variables
         }
 
         // Updates a Value from Memory
-        public static void UpdateEntry<T>(string name, T newValue)
+        [Obsolete]
+        public static void UpdateEntry(string name, byte[] newValue)
         {
+            Console.WriteLine("Warning: Obsolete Method Use (UpdateEntry)");
             if (globalVar.ContainsKey(name))
             {
-                globalVar[name] = newValue;
+                //globalVar[name] = newValue;
+                //globalVar[name] = new Memory<byte>(newValue);
             }
             else
             {
@@ -90,7 +119,8 @@ namespace Tungsten_Interpreter.Utilities.Variables
                     try
                     {
                         // Handle String[]
-                        string[] val = (string[])globalVar[inputList[i]];
+                        //string[] val = (string[])globalVar[inputList[i]];
+                        string[] val = System.Text.Encoding.UTF8.GetString(globalVar[inputList[i]].data.Span).Split('\0', StringSplitOptions.RemoveEmptyEntries);
                         //input[i] = Regex.Replace(input[i].Replace(inputList[i], val[System.Convert.ToInt32(TextMethods.CalcString(input[i], '<', '>'))]), @"<[0-9]>", "") ;
 
                         if (int.TryParse(TextMethods.CalcString(input[i], '<', '>'), out int num))
@@ -105,7 +135,18 @@ namespace Tungsten_Interpreter.Utilities.Variables
                     catch
                     {
                         // Handle Non-Array
-                        input[i] = input[i].Replace(inputList[i], globalVar[inputList[i]].ToString());
+                        //input[i] = input[i].Replace(inputList[i], globalVar[inputList[i]].ToString());
+
+                        // Needs To Decide Between String & Int
+                        //input[i] = input[i].Replace(inputList[i], System.Text.Encoding.UTF8.GetString(globalVar[inputList[i]].Span));
+                        if (globalVar[inputList[i]].type == VariableTypes.String)
+                        {
+                            input[i] = input[i].Replace(inputList[i], System.Text.Encoding.UTF8.GetString(globalVar[inputList[i]].data.Span));
+                        }
+                        else if (globalVar[inputList[i]].type == VariableTypes.Int)
+                        {
+                            input[i] = input[i].Replace(inputList[i], BitConverter.ToInt32(globalVar[inputList[i]].data.Span).ToString());
+                        }
                     }
                 }
             }
@@ -133,7 +174,8 @@ namespace Tungsten_Interpreter.Utilities.Variables
             try
             {
                 // Handle Matrix[]
-                string[] val = (string[])globalVar[comparator];
+                //string[] val = (string[])globalVar[comparator];
+                string[] val = System.Text.Encoding.UTF8.GetString(globalVar[comparator].data.Span).Split('\0', StringSplitOptions.RemoveEmptyEntries);
                 if (int.TryParse(TextMethods.CalcString(input, '<', '>'), out int num)) {
                     input = Regex.Replace(input.Replace(comparator, val[/*System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))*/num]), @"<[0-9]+>", "");
                 }
@@ -145,7 +187,14 @@ namespace Tungsten_Interpreter.Utilities.Variables
             catch (Exception e)
             {
                 // Handle Non-Array
-                input = input.Replace(comparator, globalVar[comparator].ToString());
+                //input = input.Replace(comparator, globalVar[comparator].ToString());
+                if (globalVar[comparator].type == VariableTypes.String)
+                {
+                    input = input.Replace(comparator, System.Text.Encoding.UTF8.GetString(globalVar[comparator].data.Span));
+                }
+                else if (globalVar[comparator].type == VariableTypes.Int){
+                    input = input.Replace(comparator, BitConverter.ToInt32(globalVar[comparator].data.Span).ToString());
+                }
             }
 
 
@@ -182,7 +231,8 @@ namespace Tungsten_Interpreter.Utilities.Variables
         // Cleans Memory
         public static void Clean()
         {
-            globalVar = new Hashtable();
+            //globalVar = new Hashtable();
+            globalVar = new Dictionary<string, Variable>();
             usingMethods = new List<string>() { "ACTIVATE" };
             lines = new List<string[]>();
 

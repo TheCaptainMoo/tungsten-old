@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -13,7 +14,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         // Creates a String in Memory
         public void Execute(string[] para)
         {
-            VariableSetup.AddEntry(para[1], TextMethods.ParseText(para, 2, '[', ']'));
+            //VariableSetup.AddEntry(para[1], TextMethods.ParseText(para, 2, '[', ']'));
+            VariableSetup.AddEntry(para[1], VariableSetup.VariableTypes.String, Encoding.UTF8.GetBytes(TextMethods.ParseText(para, 2, '[', ']')));
         }
     }
 }

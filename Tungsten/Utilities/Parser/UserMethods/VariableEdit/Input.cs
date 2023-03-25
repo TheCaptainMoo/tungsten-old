@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -20,7 +21,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     string[] inputStr = Console.ReadLine().Split(" ");
                     inputStr[0] = "[" + inputStr[0];
                     inputStr[inputStr.Length - 1] = inputStr[inputStr.Length - 1] + "]";
-                    VariableSetup.AddEntry(para[2], TextMethods.ParseText(inputStr, 0, '[', ']'));
+                    //VariableSetup.AddEntry(para[2], TextMethods.ParseText(inputStr, 0, '[', ']'));
+                    VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.String, Encoding.UTF8.GetBytes(TextMethods.ParseText(inputStr, 0, '[', ']')));
                     #endregion
                     break;
 
@@ -30,11 +32,13 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     try
                     {
                         double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", inputInt, 0, inputInt.Length), '(', ')'));
-                        VariableSetup.AddEntry(para[2], Convert.ToInt32(maths));
+                        //VariableSetup.AddEntry(para[2], Convert.ToInt32(maths));
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Int, BitConverter.GetBytes(maths));
                     }
                     catch
                     {
-                        VariableSetup.AddEntry(para[2], Convert.ToInt32(inputInt[0]));
+                        //VariableSetup.AddEntry(para[2], Convert.ToInt32(inputInt[0]));
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Int, BitConverter.GetBytes(Convert.ToInt32(inputInt[0])));
                     }
                     #endregion
                     break;
@@ -44,7 +48,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     string inputBool = Console.ReadLine();
                     try
                     {
-                        VariableSetup.AddEntry(para[2], Convert.ToBoolean(inputBool));
+                        //VariableSetup.AddEntry(para[2], Convert.ToBoolean(inputBool));
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Boolean, BitConverter.GetBytes(Convert.ToBoolean(inputBool)));
                     }
                     catch
                     {

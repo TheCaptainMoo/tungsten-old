@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -18,25 +19,29 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             switch (para[1])
             {
                 case "STRING":
-                    VariableSetup.UpdateEntry(para[2], TextMethods.ParseText(para, 3, '[', ']'));
+                    //VariableSetup.UpdateEntry(para[2], TextMethods.ParseText(para, 3, '[', ']'));
+                    VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.String, Encoding.UTF8.GetBytes(TextMethods.ParseText(para, 3, '[', ']')));
                     break;
 
                 case "INT":
                     try
                     {
                         double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", para, 1, para.Length - 1), '(', ')'));
-                        VariableSetup.UpdateEntry(para[2], maths);
+                        //VariableSetup.UpdateEntry(para[2], maths);
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Int,BitConverter.GetBytes(Convert.ToInt32(maths)));
                     }
                     catch
                     {
-                        VariableSetup.UpdateEntry(para[2], para[3]);
+                        //VariableSetup.UpdateEntry(para[2], para[3]);
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Int, BitConverter.GetBytes(Convert.ToInt32(para[3])));
                     }
                     break;
 
                 case "BOOL":
                     try
                     {
-                        VariableSetup.UpdateEntry(para[2], Convert.ToBoolean(para[3]));
+                        //VariableSetup.UpdateEntry(para[2], Convert.ToBoolean(para[3]));
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Boolean, BitConverter.GetBytes(Convert.ToBoolean(para[3])));
                     }
                     catch
                     {
@@ -74,7 +79,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                             break;
                         }
                     }
-                    VariableSetup.UpdateEntry(para[2], value.ToArray());
+                    //VariableSetup.UpdateEntry(para[2], value.ToArray());
                     break;
             }
         }

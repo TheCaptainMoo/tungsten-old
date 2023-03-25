@@ -14,7 +14,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         {
             try
             {
-                VariableSetup.AddEntry(para[1], Convert.ToBoolean(para[2]));
+                //VariableSetup.AddEntry(para[1], Convert.ToBoolean(para[2]));
+                VariableSetup.AddEntry(para[1], VariableSetup.VariableTypes.Boolean ,BitConverter.GetBytes(Convert.ToBoolean(para[2])));
             }
             catch
             {

@@ -67,7 +67,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 //value[i] = value[i].Substring(1, value[i].Length - 2);
             //}
 
-            VariableSetup.AddEntry(para[1], value.ToArray());
+            //VariableSetup.AddEntry(para[1], value.ToArray());
         }
     }
 }
