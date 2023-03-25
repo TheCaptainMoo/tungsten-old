@@ -80,6 +80,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                         }
                     }
                     //VariableSetup.UpdateEntry(para[2], value.ToArray());
+                    VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Matrix, Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray())));
                     break;
             }
         }

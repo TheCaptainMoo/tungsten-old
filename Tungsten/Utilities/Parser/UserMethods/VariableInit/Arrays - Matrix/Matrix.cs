@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Text;
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
@@ -64,10 +65,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             //for(int i = 0; i < value.Count; i++)
             //{
             //    value[i] = value[i].Trim();
-                //value[i] = value[i].Substring(1, value[i].Length - 2);
+            //value[i] = value[i].Substring(1, value[i].Length - 2);
             //}
 
             //VariableSetup.AddEntry(para[1], value.ToArray());
+            VariableSetup.AddEntry(para[1], VariableSetup.VariableTypes.Matrix, Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray())));
         }
     }
 }

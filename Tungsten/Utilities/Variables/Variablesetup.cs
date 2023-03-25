@@ -175,16 +175,16 @@ namespace Tungsten_Interpreter.Utilities.Variables
             {
                 // Handle Matrix[]
                 //string[] val = (string[])globalVar[comparator];
-                string[] val = System.Text.Encoding.UTF8.GetString(globalVar[comparator].data.Span).Split('\0', StringSplitOptions.RemoveEmptyEntries);
+                string[] val = System.Text.Encoding.UTF8.GetString(globalVar[comparator].data.Span).Split('\u0004', StringSplitOptions.RemoveEmptyEntries);
                 if (int.TryParse(TextMethods.CalcString(input, '<', '>'), out int num)) {
                     input = Regex.Replace(input.Replace(comparator, val[/*System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))*/num]), @"<[0-9]+>", "");
                 }
                 else
                 {
-                    input = Regex.Replace(input.Replace(comparator, val[System.Convert.ToInt32(globalVar[TextMethods.CalcString(input, '<', '>')])]), @"<[a-zA-Z]+>", "");
+                    input = Regex.Replace(input.Replace(comparator, val[BitConverter.ToInt32(globalVar[TextMethods.CalcString(input, '<', '>')].data.Span)]), @"<[a-zA-Z]+>", "");
                 }
             }
-            catch (Exception e)
+            catch
             {
                 // Handle Non-Array
                 //input = input.Replace(comparator, globalVar[comparator].ToString());
