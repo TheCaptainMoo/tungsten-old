@@ -20,7 +20,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             {
                 case "STRING":
                     //VariableSetup.UpdateEntry(para[2], TextMethods.ParseText(para, 3, '[', ']'));
-                    VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.String, Encoding.UTF8.GetBytes(TextMethods.ParseText(para, 3, '[', ']')));
+                    VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.String, Encoding.UTF8.GetBytes(TextMethods.ParseText(para, 4, '[', ']')));
                     break;
 
                 case "INT":
@@ -33,7 +33,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     catch
                     {
                         //VariableSetup.UpdateEntry(para[2], para[3]);
-                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Int, BitConverter.GetBytes(Convert.ToInt32(para[3])));
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Int, BitConverter.GetBytes(Convert.ToInt32(para[4])));
                     }
                     break;
 
@@ -41,7 +41,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     try
                     {
                         //VariableSetup.UpdateEntry(para[2], Convert.ToBoolean(para[3]));
-                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Boolean, BitConverter.GetBytes(Convert.ToBoolean(para[3])));
+                        VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Boolean, BitConverter.GetBytes(Convert.ToBoolean(para[4])));
                     }
                     catch
                     {

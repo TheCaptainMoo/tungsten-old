@@ -18,12 +18,12 @@ namespace Tungsten_Interpreter
             //";"
         };
 
-        public static readonly string[] lineChars =
+        /*public static readonly string[] lineChars =
         {
             "WS",
             "\0",
             "NL"
-        };
+        };*/
 
         public static Dictionary<string, IMethod> methods = new Dictionary<string, IMethod>();
         public static Dictionary<string, ILineInteractable> linedMethods = new Dictionary<string, ILineInteractable>();
@@ -58,20 +58,7 @@ namespace Tungsten_Interpreter
 
                 sr.Close();
 
-                string[] lexerArr = TungstenLexer.Lexer(_args).ToArray();
-                string lexerOut = "";
-
-                foreach (string lexer in lexerArr)
-                {
-                    lexerOut += lexer + "WS";
-                }
-
-                string[] line = lexerOut.Split("NL");
-
-                for (int i = 0; i < line.Length; i++)
-                {
-                    VariableSetup.lines.Add(/*i, */line[i].Split(lineChars, StringSplitOptions.RemoveEmptyEntries));
-                }
+                TungstenLexer.ConstructLines(TungstenLexer.Lexer(_args));
 
                 Parser();
             }
@@ -135,7 +122,7 @@ namespace Tungsten_Interpreter
                     goto zero;
                 }
 
-                if ((words[0] == "STRING" || words[0] == "INT" || words[0] == "BOOL") && !words[1].EndsWith(':'))
+                /*if ((words[0] == "STRING" || words[0] == "INT" || words[0] == "BOOL") && !words[1].EndsWith(':'))
                 {
                     Console.WriteLine("Relevant Assigner ':' Expected At: '" + words[1] + "'");
                     return;
@@ -148,7 +135,7 @@ namespace Tungsten_Interpreter
                         words[2] = words[2].Replace(":", "");
                     }
                     catch { }
-                }
+                }*/
                 #endregion
 
                 // Runs Code
@@ -202,6 +189,7 @@ namespace Tungsten_Interpreter
 
                     i--;
                 }
+               
                 #endregion
             }
 

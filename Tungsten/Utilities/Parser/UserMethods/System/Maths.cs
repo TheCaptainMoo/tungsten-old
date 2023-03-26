@@ -9,7 +9,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
     {
         public string Name { get; set; } = "MATH";
         public string Path { get; set; } = "System";
-        public Regex RegexCode { get; set; } = new Regex(@"^math$|^math:$|WSmath");
+        public Regex RegexCode { get; set; } = new Regex(@"^math$|WSmath");
 
         public void Execute(string[] para)
         {

@@ -10,7 +10,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
     {
         public string Name { get; set; } = "MATRIX";
         public string Path { get; set; } = "Variables.Matrix";
-        public Regex RegexCode { get; set; } = new Regex(@"^mat$|^mat:$|WSmat|#\[\]");
+        public Regex RegexCode { get; set; } = new Regex(@"^mat$|WSmat|#\[\]");
 
         // Creates a 'Matrix' (Array) in Memory
         public void Execute(string[] para)

@@ -1,53 +1,34 @@
-﻿using System;
+﻿using System.Collections;
 using System.Reflection;
+using System.Text;
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser;
+using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Lexer
 {
     public class TungstenLexer
     {
-        // Keywords
-        public enum TokenList
+        public static readonly string[] splitChars =
         {
-            WS, //Whitespace
-            STRING,
-            MATRIX,
-            INT,
-            BOOL,
-            TL, //Typeless Variable
-            NL, //New Line
-            FUNCT,
-            PRINT,
-            PRINTIN,
-            MATH,
-            UPDATE,
-            DELETE,
-            INPUT,
-            WHILE,
-            IF,
-            SB, //Start Bracket
-            EB, //End Bracket
-            ACTIVATE
-        }
+            " ",
+            //"\n",
+            "\r",
+            "\t",
+            //";"
+        };
 
-        // Template For Creating Tokens
-        /*public class TokenAssign
+        public static readonly string[] lineChars =
         {
-            public TokenAssign(TokenList tokenList, Regex regex)
-            {
-                TokenList = tokenList;
-                this.regex = regex;
-            }
-
-            public TokenList TokenList { get; set; }
-            public Regex regex { get; set; }
-        }*/
+            "WS",
+            "\0",
+            "NL"
+        };
 
         public sealed class TokenAssign
         {
-            public TokenAssign(string token, Regex regex) 
-            { 
+            public TokenAssign(string token, Regex regex)
+            {
                 Token = token;
                 this.regex = regex;
             }
@@ -58,22 +39,21 @@ namespace Lexer
 
         static List<TokenAssign> LexerInit()
         {
-            // List of Tokens & Relevant Syntax
-
             // Handle Syntax
             List<TokenAssign> ta = new List<TokenAssign>()
             {
                 new TokenAssign("WS", new Regex(@"\s+|\t")),
                 new TokenAssign("NL", new Regex(@";|\n+|\r+|[\r\n]+|\*\/")),
                 new TokenAssign("SB", new Regex(@"{|WS{")),
-                new TokenAssign("EB", new Regex(@"}|WS}"))
+                new TokenAssign("EB", new Regex(@"}|WS}")),
+                new TokenAssign("WSASSIGN", new Regex(@":|WS:"))
             };
 
             // Handle Keywords
             var tokens = from t in Assembly.GetExecutingAssembly().GetTypes()
-                          where t.GetInterfaces().Contains(typeof(ILexer))
-                                   && t.GetConstructor(Type.EmptyTypes) != null
-                          select Activator.CreateInstance(t) as ILexer;
+                         where t.GetInterfaces().Contains(typeof(ILexer))
+                                  && t.GetConstructor(Type.EmptyTypes) != null
+                         select Activator.CreateInstance(t) as ILexer;
 
             foreach (var t in tokens)
             {
@@ -83,52 +63,65 @@ namespace Lexer
             return ta;
         }
 
-        public static List<string> Lexer(string[] args)
+        public static string Lexer(string[] args)
         {
-            List<TokenAssign> ta = LexerInit();
-            List<string> output = new List<string>();
-            string res;
+            List<TokenAssign> tokens = LexerInit();
+            StringBuilder str = new StringBuilder();
 
             int bracketNum = 0;
+            bool insideString = false;
 
-            //Lex Values
-            foreach (string arg in args)
+            for (int i = 0; i < args.Length; i++)
             {
-                res = arg;
-                for (int i = 0; i < ta.Count; i++)
+                string temp = args[i];
+                for (int j = 0; j < temp.Length; j++)
                 {
-                    // Replace Syntax With Token
-                    res = Regex.Replace(res, ta[i].regex.ToString(), /*ta[i].TokenList.ToString()*/ ta[i].Token);
-                    if (res.EndsWith("SB") || res.StartsWith("EB"))
+                    if (temp[j] == '[')
                     {
-                        res = res.Insert(res.Length - 2, "NL");
+                        insideString = true;
+                    }
+                    else if (temp[j] == ']')
+                    {
+                        insideString = false;
+                    }
+                    else if (temp[j] == '{')
+                    {
+                        temp = temp.Insert(j, "NL");
+                        temp += "WS" + bracketNum + "NL";
+                        bracketNum++;
+                        break;
+                    }
+                    else if (temp[j] == '}')
+                    {
+                        temp = temp.Insert(j, "NL");
+                        bracketNum--;
+                        temp += "WS" + bracketNum + "NL";
                         break;
                     }
                 }
 
-                // Code For Tokenising 
-                if (res.EndsWith("NLSB"))
+                for (int j = 0; j < tokens.Count; j++)
                 {
-                    res += "WS" + bracketNum + "NL";
-                    bracketNum++;
-                }
-                else if (res.StartsWith("EB") || res.StartsWith("NLEB") || res.StartsWith("WSNL"))
-                {
-                    bracketNum--;
-                    res += "WS" + bracketNum + "NL";
+                    if (insideString == false)
+                    {
+                        temp = Regex.Replace(temp, tokens[j].regex.ToString(), tokens[j].Token);
+                    }
                 }
 
-                output.Add(res);
+                str.Append(temp + "WS");
             }
 
-            #if DEBUG
-            foreach (string outp in output)
+            return str.ToString();
+        }
+
+        public static void ConstructLines(string args)
+        {
+            Span<string> strings = args.Split("NL", StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < strings.Length; i++)
             {
-                Console.WriteLine(outp);
+                VariableSetup.lines.Add(strings[i].Split("WS", StringSplitOptions.RemoveEmptyEntries));
             }
-            #endif
-
-            return output;
         }
     }
 }
