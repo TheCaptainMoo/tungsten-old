@@ -203,6 +203,9 @@ namespace Tungsten_Interpreter.Utilities.Variables
             //   return globalVar[input].ToString();
             //}
 
+            if(input == "\0\0\0\0")
+                return "0";
+
             return input;
         }
 

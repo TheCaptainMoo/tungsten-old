@@ -10,7 +10,7 @@ namespace Tungsten_Interpreter.Utilities.Parser
     public interface ILateMethod
     {
         string Name { get; set; }
-        int Position { get; set; }
+        //int Position { get; set; }
         void LateExecute(string[] para);
     }
 }

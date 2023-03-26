@@ -27,6 +27,7 @@ namespace Tungsten_Interpreter
 
         public static Dictionary<string, IMethod> methods = new Dictionary<string, IMethod>();
         public static Dictionary<string, ILineInteractable> linedMethods = new Dictionary<string, ILineInteractable>();
+        public static Dictionary<string, ILateMethod> lateMethods = new Dictionary<string, ILateMethod>();
 
         // Program Entry Point | Executes Lexer & Parser
         static void Main(string[] args)
@@ -44,6 +45,12 @@ namespace Tungsten_Interpreter
                 {
                     ILineInteractable linedMethod = (ILineInteractable)Activator.CreateInstance(type);
                     linedMethods.Add(linedMethod.Name, linedMethod);
+                }
+
+                if (type.GetInterfaces().Contains(typeof(ILateMethod)) && type.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    ILateMethod lateMethod = (ILateMethod)Activator.CreateInstance(type);
+                    lateMethods.Add(lateMethod.Name, lateMethod);
                 }
             }
 
@@ -100,14 +107,14 @@ namespace Tungsten_Interpreter
 
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
-                if (words != null)
+                /*if (words != null)
                 {
                     try
                     {
                         words[0] = words[0].ToUpper();
                     }
                     catch { }
-                }
+                }*/
 
                 if (words.Length == 0 || words[0].StartsWith("/*"))
                 {
@@ -144,14 +151,16 @@ namespace Tungsten_Interpreter
                 if (methods.ContainsKey(words[0]))
                 {
                     methods[words[0]].Execute(words);
-                }
-
-                if (linedMethods.ContainsKey(words[0]))
+                } 
+                else if (linedMethods.ContainsKey(words[0]))
                 {
                     i = linedMethods[words[0]].lineExecute(words, i);
                 }
-
-                if (VariableSetup.functionParameters.ContainsKey(words[0]))
+                else if (lateMethods.ContainsKey(words[1]))
+                {
+                    lateMethods[words[1]].LateExecute(words);
+                }
+                else if (VariableSetup.functionParameters.ContainsKey(words[0]))
                 {
                     string[] args = TextMethods.ParseText(words, 0, '<', '>').Split(",");
                     List<string[]> outputList = new List<string[]>();
