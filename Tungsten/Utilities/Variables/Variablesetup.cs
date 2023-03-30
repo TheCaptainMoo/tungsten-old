@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.AST;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 
 namespace Tungsten_Interpreter.Utilities.Variables
@@ -12,6 +13,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
         public static List<string> usingMethods = new List<string>() { "ACTIVATE" }; // List of Using Methods
 
         public static List<string[]> lines = new List<string[]>(); // Lines of Code
+        public static List<AbstractSyntaxTree.AstNode> nodes = new List<AbstractSyntaxTree.AstNode>(); // New Lines Of Code
 
         // Function Variables
         public static Dictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();

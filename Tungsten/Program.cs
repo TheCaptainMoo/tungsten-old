@@ -1,5 +1,7 @@
 ﻿using Lexer;
+using System.Diagnostics;
 using System.Reflection;
+using Tungsten_Interpreter.Utilities.AST;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods.System;
@@ -53,6 +55,11 @@ namespace Tungsten_Interpreter
                     lateMethods.Add(lateMethod.Name, lateMethod);
                 }
             }
+
+            //AbstractSyntaxTree.PrintNode pn = new AbstractSyntaxTree.PrintNode("Hi");
+            //pn.Execute();
+            //AbstractSyntaxTree.VariableAssignNode van = new AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Typeless, "fun", 0x01);
+            //van.Execute();
 
             // Loop For Each Script
             while (true)
