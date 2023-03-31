@@ -6,11 +6,57 @@ using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 {
-    public class MatrixCreation : IMethod, IUsing, ILexer
+    public class MatrixCreation : ILexer
     {
         public string Name { get; set; } = "MATRIX";
-        public string Path { get; set; } = "Variables.Matrix";
         public Regex RegexCode { get; set; } = new Regex(@"^mat$|WSmat|#\[\]");
+
+        public void AstConstructor(string[] para)
+        {
+            List<string> value = new List<string>();
+
+            //para = VariableSetup.Format(para, 2);
+            List<string> param = VariableSetup.Convert(VariableSetup.Format(para, 2), 2).ToList();
+            param.RemoveAt(2);
+
+            for (int i = 2; i < para.Length; i++)
+            {
+                if (!param[2].StartsWith('[') && !param[2].EndsWith(']'))
+                {
+                    param[2] = "[" + param[2] + "]";
+                }
+
+                value.Add(TextMethods.CalcStringForward(String.Join(" ", param), '[', ']'));
+
+                if (param[2] != null)
+                {
+
+                    if (param[2].EndsWith(']'))
+                    {
+                        param.RemoveAt(2);
+                    }
+                    else
+                    {
+                        while (!param[2].EndsWith(']'))
+                        {
+                            param.RemoveAt(2);
+                        }
+                        param.RemoveAt(2);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+
+                if (param.Count < 3)
+                {
+                    break;
+                }
+            }
+
+            VariableSetup.nodes.Add(new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Matrix, para[1], Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray()))));
+        }
 
         // Creates a 'Matrix' (Array) in Memory
         public void Execute(string[] para)

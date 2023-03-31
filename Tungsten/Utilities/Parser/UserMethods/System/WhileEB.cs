@@ -1,4 +1,4 @@
-﻿using Tungsten_Interpreter.Utilities.Variables;
+﻿/*using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 {
@@ -14,3 +14,4 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
         }
     }
 }
+*/

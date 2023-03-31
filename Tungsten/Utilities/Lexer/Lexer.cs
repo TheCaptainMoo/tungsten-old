@@ -1,7 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Tungsten_Interpreter;
+using Tungsten_Interpreter.Utilities.AST;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -114,14 +117,55 @@ namespace Lexer
             return str.ToString();
         }
 
-        public static void ConstructLines(string args)
+        public static List<string[]> ConstructLines(string args)
         {
             Span<string> strings = args.Split("NL", StringSplitOptions.RemoveEmptyEntries);
+            List<string[]> lines = new List<string[]>();
 
             for (int i = 0; i < strings.Length; i++)
             {
-                VariableSetup.lines.Add(strings[i].Split("WS", StringSplitOptions.RemoveEmptyEntries));
+                //VariableSetup.lines.Add(strings[i].Split("WS", StringSplitOptions.RemoveEmptyEntries));
+                lines.Add(strings[i].Split("WS", StringSplitOptions.RemoveEmptyEntries));
             }
+
+            return lines;
+        }
+
+        public static void CreateNodes(List<string[]> lines)
+        {
+            for (int i = 0; i < lines.Count; i++)
+            {
+                // Cleans Lexer Input
+                #region Cleaning & Init
+                string[] words = lines[i];
+
+                words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
+                if (words.Length == 0 || words[0].StartsWith("/*"))
+                {
+                    if (i >= lines.Count || i == lines.Count - 1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                    continue;
+                }
+
+                #endregion
+
+                #region AstGeneration
+
+                if (Program.methods.ContainsKey(words[0]))
+                {
+                    Program.methods[words[0]].AstConstructor(words);
+                }
+
+                #endregion
+            }
+
         }
     }
 }

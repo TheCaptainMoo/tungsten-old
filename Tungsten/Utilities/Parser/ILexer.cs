@@ -6,5 +6,6 @@ namespace Tungsten_Interpreter.Utilities.Parser
     {
         public string Name { get; set; }
         public Regex RegexCode { get; set; }
+        void AstConstructor(string[] para);
     }
 }

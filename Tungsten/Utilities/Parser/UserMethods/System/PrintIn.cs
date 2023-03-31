@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿/*using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
@@ -14,4 +14,4 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             Console.Write(TextMethods.ParseText(para, 1, '[', ']'));
         }
     }
-}
+}*/

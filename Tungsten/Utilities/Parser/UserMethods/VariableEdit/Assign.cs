@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿/*using System.Text;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -53,4 +53,4 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.VariableEdit
             }
         }
     }
-}
+}*/

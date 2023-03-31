@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -31,6 +32,23 @@ namespace Tungsten_Interpreter.Utilities.AST
             public int Value { get; set; }
         }
 
+        public class StringAnalysisNode : AstNode
+        {
+            public StringAnalysisNode(string[] value, int startIndex)
+            {
+                Value = value;
+                StartIndex = startIndex;
+            }
+
+            public override object Execute()
+            {
+                return TextMethods.ParseText(Value, StartIndex, '[', ']');
+            }
+
+            public string[] Value { get; set; }
+            public int StartIndex { get; set; }
+        }
+
         public class IfStatementNode : AstNode
         {
             public IfStatementNode(AstNode condition, AstNode thenStatement)
@@ -49,25 +67,9 @@ namespace Tungsten_Interpreter.Utilities.AST
             public AstNode ThenStatement { get; set; }
         }
 
-        public class PrintNode : AstNode 
-        {
-            public PrintNode(string value)
-            {
-                Value = value;
-            }
-
-            public override object? Execute()
-            {
-                Console.WriteLine(Value);
-                return null;
-            }
-
-            public string Value { get; set; }
-        }
-
         public class VariableAssignNode : AstNode
         {
-            public VariableAssignNode(VariableSetup.VariableTypes type, string name, byte value)
+            public VariableAssignNode(VariableSetup.VariableTypes type, string name, byte[] value)
             {
                 Type = type;
                 Name = name;
@@ -76,14 +78,14 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                switch (Type)
+                /*switch (Type)
                 {
                     case VariableSetup.VariableTypes.Typeless:
                         Console.WriteLine("Typeless");
                         break;
 
                     case VariableSetup.VariableTypes.String:
-                        Console.WriteLine("String");
+                        VariableSetup.globalVar.Add(Name, new VariableSetup.Variable(Type, Value));
                         break;
 
                     case VariableSetup.VariableTypes.Int:
@@ -101,14 +103,16 @@ namespace Tungsten_Interpreter.Utilities.AST
                     default: 
                         // Throw Error
                         break;
-                }
+                }*/
+
+                VariableSetup.globalVar.Add(Name, new VariableSetup.Variable(Type, Value));
 
                 return null;
             }
 
             public VariableSetup.VariableTypes Type { get; set; }
             public string Name { get; set; }
-            public byte Value { get; set; }
+            public byte[] Value { get; set; }
         }
 
         // Program Start - Acts As The Root

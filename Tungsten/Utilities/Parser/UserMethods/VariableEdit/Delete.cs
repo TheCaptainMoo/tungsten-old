@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿/*using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
@@ -22,4 +22,4 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             }
         }
     }
-}
+}*/
