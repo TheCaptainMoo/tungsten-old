@@ -11,7 +11,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public string Name { get; set; } = "MATRIX";
         public Regex RegexCode { get; set; } = new Regex(@"^mat$|WSmat|#\[\]");
 
-        public void AstConstructor(string[] para)
+        public AST.AbstractSyntaxTree.AstNode AstConstructor(string[] para)
         {
             List<string> value = new List<string>();
 
@@ -55,11 +55,12 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 }
             }
 
-            VariableSetup.nodes.Add(new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Matrix, para[1], Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray()))));
+            //VariableSetup.nodes.Add(new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Matrix, para[1], Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray()))));
+            return new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Matrix, para[1], Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray())));
         }
 
         // Creates a 'Matrix' (Array) in Memory
-        public void Execute(string[] para)
+        /*public void Execute(string[] para)
         {
             List<string> value = new List<string>();
 
@@ -116,6 +117,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
             //VariableSetup.AddEntry(para[1], value.ToArray());
             VariableSetup.AddEntry(para[1], VariableSetup.VariableTypes.Matrix, Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray())));
-        }
+        }*/
     }
 }

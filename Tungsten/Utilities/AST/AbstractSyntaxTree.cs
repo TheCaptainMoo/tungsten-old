@@ -49,22 +49,32 @@ namespace Tungsten_Interpreter.Utilities.AST
             public int StartIndex { get; set; }
         }
 
-        public class IfStatementNode : AstNode
+        
+
+        public class ConditionNode : AstNode
         {
-            public IfStatementNode(AstNode condition, AstNode thenStatement)
+            public ConditionNode(dynamic leftStatement, string condition, dynamic rightStatement)
             {
-                //Type = AstNodeType.IfStatement;
+                LeftStatement = leftStatement;
                 Condition = condition;
-                ThenStatement = thenStatement;
+                RightStatement = rightStatement;
             }
 
             public override object? Execute()
             {
-                return null;
+                try
+                {
+                    LeftStatement = VariableSetup.Convert(LeftStatement);
+                    RightStatement = VariableSetup.Convert(RightStatement);
+                }
+                catch { }
+
+                return Check.Operation(LeftStatement, Condition, RightStatement);
             }
 
-            public AstNode Condition { get; set; }
-            public AstNode ThenStatement { get; set; }
+            public dynamic LeftStatement { get; set; }
+            public string Condition { get; set; }
+            public dynamic RightStatement { get; set;}
         }
 
         public class VariableAssignNode : AstNode
@@ -113,6 +123,18 @@ namespace Tungsten_Interpreter.Utilities.AST
             public VariableSetup.VariableTypes Type { get; set; }
             public string Name { get; set; }
             public byte[] Value { get; set; }
+        }
+
+        public struct LinedAstReturn
+        {
+            public LinedAstReturn(int returnIndex, AstNode returnNode)
+            {
+                ReturnIndex = returnIndex;
+                ReturnNode = returnNode;
+            }
+
+            public int ReturnIndex { get; set; }
+            public AstNode ReturnNode { get; set; }
         }
 
         // Program Start - Acts As The Root

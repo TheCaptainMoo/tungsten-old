@@ -58,7 +58,17 @@ namespace Lexer
                                   && t.GetConstructor(Type.EmptyTypes) != null
                          select Activator.CreateInstance(t) as ILexer;
 
+            var linedtokens = from t in Assembly.GetExecutingAssembly().GetTypes()
+                         where t.GetInterfaces().Contains(typeof(INestedLexer))
+                                  && t.GetConstructor(Type.EmptyTypes) != null
+                         select Activator.CreateInstance(t) as INestedLexer;
+
             foreach (var t in tokens)
+            {
+                ta.Add(new TokenAssign(t.Name, t.RegexCode));
+            }
+
+            foreach (var t in linedtokens)
             {
                 ta.Add(new TokenAssign(t.Name, t.RegexCode));
             }
@@ -160,12 +170,69 @@ namespace Lexer
 
                 if (Program.methods.ContainsKey(words[0]))
                 {
-                    Program.methods[words[0]].AstConstructor(words);
+                    //Program.methods[words[0]].AstConstructor(words);
+                    VariableSetup.nodes.Add(Program.methods[words[0]].AstConstructor(words));
+                }
+                else if (Program.nestedMethods.ContainsKey(words[0]))
+                {
+                    AbstractSyntaxTree.LinedAstReturn prog = Program.nestedMethods[words[0]].AstConstructor(words, lines, i);
+                    VariableSetup.nodes.Add(prog.ReturnNode);
+                    i = prog.ReturnIndex;
                 }
 
                 #endregion
             }
 
+        }
+
+        public static List<AbstractSyntaxTree.AstNode> CreateNestedNode(List<string[]> lines)
+        {
+            List<AbstractSyntaxTree.AstNode> output = new List<AbstractSyntaxTree.AstNode>();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                // Cleans Lexer Input
+                #region Cleaning & Init
+                string[] words = lines[i];
+
+                words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
+
+                if (words.Length == 0 || words[0].StartsWith("/*"))
+                {
+                    if (i >= lines.Count || i == lines.Count - 1)
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                    continue;
+                }
+
+                #endregion
+
+                #region AstGeneration
+
+                if (Program.methods.ContainsKey(words[0]))
+                {
+                    //Program.methods[words[0]].AstConstructor(words);
+                    output.Add(Program.methods[words[0]].AstConstructor(words));
+                }
+
+                if (Program.nestedMethods.ContainsKey(words[0]))
+                {
+                    //i = Program.nestedMethods[words[0]].AstConstructor(words, lines, i);
+                    AbstractSyntaxTree.LinedAstReturn prog = Program.nestedMethods[words[0]].AstConstructor(words, lines, i);
+                    output.Add(prog.ReturnNode);
+                    i = prog.ReturnIndex;
+                }
+
+                #endregion
+
+                
+            }
+            return output;
         }
     }
 }

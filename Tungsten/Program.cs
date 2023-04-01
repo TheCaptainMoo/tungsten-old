@@ -34,6 +34,7 @@ namespace Tungsten_Interpreter
         //public static Dictionary<string, ILateMethod> lateMethods = new Dictionary<string, ILateMethod>();
 
         public static Dictionary<string, ILexer> methods = new Dictionary<string, ILexer>();
+        public static Dictionary<string, INestedLexer> nestedMethods = new Dictionary<string, INestedLexer>();
 
         // Program Entry Point | Executes Lexer & Parser
         static void Main(string[] args)
@@ -63,6 +64,12 @@ namespace Tungsten_Interpreter
                 {
                     ILexer lexer = (ILexer)Activator.CreateInstance(type);
                     methods.Add(lexer.Name, lexer);
+                }
+
+                if (type.GetInterfaces().Contains(typeof(INestedLexer)) && type.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    INestedLexer nestedLexer = (INestedLexer)Activator.CreateInstance(type);
+                    nestedMethods.Add(nestedLexer.Name, nestedLexer);
                 }
             }
 

@@ -11,9 +11,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         //public string Path { get; set; } = "System";
         public Regex RegexCode { get; set; } = new Regex(@"^print$|WSprint");
 
-        public void AstConstructor(string[] para)
+        public AstNode AstConstructor(string[] para)
         {
-            VariableSetup.nodes.Add(new PrintNode(new StringAnalysisNode(para, 1)));
+            //VariableSetup.nodes.Add(new PrintNode(new StringAnalysisNode(para, 1)));
+            return new PrintNode(new StringAnalysisNode(para, 1));
         }
 
         //TextMethods.ParseText(para, 1, '[', ']')

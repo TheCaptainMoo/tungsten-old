@@ -240,6 +240,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             globalVar = new Dictionary<string, Variable>();
             usingMethods = new List<string>() { "ACTIVATE" };
             lines = new List<string[]>();
+            nodes = new List<AbstractSyntaxTree.AstNode>();
 
             functionParameters = new Dictionary<string, FunctionParam>();
             functionBody = new Dictionary<string, FunctionBody>();
