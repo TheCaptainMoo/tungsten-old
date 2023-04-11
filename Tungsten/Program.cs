@@ -22,17 +22,6 @@ namespace Tungsten_Interpreter
             //";"
         };
 
-        /*public static readonly string[] lineChars =
-        {
-            "WS",
-            "\0",
-            "NL"
-        };*/
-
-        //public static Dictionary<string, IMethod> methods = new Dictionary<string, IMethod>();
-        //public static Dictionary<string, ILineInteractable> linedMethods = new Dictionary<string, ILineInteractable>();
-        //public static Dictionary<string, ILateMethod> lateMethods = new Dictionary<string, ILateMethod>();
-
         public static Dictionary<string, ILexer> methods = new Dictionary<string, ILexer>();
         public static Dictionary<string, INestedLexer> nestedMethods = new Dictionary<string, INestedLexer>();
 

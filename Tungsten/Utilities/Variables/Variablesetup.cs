@@ -10,7 +10,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
         // Misc Variables
         //public static Hashtable globalVar = new Hashtable(); // Memory
         public static Dictionary<string, /*Memory<byte>*/ Variable> globalVar = new Dictionary<string, Variable>();
-        public static List<string> usingMethods = new List<string>() { "ACTIVATE" }; // List of Using Methods
+        //public static List<string> usingMethods = new List<string>() { "ACTIVATE" }; // List of Using Methods
 
         public static List<string[]> lines = new List<string[]>(); // Lines of Code
         public static List<AbstractSyntaxTree.AstNode> nodes = new List<AbstractSyntaxTree.AstNode>(); // New Lines Of Code
@@ -238,7 +238,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
         {
             //globalVar = new Hashtable();
             globalVar = new Dictionary<string, Variable>();
-            usingMethods = new List<string>() { "ACTIVATE" };
+            //usingMethods = new List<string>() { "ACTIVATE" };
             lines = new List<string[]>();
             nodes = new List<AbstractSyntaxTree.AstNode>();
 

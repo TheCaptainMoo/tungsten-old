@@ -7,6 +7,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
     public class TextMethods
     {
         // Gets a Substring Between 2 Characters
+        /// <summary>
+        /// [Runtime]
+        /// </summary>
         public static string CalcString(string input, char openChar, char closeChar)
         {
             int startPos = 0;
@@ -34,6 +37,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         }
 
         // Gets a Substring Between 2 Characters In A Forward Motion
+        /// <summary>
+        /// [Runtime]
+        /// </summary>
         public static string CalcStringForward(string input, char openChar, char closeChar)
         {
             int startPos = 0;
@@ -61,6 +67,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         }
 
         // Parses Text Array Between 2 Characters
+        /// <summary>
+        /// [Runtime]
+        /// </summary>
         public static string ParseText(string[] words, int startIndex, char startsWith, char endsWith)
         {
             StringBuilder sb = new StringBuilder();
@@ -81,6 +90,41 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             }
 
             return sb.ToString();
+        }
+
+        // Function To 
+        /// <summary>
+        /// [Gentime]
+        /// </summary>
+        public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            bool insideString = false;
+
+            for(int i = startIndex; i < para.Length; i++)
+            {
+                if (para[i].StartsWith('['))
+                {
+                    insideString = true;
+                }
+                else if (para[i].EndsWith(']'))
+                {
+                    insideString = false;
+                    continue;
+                }
+
+                if (!insideString)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                }
+                else
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length-i), '[', ']'))));
+                }
+
+            }
+
+            return nodes;
         }
     }
 }

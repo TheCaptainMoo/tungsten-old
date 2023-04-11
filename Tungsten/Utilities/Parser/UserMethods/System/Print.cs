@@ -14,7 +14,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         public AstNode AstConstructor(string[] para)
         {
             //VariableSetup.nodes.Add(new PrintNode(new StringAnalysisNode(para, 1)));
-            return new PrintNode(new StringAnalysisNode(para, 1));
+
+            // Text Methods Function To Make Para Into ASTNodes
+
+
+            return new PrintNode(new StringAnalysisNode(TextMethods.AstParse(para, 1)));
         }
 
         //TextMethods.ParseText(para, 1, '[', ']')
