@@ -85,8 +85,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             }
         }
     }
-}//
-
+}//*/
 using System.Text;
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
@@ -102,11 +101,23 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public AstNode AstConstructor(string[] para)
         {
+            switch (para[1])
+            {
+                case "STRING":
+                    return new VariableNodedAssignNode(VariableSetup.VariableTypes.String, para[2], TextMethods.StringAstParse(para, 4));
+                    //return new UpdateNode(para[2], VariableSetup.VariableTypes.String, TextMethods.StringAstParse(para, 4));
 
+                case "INT":
+                    return new VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[2], TextMethods.IntAstParse(para, 4));
+                    //return new UpdateNode(para[2], VariableSetup.VariableTypes.Int, TextMethods.IntAstParse(para, 4));
+
+                default:
+                    // Error Generation - Variable Type Not Supported
+                    return null;
+            }
         }
-
         // Formats & Modifies Variables
-        public void Execute(string[] para)
+        /*public void Execute(string[] para)
         {
             para = VariableSetup.Convert(para, 3);
 
@@ -177,20 +188,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     VariableSetup.AddEntry(para[2], VariableSetup.VariableTypes.Matrix, Encoding.UTF8.GetBytes(string.Join("\u0004", value.ToArray())));
                     break;
             }
-        }
-
-        public class UpdateNode : AstNode
-        {
-            public UpdateNode(VariableSetup.VariableTypes type, string name, byte[] value)
-            {
-                Type = type;
-                Name = name;
-                Value = value;
-            }
-
-            public VariableSetup.VariableTypes Type { get; set; }
-            public string Name { get; set; }
-            public byte[] Value { get; set; }
-        }
+        }*/
     }
-}*/
+}

@@ -18,7 +18,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             // Text Methods Function To Make Para Into ASTNodes
 
 
-            return new PrintNode(new StringAnalysisNode(TextMethods.AstParse(para, 1)));
+            return new PrintNode(new StringAnalysisNode(TextMethods.StringAstParse(para, 1)));
         }
 
         //TextMethods.ParseText(para, 1, '[', ']')

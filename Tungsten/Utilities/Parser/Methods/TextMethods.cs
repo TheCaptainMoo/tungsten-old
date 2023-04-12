@@ -92,11 +92,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             return sb.ToString();
         }
 
-        // Function To 
         /// <summary>
         /// [Gentime]
         /// </summary>
-        public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex)
+        public static List<AST.AbstractSyntaxTree.AstNode> StringAstParse(string[] para, int startIndex)
         {
             List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
             bool insideString = false;
@@ -126,5 +125,77 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             return nodes;
         }
+
+        /// <summary>
+        /// [Gentime]
+        /// </summary>
+        public static List<AST.AbstractSyntaxTree.AstNode> IntAstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+
+            for (int i = startIndex; i < para.Length; i++)
+            {
+                if (Regex.IsMatch(para[i], @"^[0-9]+$"))
+                {
+                    //nodes.Add(new AST.AbstractSyntaxTree.ValueNode(BitConverter.GetBytes(Convert.ToInt32(para[i]))));
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                }
+                else if (para[i] == "+" || para[i] == "-" || para[i] == "(" || para[i] == ")" || para[i] == "*" || para[i] == "/")
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                }
+                else
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                }
+            }
+
+            return nodes;
+        }
+    
+        /// <summary>
+        /// [Gentime]
+        /// </summary>
+        public static List<AST.AbstractSyntaxTree.AstNode> GenericAstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            bool insideString = false;
+
+
+            for (int i = startIndex; i < para.Length; i++)
+            {
+                // Strings
+                if (para[i].StartsWith('['))
+                {
+                    insideString = true;
+                }
+                else if (para[i].EndsWith(']'))
+                {
+                    insideString = false;
+                    continue;
+                }
+
+
+                if(insideString)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                }
+                // Integers
+                else if (Regex.IsMatch(para[i], @"^[0-9]+$"))
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                }
+                else if (para[i] == "==" || para[i] == "<=" || para[i] == ">=" || para[i] == "<" || para[i] == ">" || para[i] == "!=")
+                {
+                    continue;
+                }
+                else
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                }
+            }
+
+            return nodes;
+        } 
     }
 }

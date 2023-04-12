@@ -125,8 +125,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             List<string[]> bodyLines = lines.GetRange(startIndex, endIndex - startIndex);
 
             List<AstNode> bodyNodes = Lexer.TungstenLexer.CreateNestedNode(bodyLines);
+            List<AstNode> conditionNodes = TextMethods.GenericAstParse(whileCondition, 0);
 
-            return new LinedAstReturn(endIndex, new WhileStatementNode(new ConditionNode(whileCondition[0], whileCondition[1], whileCondition[2]), bodyNodes));
+            //return new LinedAstReturn(endIndex, new WhileStatementNode(new ConditionNode(whileCondition[0], whileCondition[1], whileCondition[2]), bodyNodes));
+            return new LinedAstReturn(endIndex, new WhileStatementNode(new ConditionNode(conditionNodes[0], whileCondition[1], conditionNodes[1]), bodyNodes));
         }
 
         public class WhileStatementNode : AstNode
@@ -147,6 +149,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     {
                         BodyNodes[i].Execute();
                     }
+
+                    conditionalResult = (bool)Condition.Execute();
                 }
 
                 return null;

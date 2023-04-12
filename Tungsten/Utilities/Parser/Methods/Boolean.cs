@@ -1,12 +1,13 @@
-﻿namespace Tungsten_Interpreter.Utilities.Parser.Methods
+﻿using System.Text;
+
+namespace Tungsten_Interpreter.Utilities.Parser.Methods
 {
     internal static class Check
     {
-        public static bool Operation<T>(T val1, string op, T val2)
+        public static bool Operation(string val1, string op, string val2)
         {
-            // Convert the Generic into Strings
-            string v1 = val1.ToString();
-            string v2 = val2.ToString();
+            string v1 = val1;
+            string v2 = val2;
 
             // Switch Statement For Each Accepted Operation
             switch (op)
@@ -39,7 +40,7 @@
                     }
                     catch
                     {
-                        Console.WriteLine("Cannot Compute String To Integer At {0} {1} {2}", v1, op, v2);
+                        Console.WriteLine("Cannot Compute Boolean At {0} {1} {2}", v1, op, v2);
                         return false;
                     }
 
@@ -57,7 +58,7 @@
                     }
                     catch
                     {
-                        Console.WriteLine("Cannot Compute String To Integer At {0} {1} {2}", v1, op, v2);
+                        Console.WriteLine("Cannot Compute Boolean At {0} {1} {2}", v1, op, v2);
                         return false;
                     }
 
@@ -75,7 +76,7 @@
                     }
                     catch
                     {
-                        Console.WriteLine("Cannot Compute String To Integer At {0} {1} {2}", v1, op, v2);
+                        Console.WriteLine("Cannot Compute Boolean At {0} {1} {2}", v1, op, v2);
                         return false;
                     }
 

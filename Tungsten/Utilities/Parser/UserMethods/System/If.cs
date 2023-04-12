@@ -67,7 +67,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 
             List<AstNode> bodyNodes = Lexer.TungstenLexer.CreateNestedNode(bodyLines);
 
-            return new LinedAstReturn(endIndex, new IfStatementNode(new ConditionNode(output[0], output[1], output[2]), bodyNodes )); // ------------------------------------------------------------------------------------ Return Ending Line Num; 
+            return new LinedAstReturn(0, null);
+            //return new LinedAstReturn(endIndex, new IfStatementNode(new ConditionNode(output[0], output[1], output[2]), bodyNodes )); // ------------------------------------------------------------------------------------ Return Ending Line Num; 
         }
 
         public class IfStatementNode : AstNode

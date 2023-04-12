@@ -76,6 +76,9 @@ namespace Tungsten_Interpreter
                 VariableSetup.nodes[i].Execute();
             }*/
 
+            //Maths maths = new Maths("128+1");
+            //Console.WriteLine(maths.Execute());
+
             // Loop For Each Script
             while (true)
             {
