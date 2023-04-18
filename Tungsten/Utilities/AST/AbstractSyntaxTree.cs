@@ -19,21 +19,6 @@ namespace Tungsten_Interpreter.Utilities.AST
 
         public class StringAnalysisNode : AstNode
         {
-            /*public StringAnalysisNode(string[] value, int startIndex)
-            {
-                Value = value;
-                StartIndex = startIndex;
-            }
-
-            public override object Execute()
-            {
-                //return TextMethods.ParseText(Value, StartIndex, '[', ']');
-                return TextMethods.AstParse(Value, StartIndex);
-            }
-
-            public string[] Value { get; set; }
-            public int StartIndex { get; set; }*/
-
             public StringAnalysisNode(List<AstNode> values)
             {
                 Values = values;
@@ -75,13 +60,6 @@ namespace Tungsten_Interpreter.Utilities.AST
 
         public class ConditionNode : AstNode
         {
-            /*public ConditionNode(dynamic leftStatement, string condition, dynamic rightStatement)
-            {
-                LeftStatement = leftStatement;
-                Condition = condition;
-                RightStatement = rightStatement;
-            }*/
-
             public ConditionNode(AstNode leftStatement, string condition, AstNode rightStatement)
             {
                 LeftStatement = leftStatement;
@@ -89,49 +67,54 @@ namespace Tungsten_Interpreter.Utilities.AST
                 RightStatement = rightStatement;
             }
 
-            /*public override object? Execute()
-            {
-                try
-                {
-                    LeftStatement = VariableSetup.Convert(LeftStatement);
-                    RightStatement = VariableSetup.Convert(RightStatement);
-                }
-                catch { }
-
-                return Check.Operation(LeftStatement, Condition, RightStatement);
-            }*/
-
             public override object? Execute()
             {
-                string ls;
-                string rs;
+                //string ls;
+                //string rs;
+
+                byte[] ls;
+                byte[] rs;
 
                 if (LeftStatement is VariableNode)
                 {
                     Memory<byte> memory = (Memory<byte>)LeftStatement.Execute();
-                    ls = Encoding.UTF8.GetString(memory.Span);
+                    //ls = Encoding.UTF8.GetString(memory.Span);
+                    ls = memory.Span.ToArray();
                 }
                 else
                 {
-                    ls = Encoding.UTF8.GetString((byte[])LeftStatement.Execute());
+                    //ls = Encoding.UTF8.GetString((byte[])LeftStatement.Execute());
+                    try
+                    {
+                        ls = BitConverter.GetBytes(Convert.ToInt32(Encoding.UTF8.GetString((byte[])LeftStatement.Execute())));
+                    }
+                    catch
+                    {
+                        ls =(byte[])LeftStatement.Execute();
+                    }
                 }
 
                 if (RightStatement is VariableNode)
                 {
                     Memory<byte> memory = (Memory<byte>)RightStatement.Execute();
-                    rs = Encoding.UTF8.GetString(memory.Span);
+                    //rs = Encoding.UTF8.GetString(memory.Span);
+                    rs = memory.Span.ToArray();
                 }
                 else
                 {
-                    rs = Encoding.UTF8.GetString((byte[])RightStatement.Execute());
+                    //rs = Encoding.UTF8.GetString((byte[])RightStatement.Execute());
+                    try
+                    {
+                        rs = BitConverter.GetBytes(Convert.ToInt32(Encoding.UTF8.GetString((byte[])RightStatement.Execute())));
+                    }
+                    catch
+                    {
+                        rs = (byte[])RightStatement.Execute();
+                    }
                 }
 
                 return Check.Operation(ls, Condition, rs);
             }
-
-            /*public dynamic LeftStatement { get; set; }
-            public string Condition { get; set; }
-            public dynamic RightStatement { get; set;}*/
 
             public AstNode LeftStatement { get; set; }
             public string Condition { get; set; }

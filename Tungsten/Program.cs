@@ -31,24 +31,6 @@ namespace Tungsten_Interpreter
             // Get Methods
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
             {
-                /*if (type.GetInterfaces().Contains(typeof(IMethod)) && type.GetConstructor(Type.EmptyTypes) != null)
-                {
-                    IMethod method = (IMethod)Activator.CreateInstance(type);
-                    methods.Add(method.Name, method);
-                }
-
-                if (type.GetInterfaces().Contains(typeof(ILineInteractable)) && type.GetConstructor(Type.EmptyTypes) != null)
-                {
-                    ILineInteractable linedMethod = (ILineInteractable)Activator.CreateInstance(type);
-                    linedMethods.Add(linedMethod.Name, linedMethod);
-                }
-
-                if (type.GetInterfaces().Contains(typeof(ILateMethod)) && type.GetConstructor(Type.EmptyTypes) != null)
-                {
-                    ILateMethod lateMethod = (ILateMethod)Activator.CreateInstance(type);
-                    lateMethods.Add(lateMethod.Name, lateMethod);
-                }*/
-
                 if (type.GetInterfaces().Contains(typeof(ILexer)) && type.GetConstructor(Type.EmptyTypes) != null)
                 {
                     ILexer lexer = (ILexer)Activator.CreateInstance(type);
@@ -61,23 +43,6 @@ namespace Tungsten_Interpreter
                     nestedMethods.Add(nestedLexer.Name, nestedLexer);
                 }
             }
-
-            //AbstractSyntaxTree.PrintNode pn = new AbstractSyntaxTree.PrintNode("Hi");
-            //pn.Execute();
-            //AbstractSyntaxTree.VariableAssignNode van = new AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Typeless, "fun", 0x01);
-            //van.Execute();
-            //VariableSetup.nodes.Add(new AbstractSyntaxTree.PrintNode("Hi"));
-            //Print pn = new Print();
-            //pn.AstConstructor(new string[] { "thing", "[Hi]" });
-
-            // Parser
-            /*for(int i = 0; i < VariableSetup.nodes.Count; i++)
-            {
-                VariableSetup.nodes[i].Execute();
-            }*/
-
-            //Maths maths = new Maths("128+1");
-            //Console.WriteLine(maths.Execute());
 
             // Loop For Each Script
             while (true)

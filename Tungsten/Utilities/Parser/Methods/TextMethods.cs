@@ -99,6 +99,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         {
             List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
             bool insideString = false;
+            bool stringProtection = false;
 
             for(int i = startIndex; i < para.Length; i++)
             {
@@ -109,6 +110,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 else if (para[i].EndsWith(']'))
                 {
                     insideString = false;
+                    stringProtection = false;
                     continue;
                 }
 
@@ -116,11 +118,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 {
                     nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
                 }
-                else
+                else if(stringProtection == false)
                 {
                     nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length-i), '[', ']'))));
+                    stringProtection = true;
                 }
-
             }
 
             return nodes;
@@ -179,6 +181,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 if(insideString)
                 {
                     nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                }
+                else if (para[i].ToLower() == "true" || para[i].ToLower() == "false")
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(BitConverter.GetBytes(Convert.ToBoolean(para[i]))));
                 }
                 // Integers
                 else if (Regex.IsMatch(para[i], @"^[0-9]+$"))

@@ -13,19 +13,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public AbstractSyntaxTree.AstNode AstConstructor(string[] para)
         {
-            /*try
-            {
-                //double maths = Maths.Evaluate(TextMethods.CalcString(String.Join(" ", VariableSetup.Convert(para, 3), 1, para.Length - 1), '(', ')'));
-                //VariableSetup.nodes.Add(new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Int, para[1], BitConverter.GetBytes(Convert.ToInt32(maths))));
-                //return new AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Int, para[1], BitConverter.GetBytes(Convert.ToInt32(maths)));
-                return new AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[1], TextMethods.IntAstParse(para, 3));
-            }
-            catch
-            {
-                //VariableSetup.nodes.Add(new AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Int, para[1], BitConverter.GetBytes(Convert.ToInt32(para[3]))));
-                //return new AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Int, para[1], BitConverter.GetBytes(Convert.ToInt32(para[3])));
-                return new AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[1], TextMethods.IntAstParse(para, 3));
-            }*/
             return new AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[1], TextMethods.IntAstParse(para, 3));
         }
     }

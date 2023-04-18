@@ -118,6 +118,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     if (lines[i][0] == "EB" || lines[i][1] == bracketIndex.ToString())
                     {
                         endIndex = i;
+                        break;
                     }
                 }
             }
