@@ -199,12 +199,6 @@ namespace Tungsten_Interpreter.Utilities.Variables
                 }
             }
 
-
-            //if (globalVar.ContainsKey(input))
-            //{
-            //   return globalVar[input].ToString();
-            //}
-
             if(input == "\0\0\0\0")
                 return "0";
 

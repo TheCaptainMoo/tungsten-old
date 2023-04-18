@@ -49,11 +49,12 @@ namespace Tungsten_Interpreter
             {
                 VariableSetup.Clean();
                 string path = Console.ReadLine().Replace("\"", "");
-                StreamReader sr = new StreamReader(path);
+                string[] _args;
 
-                string[] _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
-
-                sr.Close();
+                using (StreamReader sr = new StreamReader(path))
+                {
+                     _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+                }
 
                 TungstenLexer.CreateNodes(TungstenLexer.ConstructLines(TungstenLexer.Lexer(_args)));
 

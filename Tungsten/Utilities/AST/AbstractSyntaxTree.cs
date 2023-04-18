@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+﻿using System.Text;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
-using Tungsten_Interpreter.Utilities.Parser.UserMethods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.AST
@@ -69,21 +63,16 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                //string ls;
-                //string rs;
-
                 byte[] ls;
                 byte[] rs;
 
                 if (LeftStatement is VariableNode)
                 {
                     Memory<byte> memory = (Memory<byte>)LeftStatement.Execute();
-                    //ls = Encoding.UTF8.GetString(memory.Span);
                     ls = memory.Span.ToArray();
                 }
                 else
                 {
-                    //ls = Encoding.UTF8.GetString((byte[])LeftStatement.Execute());
                     try
                     {
                         ls = BitConverter.GetBytes(Convert.ToInt32(Encoding.UTF8.GetString((byte[])LeftStatement.Execute())));
@@ -97,12 +86,10 @@ namespace Tungsten_Interpreter.Utilities.AST
                 if (RightStatement is VariableNode)
                 {
                     Memory<byte> memory = (Memory<byte>)RightStatement.Execute();
-                    //rs = Encoding.UTF8.GetString(memory.Span);
                     rs = memory.Span.ToArray();
                 }
                 else
                 {
-                    //rs = Encoding.UTF8.GetString((byte[])RightStatement.Execute());
                     try
                     {
                         rs = BitConverter.GetBytes(Convert.ToInt32(Encoding.UTF8.GetString((byte[])RightStatement.Execute())));
@@ -133,8 +120,6 @@ namespace Tungsten_Interpreter.Utilities.AST
             public override object? Execute()
             {
                 VariableSetup.AddEntry(Name, Type, Value);
-                //VariableSetup.globalVar.Add(Name, new VariableSetup.Variable(Type, Value));
-
                 return null;
             }
 
@@ -160,6 +145,13 @@ namespace Tungsten_Interpreter.Utilities.AST
 
                         for (int i = 0; i < Value.Count; i++)
                         {
+                            if (Value[i] is VariableNode)
+                            {
+                                Memory<byte> memory = (Memory<byte>)Value[i].Execute();
+                                bytes.Add(memory.Span.ToArray());
+                                continue;
+                            }
+
                             bytes.Add((byte[])Value[i].Execute());
                         }
 
@@ -208,9 +200,6 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                //return System.Text.Encoding.UTF8.GetString(VariableSetup.globalVar[Name].data.Span);
-                
-
                 return VariableSetup.globalVar[Name].data;
             }
 
@@ -226,7 +215,6 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                //return System.Text.Encoding.UTF8.GetString(Value);
                 return Value;
             }
 

@@ -73,3 +73,69 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         }
     }
 }*/
+using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
+using static Tungsten_Interpreter.Utilities.AST.AbstractSyntaxTree;
+
+namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
+{
+    public class Function : INestedLexer
+    {
+        public string Name { get; set; } = "FUNCT";
+        public Regex RegexCode { get; set; } = new Regex(@"^funct$|WSfunct");
+
+        public LinedAstReturn AstConstructor(string[] para, List<string[]> lines, int lineNum)
+        {
+            string str = TextMethods.CalcStringForward(String.Join(" ", para, 1, para.Length - 1), '<', '>'); ;
+            string[] param = str.Replace(",", "").Split(" ");
+            List<string> paramList = new List<string>();
+
+            // Get Parameters
+            for (int j = 0; j < param.Length; j++)
+            {
+                paramList.Add(param[j]);
+            }
+
+            // Body Finding
+            int bracketIndex = Convert.ToInt32(lines[lineNum + 1][1]);
+            int startIndex = lineNum + 2;
+            int endIndex = 0;
+            for (int i = lineNum + 2; i < lines.Count; i++)
+            {
+                if (lines[i].Length >= 2)
+                {
+                    if (lines[i][0] == "EB" || lines[i][1] == bracketIndex.ToString())
+                    {
+                        endIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            List<string[]> bodyLines = lines.GetRange(startIndex, endIndex - startIndex);
+            List<AstNode> bodyNodes = Lexer.TungstenLexer.CreateNestedNode(bodyLines);
+
+            return new LinedAstReturn(endIndex, new FunctionNode(para[1], paramList.ToArray(), bodyNodes));
+        }
+
+        public class FunctionNode : AstNode
+        {
+            public FunctionNode(string name, string[] parameters, List<AstNode> body)
+            {
+                Name = name;
+                Parameters = parameters;
+                Body = body;
+            }
+
+            public override object? Execute()
+            {
+                throw new NotImplementedException();
+            }
+
+            public string Name { get; set; }
+            public string[] Parameters { get; set; }
+            public List<AstNode> Body { get; set; }
+
+        }
+    }
+}
