@@ -203,5 +203,41 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             return nodes;
         } 
+    
+        public static List<AST.AbstractSyntaxTree.AstNode> ParameterAstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            bool insideString = false;
+            bool stringProtection = false;
+
+            for (int i = startIndex; i < para.Length; i++)
+            {
+                string word = para[i].Replace("<", "").Replace(">", "");
+
+                if (word.StartsWith('['))
+                {
+                    insideString = true;
+                }
+                else if (word.EndsWith(']'))
+                {
+                    insideString = false;
+                    stringProtection = false;
+                    continue;
+                }
+
+                if (!insideString)
+                {
+                    if(word.Length > 0)
+                        nodes.Add(new AST.AbstractSyntaxTree.VariableNode(word));
+                }
+                else if (stringProtection == false)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    stringProtection = true;
+                }
+            }
+
+            return nodes;
+        }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System.Collections;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.AST;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
+using Tungsten_Interpreter.Utilities.Parser.UserMethods;
 
 namespace Tungsten_Interpreter.Utilities.Variables
 {
-    public class VariableSetup
+    public static class VariableSetup
     {
         // Misc Variables
         //public static Hashtable globalVar = new Hashtable(); // Memory
@@ -18,6 +20,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
         // Function Variables
         public static Dictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
         public static Dictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
+        public static Dictionary<string, Function.FunctionNode> functions = new Dictionary<string, Function.FunctionNode>();
 
         // While Variables
         public static Dictionary<int, int> whileStartPosition = new Dictionary<int, int>();
@@ -236,6 +239,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             lines = new List<string[]>();
             nodes = new List<AbstractSyntaxTree.AstNode>();
 
+            functions = new Dictionary<string, Function.FunctionNode>();
             functionParameters = new Dictionary<string, FunctionParam>();
             functionBody = new Dictionary<string, FunctionBody>();
 
