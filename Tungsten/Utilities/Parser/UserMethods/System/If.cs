@@ -48,10 +48,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 
             // Body Finding
 
-            int bracketIndex = Convert.ToInt32(lines[lineNum+1][1]);
+            int bracketIndex = Convert.ToInt32(lines[lineNum + 1][1]);
             int startIndex = lineNum + 2;
             int endIndex = 0;
-            for(int i = lineNum + 2; i < lines.Count; i++)
+            for (int i = lineNum + 2; i < lines.Count; i++)
             {
                 if (lines[i].Length >= 2)
                 {
@@ -63,13 +63,13 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
                 }
             }
 
-            List<string[]> bodyLines = lines.GetRange(startIndex, endIndex-startIndex);
+            List<string[]> bodyLines = lines.GetRange(startIndex, endIndex - startIndex);
 
             List<AstNode> bodyNodes = Lexer.TungstenLexer.CreateNestedNode(bodyLines);
             List<AstNode> conditionNodes = TextMethods.GenericAstParse(ifStr, 0);
 
             //return new LinedAstReturn(0, null);
-            return new LinedAstReturn(endIndex, new IfStatementNode(new ConditionNode(conditionNodes[0], output[1], conditionNodes[1]), bodyNodes ));
+            return new LinedAstReturn(endIndex, new IfStatementNode(new ConditionNode(conditionNodes[0], output[1], conditionNodes[1]), bodyNodes));
         }
 
         public class IfStatementNode : AstNode

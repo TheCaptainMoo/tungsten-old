@@ -92,7 +92,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 }*/
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
-using Tungsten_Interpreter.Utilities.Variables;
 using static Tungsten_Interpreter.Utilities.AST.AbstractSyntaxTree;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
@@ -144,7 +143,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             {
                 bool conditionalResult = (bool)Condition.Execute();
 
-                while(conditionalResult)
+                while (conditionalResult)
                 {
                     for (int i = 0; i < BodyNodes.Count; i++)
                     {

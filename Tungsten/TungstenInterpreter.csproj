@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0-windows7.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>Tungsten_Interpreter</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationIcon>TungstenLogo.ico</ApplicationIcon>
     <BaseOutputPath>Interpreter\</BaseOutputPath>
+	<!--<PublishAot>true</PublishAot>-->
   </PropertyGroup>
 
   <ItemGroup>

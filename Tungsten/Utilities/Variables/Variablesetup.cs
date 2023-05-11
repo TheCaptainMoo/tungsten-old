@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Immutable;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.AST;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods;
@@ -117,7 +115,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
                 }
             }
 
-            for(int i = startIndex; i < input.Length; i++)
+            for (int i = startIndex; i < input.Length; i++)
             {
                 if (globalVar.ContainsKey(inputList[i]))
                 {
@@ -163,12 +161,12 @@ namespace Tungsten_Interpreter.Utilities.Variables
         public static string Convert(string input)
         {
             string comparator = input;
-            if(TextMethods.CalcString(comparator, '<', '>') !=  comparator)
+            if (TextMethods.CalcString(comparator, '<', '>') != comparator)
             {
                 comparator = comparator.Replace("<" + TextMethods.CalcString(comparator, '<', '>') + ">", "");
             }
 
-            for(int i = 0; i < comparator.Length; i++)
+            for (int i = 0; i < comparator.Length; i++)
             {
                 if (comparator[i] == '(' || comparator[i] == ')' || comparator[i] == '[' || comparator[i] == ']')
                 {
@@ -181,7 +179,8 @@ namespace Tungsten_Interpreter.Utilities.Variables
                 // Handle Matrix[]
                 //string[] val = (string[])globalVar[comparator];
                 string[] val = System.Text.Encoding.UTF8.GetString(globalVar[comparator].data.Span).Split('\u0004', StringSplitOptions.RemoveEmptyEntries);
-                if (int.TryParse(TextMethods.CalcString(input, '<', '>'), out int num)) {
+                if (int.TryParse(TextMethods.CalcString(input, '<', '>'), out int num))
+                {
                     input = Regex.Replace(input.Replace(comparator, val[/*System.Convert.ToInt32(TextMethods.CalcString(input, '<', '>'))*/num]), @"<[0-9]+>", "");
                 }
                 else
@@ -197,12 +196,13 @@ namespace Tungsten_Interpreter.Utilities.Variables
                 {
                     input = input.Replace(comparator, System.Text.Encoding.UTF8.GetString(globalVar[comparator].data.Span));
                 }
-                else if (globalVar[comparator].type == VariableTypes.Int){
+                else if (globalVar[comparator].type == VariableTypes.Int)
+                {
                     input = input.Replace(comparator, BitConverter.ToInt32(globalVar[comparator].data.Span).ToString());
                 }
             }
 
-            if(input == "\0\0\0\0")
+            if (input == "\0\0\0\0")
                 return "0";
 
             return input;
@@ -228,8 +228,8 @@ namespace Tungsten_Interpreter.Utilities.Variables
             }
 
             return input;
-        } 
-        
+        }
+
         // Cleans Memory
         public static void Clean()
         {

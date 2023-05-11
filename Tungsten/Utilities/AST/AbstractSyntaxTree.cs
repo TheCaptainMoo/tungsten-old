@@ -22,7 +22,7 @@ namespace Tungsten_Interpreter.Utilities.AST
             {
                 StringBuilder sb = new StringBuilder();
 
-                for(int i = 0; i < Values.Count; i++)
+                for (int i = 0; i < Values.Count; i++)
                 {
                     if (Values[i] is VariableNode)
                     {
@@ -79,7 +79,7 @@ namespace Tungsten_Interpreter.Utilities.AST
                     }
                     catch
                     {
-                        ls =(byte[])LeftStatement.Execute();
+                        ls = (byte[])LeftStatement.Execute();
                     }
                 }
 
@@ -139,7 +139,8 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                switch (Type) {
+                switch (Type)
+                {
                     case VariableSetup.VariableTypes.String:
                         List<byte[]> bytes = new List<byte[]>();
 
@@ -253,14 +254,14 @@ namespace Tungsten_Interpreter.Utilities.AST
         // Program Start - Acts As The Root
         public class Program : AstNode
         {
-            public Program(List<AstNode> children) 
+            public Program(List<AstNode> children)
             {
                 Children = children;
             }
 
             public override object? Execute()
             {
-                for(int i = 0; i < Children.Count; i++)
+                for (int i = 0; i < Children.Count; i++)
                 {
                     return Children[i].Execute();
                 }

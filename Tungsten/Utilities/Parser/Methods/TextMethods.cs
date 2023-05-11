@@ -101,7 +101,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             bool insideString = false;
             bool stringProtection = false;
 
-            for(int i = startIndex; i < para.Length; i++)
+            for (int i = startIndex; i < para.Length; i++)
             {
                 if (para[i].StartsWith('['))
                 {
@@ -118,9 +118,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 {
                     nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
                 }
-                else if(stringProtection == false)
+                else if (stringProtection == false)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length-i), '[', ']'))));
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                     stringProtection = true;
                 }
             }
@@ -154,7 +154,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             return nodes;
         }
-    
+
         /// <summary>
         /// [Gentime]
         /// </summary>
@@ -178,7 +178,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 }
 
 
-                if(insideString)
+                if (insideString)
                 {
                     nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                 }
@@ -202,8 +202,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             }
 
             return nodes;
-        } 
-    
+        }
+
         public static List<AST.AbstractSyntaxTree.AstNode> ParameterAstParse(string[] para, int startIndex)
         {
             List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
@@ -227,7 +227,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
                 if (!insideString)
                 {
-                    if(word.Length > 0)
+                    if (word.Length > 0)
                         nodes.Add(new AST.AbstractSyntaxTree.VariableNode(word));
                 }
                 else if (stringProtection == false)

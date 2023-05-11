@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 using static Tungsten_Interpreter.Utilities.AST.AbstractSyntaxTree;
@@ -34,22 +31,17 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 Name = name;
                 Parameters = parameters;
 
-                FunctNode = VariableSetup.functions[name]; //new Function.FunctionNode(name, VariableSetup.functions[name].Parameters, VariableSetup.functions[name].Body);
+                FunctNode = VariableSetup.functions[name];
             }
 
             public override object? Execute()
             {
-                /*for(int i = 0; i < FunctNode.Body.Count; i++)
-                {
-                    FunctNode.Body[i] = ProcessAstNode(FunctNode.Body[i]);
-                }*/
                 for (int i = 0; i < FunctNode.Body.Count; i++)
                 {
                     ProcessAstNode(FunctNode.Body[i]).Execute();
-                    //FunctNode.Body[i].Execute();
                 }
 
-                for(int i = 0 ; i < Parameters.Count; i++)
+                for (int i = 0; i < Parameters.Count; i++)
                 {
                     VariableSetup.RemoveEntry(FunctNode.Parameters[i].Name);
                 }
@@ -62,7 +54,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 if (node is VariableNode)
                 {
                     VariableNode variableNode = (VariableNode)node;
-                    for (int i = 0; i < FunctNode.Parameters.Count; i++) 
+                    for (int i = 0; i < FunctNode.Parameters.Count; i++)
                     {
                         if (FunctNode.Parameters[i].Name == variableNode.Name)
                         {
@@ -81,7 +73,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 }
                 else if (node is StringAnalysisNode analysisNode)
                 {
-                    for(int i = 0; i < analysisNode.Values.Count; i++)
+                    for (int i = 0; i < analysisNode.Values.Count; i++)
                     {
                         analysisNode.Values[i] = ProcessAstNode(analysisNode.Values[i]);
                     }

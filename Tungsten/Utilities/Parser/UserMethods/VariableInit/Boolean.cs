@@ -18,7 +18,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             catch
             {
                 // Print Error
-                return null; 
+                return null;
             }
         }
     }

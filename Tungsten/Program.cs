@@ -1,19 +1,15 @@
 ﻿using Lexer;
-using System.Diagnostics;
 using System.Reflection;
-using System.Xml.Linq;
-using Tungsten_Interpreter.Utilities.AST;
+using Tungsten_Interpreter.Utilities.ComponentController;
 using Tungsten_Interpreter.Utilities.Parser;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
-using Tungsten_Interpreter.Utilities.Parser.UserMethods;
-using Tungsten_Interpreter.Utilities.Parser.UserMethods;//.System;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter
 {
     internal class Program
     {
-        public static readonly string[] splitChars = 
+        public static readonly string[] splitChars =
         {
             " ",
             //"\n",
@@ -28,6 +24,7 @@ namespace Tungsten_Interpreter
         // Program Entry Point | Executes Lexer & Parser
         static void Main(string[] args)
         {
+
             // Get Methods
             foreach (Type type in Assembly.GetExecutingAssembly().GetTypes())
             {
@@ -44,6 +41,7 @@ namespace Tungsten_Interpreter
                 }
             }
 
+            
             // Loop For Each Script
             while (true)
             {
@@ -53,9 +51,17 @@ namespace Tungsten_Interpreter
 
                 using (StreamReader sr = new StreamReader(path))
                 {
-                     _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
+                    _args = sr.ReadToEnd().Split(splitChars, StringSplitOptions.RemoveEmptyEntries);
                 }
 
+                int index = 0;
+
+                while (_args[index].StartsWith("$"))
+                {
+                    AssemblyLoader.LoadAssemblies(TextMethods.CalcString(_args[index+1], '<', '>').Split('.'));
+
+                    index += 2;
+                }
                 TungstenLexer.CreateNodes(TungstenLexer.ConstructLines(TungstenLexer.Lexer(_args)));
 
                 Parser();
@@ -64,7 +70,7 @@ namespace Tungsten_Interpreter
 
         static void Parser()
         {
-            for(int i = 0; i < VariableSetup.nodes.Count; i++)
+            for (int i = 0; i < VariableSetup.nodes.Count; i++)
             {
                 VariableSetup.nodes[i].Execute();
             }

@@ -18,7 +18,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             List<Parameter> paramList = new List<Parameter>();
 
             // Get Parameters
-            for (int j = 0; j < param.Length; j+=2)
+            for (int j = 0; j < param.Length; j += 2)
             {
                 switch (param[j].ToUpper())
                 {
@@ -77,7 +77,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             public List<Parameter> Parameters { get; set; }
             public List<AstNode> Body { get; set; }
         }
-    
+
         public struct Parameter
         {
             public Parameter(VariableSetup.VariableTypes type, string name)
