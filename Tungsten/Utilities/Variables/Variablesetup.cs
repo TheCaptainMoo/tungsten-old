@@ -16,8 +16,6 @@ namespace Tungsten_Interpreter.Utilities.Variables
         public static List<AbstractSyntaxTree.AstNode> nodes = new List<AbstractSyntaxTree.AstNode>(); // New Lines Of Code
 
         // Function Variables
-        public static Dictionary<string, FunctionParam> functionParameters = new Dictionary<string, FunctionParam>();
-        public static Dictionary<string, FunctionBody> functionBody = new Dictionary<string, FunctionBody>();
         public static Dictionary<string, Function.FunctionNode> functions = new Dictionary<string, Function.FunctionNode>();
 
         // While Variables
@@ -240,8 +238,6 @@ namespace Tungsten_Interpreter.Utilities.Variables
             nodes = new List<AbstractSyntaxTree.AstNode>();
 
             functions = new Dictionary<string, Function.FunctionNode>();
-            functionParameters = new Dictionary<string, FunctionParam>();
-            functionBody = new Dictionary<string, FunctionBody>();
 
             whileStartPosition = new Dictionary<int, int>();
             whileEndPosition = new Dictionary<int, int>();

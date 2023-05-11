@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.Loader;
 using Tungsten_Interpreter.Utilities.Parser;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 
 namespace Tungsten_Interpreter.Utilities.ComponentController
 {
@@ -40,11 +41,11 @@ namespace Tungsten_Interpreter.Utilities.ComponentController
             } 
             catch (DirectoryNotFoundException ex)
             {
-                Console.WriteLine("The Interpreter cannot load directory at: {0} | Some Functionality May Be Missing", currentDirectory);
+                ErrorHandling.Alert("The Interpreter cannot load directory at: " + currentDirectory + " | Some Functionality May Be Missing", ConsoleColor.Yellow);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("External files could not be loaded.");
+                ErrorHandling.Alert("External files could not be loaded.", ConsoleColor.Red);
             }
         }
 

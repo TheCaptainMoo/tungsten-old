@@ -80,17 +80,6 @@ namespace Lexer
                     {
                         insideString = true;
                     }
-                    else if (j+1 < temp.Length)
-                    {
-                        if (temp[j] == '/' && temp[j + 1] == '*')
-                        {
-                            insideString = true;
-                        }
-                        else if(temp[j] == '*' && temp[j + 1] == '/')
-                        {
-                            insideString = false;
-                        }
-                    }
                     else if (temp[j] == ']')
                     {
                         insideString = false;
@@ -108,6 +97,18 @@ namespace Lexer
                         bracketNum--;
                         temp += "WS" + bracketNum + "NL";
                         break;
+                    }
+
+                    if (j + 1 < temp.Length)
+                    {
+                        if (temp[j] == '/' && temp[j + 1] == '*')
+                        {
+                            insideString = true;
+                        }
+                        else if (temp[j] == '*' && temp[j + 1] == '/')
+                        {
+                            insideString = false;
+                        }
                     }
                 }
 
