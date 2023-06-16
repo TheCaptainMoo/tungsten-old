@@ -77,18 +77,17 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             {
                 for(int i = 0; i < FunctNode.Parameters.Count; i++)
                 {
-                    byte[] value;
-                    try
-                    {
-                        value = (byte[])Parameters[i].Execute();
-                    }
-                    catch
-                    {
-                        Memory<byte> memory = (Memory<byte>)Parameters[i].Execute();
-                        value = memory.Span.ToArray();
-                    }
+                    switch (FunctNode.Parameters[i].Type) {
+                        case VariableSetup.VariableTypes.String:
+                            VariableSetup.AddEntry(FunctNode.Parameters[i].Name, FunctNode.Parameters[i].Type, ByteManipulation.GetValue(Parameters[i]));
+                            break;
 
-                    VariableSetup.AddEntry(FunctNode.Parameters[i].Name, FunctNode.Parameters[i].Type, value);
+                        case VariableSetup.VariableTypes.Int:
+                            VariableSetup.AddEntry(FunctNode.Parameters[i].Name, FunctNode.Parameters[i].Type, ByteManipulation.CharsToInt(ByteManipulation.GetValue(Parameters[i])));
+                            break;
+
+                    }
+                    
                 }
             }
 
