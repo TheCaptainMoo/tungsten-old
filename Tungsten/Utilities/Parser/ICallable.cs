@@ -6,6 +6,6 @@ namespace Tungsten_Interpreter.Utilities.Parser
     internal interface ICallable
     {
         public string FunctionName { get; set; }
-        public void Function(List<AST.AbstractSyntaxTree.AstNode> para);
+        public AST.AbstractSyntaxTree.AstNode Function(List<AST.AbstractSyntaxTree.AstNode> para);
     } 
 }

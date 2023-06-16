@@ -7,7 +7,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.Functions
 	internal class Delete : ICallable
 	{
         public string FunctionName { get; set; } = "delete";
-        public void Function(List<AbstractSyntaxTree.AstNode> para) 
+        public AbstractSyntaxTree.AstNode Function(List<AbstractSyntaxTree.AstNode> para) 
         {
             try
             {
@@ -23,33 +23,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.Functions
             {
                 ErrorHandling.Alert("Could not delete variable.", ConsoleColor.Red);
             }
-        }
-    }
 
-    internal class Update : ICallable
-    {
-        public string FunctionName { get; set; } = "update";
-        public void Function(List<AbstractSyntaxTree.AstNode> para)
-        {
-            try
-            {
-                AbstractSyntaxTree.ValueNode node = (AbstractSyntaxTree.ValueNode)para[0];
-                switch (node.Execute())
-                {
-                    case "string":
-                        break;
-
-                    case "int":
-                        break;
-
-                    case "bool":
-                        break;
-                }
-            } 
-            catch
-            {
-
-            }
+            return null;
         }
     }
 }
