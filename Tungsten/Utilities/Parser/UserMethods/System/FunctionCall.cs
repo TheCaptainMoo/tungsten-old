@@ -9,11 +9,15 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
     public class CallLiteral : ILexer
     {
         public string Name { get; set; } = "CALL_LITERAL";
-        public Regex RegexCode { get; set; } = new Regex(@"^call$|WScall");
+        public Regex RegexCode { get; set; } = new Regex(@"^call$|WScall|\|>");
 
         public AstNode AstConstructor(string[] para)
         {
-            if (VariableSetup.functions.ContainsKey(para[1]))
+            if (Program.callableFunctions.ContainsKey(para[1]))
+            {
+                return new CallableFunctionNode(para[1], TextMethods.ParameterAstParse(para, 2));
+            }
+            else if (VariableSetup.functions.ContainsKey(para[1]))
             {
                 return new FunctionCallNode(para[1], TextMethods.ParameterAstParse(para, 2));
             }
@@ -22,6 +26,24 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 // Variable Call Node
                 return null;
             }
+        }
+
+        public class CallableFunctionNode : AstNode
+        {
+            public CallableFunctionNode(string name, List<AstNode> parameters)
+            {
+                Name = name;
+                Parameters = parameters;
+            }
+            
+            public override object? Execute()
+            {
+                Program.callableFunctions[Name].Function(Parameters);
+                return null;
+            }
+
+            string Name { get; set; }
+            List<AstNode> Parameters { get; set; }
         }
 
         public class FunctionCallNode : AstNode
@@ -36,9 +58,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
             public override object? Execute()
             {
+                ProcessAstNode();
+
                 for (int i = 0; i < FunctNode.Body.Count; i++)
                 {
-                    ProcessAstNode(FunctNode.Body[i]).Execute();
+                    FunctNode.Body[i].Execute();
                 }
 
                 for (int i = 0; i < Parameters.Count; i++)
@@ -49,41 +73,23 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                 return null;
             }
 
-            private AstNode ProcessAstNode(AstNode node)
+            private void ProcessAstNode()
             {
-                if (node is VariableNode)
+                for(int i = 0; i < FunctNode.Parameters.Count; i++)
                 {
-                    VariableNode variableNode = (VariableNode)node;
-                    for (int i = 0; i < FunctNode.Parameters.Count; i++)
+                    byte[] value;
+                    try
                     {
-                        if (FunctNode.Parameters[i].Name == variableNode.Name)
-                        {
-                            //return new ValueNode((byte[])Parameters[i].Execute());
-                            try
-                            {
-                                VariableSetup.AddEntry(FunctNode.Parameters[i].Name, FunctNode.Parameters[i].Type, (byte[])Parameters[i].Execute());
-                            }
-                            catch
-                            {
-                                Memory<byte> memory = (Memory<byte>)Parameters[i].Execute();
-                                VariableSetup.AddEntry(FunctNode.Parameters[i].Name, FunctNode.Parameters[i].Type, memory.Span.ToArray());
-                            }
-                        }
+                        value = (byte[])Parameters[i].Execute();
                     }
-                }
-                else if (node is StringAnalysisNode analysisNode)
-                {
-                    for (int i = 0; i < analysisNode.Values.Count; i++)
+                    catch
                     {
-                        analysisNode.Values[i] = ProcessAstNode(analysisNode.Values[i]);
+                        Memory<byte> memory = (Memory<byte>)Parameters[i].Execute();
+                        value = memory.Span.ToArray();
                     }
-                }
-                else if (node is PrintNode printNode)
-                {
-                    printNode.Value = (StringAnalysisNode)ProcessAstNode(printNode.Value);
-                }
 
-                return node;
+                    VariableSetup.AddEntry(FunctNode.Parameters[i].Name, FunctNode.Parameters[i].Type, value);
+                }
             }
 
             public string Name { get; set; }

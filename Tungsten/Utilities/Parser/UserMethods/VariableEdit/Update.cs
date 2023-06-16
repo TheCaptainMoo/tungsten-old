@@ -25,6 +25,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
                 default:
                     // Error Generation - Variable Type Not Supported
+                    ErrorHandling.Alert("Value type not supported at: " + String.Join(" ", para), ConsoleColor.Red);
                     return null;
             }
         }

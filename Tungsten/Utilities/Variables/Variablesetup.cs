@@ -17,6 +17,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
 
         // Function Variables
         public static Dictionary<string, Function.FunctionNode> functions = new Dictionary<string, Function.FunctionNode>();
+        public static List<string> existingFunctions = new List<string>();
 
         // While Variables
         public static Dictionary<int, int> whileStartPosition = new Dictionary<int, int>();
@@ -70,7 +71,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             }
             else
             {
-                Console.WriteLine(name + " Doesn't Exist");
+                ErrorHandling.Alert(name + " does not exist", ConsoleColor.Red);
             }
         }
 
@@ -238,6 +239,7 @@ namespace Tungsten_Interpreter.Utilities.Variables
             nodes = new List<AbstractSyntaxTree.AstNode>();
 
             functions = new Dictionary<string, Function.FunctionNode>();
+            existingFunctions = new List<string>();
 
             whileStartPosition = new Dictionary<int, int>();
             whileEndPosition = new Dictionary<int, int>();

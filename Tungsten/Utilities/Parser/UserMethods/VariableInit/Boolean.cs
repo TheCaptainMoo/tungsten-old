@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
@@ -18,6 +19,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             catch
             {
                 // Print Error
+                ErrorHandling.Alert("Boolean value could not be generated at: " + String.Join(" ", para), ConsoleColor.Red);
                 return null;
             }
         }

@@ -22,30 +22,36 @@ namespace Tungsten_Interpreter.Utilities.AST
             {
                 StringBuilder sb = new StringBuilder();
 
-                for (int i = 0; i < Values.Count; i++)
+                try
                 {
-                    if (Values[i] is VariableNode)
+                    for (int i = 0; i < Values.Count; i++)
                     {
-                        VariableNode vn = (VariableNode)Values[i];
-                        Memory<byte> memory = (Memory<byte>)Values[i].Execute();
-
-                        switch (VariableSetup.globalVar[vn.Name].type)
+                        if (Values[i] is VariableNode)
                         {
-                            case VariableSetup.VariableTypes.String:
-                                sb.Append(Encoding.UTF8.GetString(memory.Span));
-                                break;
+                            VariableNode vn = (VariableNode)Values[i];
+                            Memory<byte> memory = (Memory<byte>)Values[i].Execute();
 
-                            case VariableSetup.VariableTypes.Int:
-                                sb.Append(BitConverter.ToInt32(memory.Span).ToString());
-                                break;
+                            switch (VariableSetup.globalVar[vn.Name].type)
+                            {
+                                case VariableSetup.VariableTypes.String:
+                                    sb.Append(Encoding.UTF8.GetString(memory.Span));
+                                    break;
+
+                                case VariableSetup.VariableTypes.Int:
+                                    sb.Append(BitConverter.ToInt32(memory.Span).ToString());
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            sb.Append(Encoding.UTF8.GetString((byte[])Values[i].Execute()));
                         }
                     }
-                    else
-                    {
-                        sb.Append(Encoding.UTF8.GetString((byte[])Values[i].Execute()));
-                    }
+                } 
+                catch
+                {
+                    ErrorHandling.Alert("Cannot construct remainder of string: '" + sb.ToString() + "'", ConsoleColor.Red);
                 }
-
                 return sb.ToString();
             }
 
@@ -178,9 +184,6 @@ namespace Tungsten_Interpreter.Utilities.AST
 
                         VariableSetup.AddEntry(Name, Type, BitConverter.GetBytes((int)new Maths(sb1.ToString()).Execute()));
                         break;
-
-                    case VariableSetup.VariableTypes.Boolean:
-                        break;
                 }
 
 
@@ -201,7 +204,15 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                return VariableSetup.globalVar[Name].data;
+                try
+                {
+                    return VariableSetup.globalVar[Name].data;
+                }
+                catch
+                {
+                    ErrorHandling.Alert(Name + " does not exist.", ConsoleColor.Red);
+                }
+                return null;
             }
 
             public string Name { get; set; }

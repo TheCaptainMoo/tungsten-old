@@ -207,6 +207,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         public static List<AST.AbstractSyntaxTree.AstNode> ParameterAstParse(string[] para, int startIndex)
         {
             List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+
             bool insideString = false;
             bool stringProtection = false;
 
@@ -217,6 +218,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 if (word.StartsWith('['))
                 {
                     insideString = true;
+                    stringProtection = false;
                 }
                 else if (word.EndsWith(']'))
                 {

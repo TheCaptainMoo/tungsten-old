@@ -20,6 +20,7 @@ namespace Tungsten_Interpreter
 
         public static Dictionary<string, ILexer> methods = new Dictionary<string, ILexer>();
         public static Dictionary<string, INestedLexer> nestedMethods = new Dictionary<string, INestedLexer>();
+        public static Dictionary<string, ICallable> callableFunctions = new Dictionary<string, ICallable>();
 
         // Program Entry Point | Executes Lexer & Parser
         static void Main(string[] args)
@@ -38,6 +39,12 @@ namespace Tungsten_Interpreter
                 {
                     INestedLexer nestedLexer = (INestedLexer)Activator.CreateInstance(type);
                     nestedMethods.Add(nestedLexer.Name, nestedLexer);
+                }
+
+                if (type.GetInterfaces().Contains(typeof(ICallable)) && type.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    ICallable callable = (ICallable)Activator.CreateInstance(type);
+                    callableFunctions.Add(callable.FunctionName, callable);
                 }
             }
 
@@ -62,6 +69,8 @@ namespace Tungsten_Interpreter
 
                     index += 2;
                 }
+
+
                 TungstenLexer.CreateNodes(TungstenLexer.ConstructLines(TungstenLexer.Lexer(_args)));
 
                 Parser();

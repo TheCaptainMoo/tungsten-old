@@ -65,3 +65,38 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         }
     }
 }*/
+
+using System.Text;
+using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.Methods;
+using Tungsten_Interpreter.Utilities.Variables;
+using static Tungsten_Interpreter.Utilities.AST.AbstractSyntaxTree;
+
+namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
+{
+    public class VariableInput : ILexer
+    {
+        public string Name { get; set; } = "INPUT";
+        public Regex RegexCode { get; set; } = new Regex(@"^input$|WSinput|=>");
+
+        public AstNode AstConstructor(string[] para)
+        {
+            switch (para[1])
+            {
+                case "STRING":
+                    return new VariableNodedAssignNode(VariableSetup.VariableTypes.String, para[2], TextMethods.StringAstParse(Console.ReadLine().Split(" "), 4));
+
+                case "INT":
+                    return new VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[2], TextMethods.IntAstParse(Console.ReadLine().Split(" "), 4));
+
+                case "BOOL":
+                    return new VariableAssignNode(VariableSetup.VariableTypes.Boolean, para[2], BitConverter.GetBytes(Convert.ToBoolean(Console.ReadLine())));
+
+                default:
+                    // Error Generation - Variable Type Not Supported
+                    ErrorHandling.Alert("Value type not supported at: " + String.Join(" ", para), ConsoleColor.Red);
+                    return null;
+            }
+        }
+    }
+}

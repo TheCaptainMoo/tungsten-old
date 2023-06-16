@@ -43,7 +43,7 @@ namespace Lexer
             // Handle Syntax
             List<TokenAssign> ta = new List<TokenAssign>()
             {
-                new TokenAssign("WS", new Regex(@"\s+|\t")),
+                new TokenAssign("WS", new Regex(@"\s+|\t|,")),
                 new TokenAssign("NL", new Regex(@";|\n+|\r+|[\r\n]+|\*\/")),
                 new TokenAssign("SB", new Regex(@"{|WS{")),
                 new TokenAssign("EB", new Regex(@"}|WS}")),
@@ -70,12 +70,27 @@ namespace Lexer
 
             int bracketNum = 0;
             bool insideString = false;
+            bool isComment = false;
 
             for (int i = 0; i < args.Length; i++)
             {
                 string temp = args[i];
                 for (int j = 0; j < temp.Length; j++)
                 {
+                    if (j + 1 < temp.Length)
+                    {
+                        if (temp[j] == '/' && temp[j + 1] == '*')
+                        {
+                            isComment = true;
+                        }
+                        else if (temp[j] == '*' && temp[j + 1] == '/')
+                        {
+                            isComment = false;
+                        }
+                    }
+
+                    if (isComment)
+                        continue;
                     if (temp[j] == '[')
                     {
                         insideString = true;
@@ -98,29 +113,20 @@ namespace Lexer
                         temp += "WS" + bracketNum + "NL";
                         break;
                     }
-
-                    if (j + 1 < temp.Length)
-                    {
-                        if (temp[j] == '/' && temp[j + 1] == '*')
-                        {
-                            insideString = true;
-                        }
-                        else if (temp[j] == '*' && temp[j + 1] == '/')
-                        {
-                            insideString = false;
-                        }
-                    }
                 }
 
                 for (int j = 0; j < tokens.Count; j++)
                 {
-                    if (insideString == false)
+                    if (insideString == false && isComment == false)
                     {
                         temp = Regex.Replace(temp, tokens[j].regex.ToString(), tokens[j].Token);
                     }
                 }
 
-                str.Append(temp + "WS");
+                if(isComment == false)
+                {
+                    str.Append(temp + "WS");
+                }
             }
 
             return str.ToString();
@@ -150,7 +156,7 @@ namespace Lexer
 
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
-                if (words.Length == 0 || words[0].StartsWith("/*"))
+                if (words.Length == 0 || words[0].StartsWith("//"))
                 {
                     if (i >= lines.Count)
                     {
@@ -166,13 +172,19 @@ namespace Lexer
                 if (Program.methods.ContainsKey(words[0]))
                 {
                     //Program.methods[words[0]].AstConstructor(words);
-                    VariableSetup.nodes.Add(Program.methods[words[0]].AstConstructor(words));
+
+                    AbstractSyntaxTree.AstNode node = Program.methods[words[0]].AstConstructor(words);
+                    if(node != null)
+                        VariableSetup.nodes.Add(node);
                 }
                 else if (Program.nestedMethods.ContainsKey(words[0]))
                 {
                     AbstractSyntaxTree.LinedAstReturn prog = Program.nestedMethods[words[0]].AstConstructor(words, lines, i);
-                    VariableSetup.nodes.Add(prog.ReturnNode);
-                    i = prog.ReturnIndex;
+                    if (prog.ReturnNode != null && prog.ReturnIndex != null)
+                    {
+                        VariableSetup.nodes.Add(prog.ReturnNode);
+                        i = prog.ReturnIndex;
+                    }
                 }
 
                 #endregion
@@ -192,7 +204,7 @@ namespace Lexer
 
                 words = words.Where(x => !string.IsNullOrEmpty(x)).ToArray();
 
-                if (words.Length == 0 || words[0].StartsWith("/*"))
+                if (words.Length == 0 || words[0].StartsWith("//"))
                 {
                     if (i >= lines.Count)
                     {
