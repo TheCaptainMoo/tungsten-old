@@ -346,6 +346,46 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                     break;
 
                 case VariableSetup.VariableTypes.Int:
+                    for(int i = startIndex; i < para.Length; i++)
+                    {
+                        if (para[i] == "CALL_LITERAL")
+                        {
+                            var temp = NewParameterAstParse(para, i);
+                            for (int j = 0; j < temp.Nodes.Count; j++)
+                            {
+                                nodes.Add(new CallLiteral.FunctionCallNode(para[i + 1], temp.Nodes));
+                            }
+                            i += temp.ExitPosition + 1;
+                        }
+                        else
+                        {
+                            for (int j = 0; j < para[i].Length; j++)
+                            {
+                                if (Regex.IsMatch(para[i][j].ToString(), @"[0-9]|\+|\-|\/|\*|\(|\)"))
+                                {
+                                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i][j].ToString())));
+                                }
+                                else
+                                {
+                                    StringBuilder sb = new StringBuilder();
+                                    try
+                                    {
+                                        while (!Regex.IsMatch(para[i][j].ToString(), @"\+|\-|\/|\*|\(|\)"))
+                                        {
+                                            sb.Append(para[i][j++]);
+                                        }
+                                    } 
+                                    catch (IndexOutOfRangeException e) { }
+                                    catch (Exception e) { ErrorHandling.Alert("Something went wrong: " + e, ConsoleColor.Red); }
+
+                                    j--;
+                                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(sb.ToString()));
+                                }
+                            }
+                        }
+                    }
+                    /*
+
                     string expression = String.Join("", para, startIndex, para.Length - startIndex);
 
                     for (int i = 0; i < expression.Length; i++)
@@ -364,7 +404,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                             i--;
                             nodes.Add(new AST.AbstractSyntaxTree.VariableNode(sb.ToString()));
                         }
-                    }
+                    }*/
                     break;
 
                 case VariableSetup.VariableTypes.Boolean:

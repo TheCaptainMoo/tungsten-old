@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using static Tungsten_Interpreter.Utilities.AST.AbstractSyntaxTree;
 using Tungsten_Interpreter.Utilities.Parser.Methods;
 using Tungsten_Interpreter.Utilities.Variables;
+using Tungsten_Interpreter.Utilities.AST;
 
 namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 {
@@ -19,7 +20,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
                     return new ReturnNode(new StringAnalysisNode(TextMethods.AstParse(para, 2, VariableSetup.VariableTypes.String)), VariableSetup.VariableTypes.String);
 
                 case "INT":
-                    break;
+                    return new ReturnNode(new Container(TextMethods.AstParse(para, 2, VariableSetup.VariableTypes.Int)), VariableSetup.VariableTypes.Int);
 
                 case "BOOL":
                     break;
@@ -44,7 +45,24 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
                         return Encoding.UTF8.GetBytes((string)Value.Execute());
 
                     case VariableSetup.VariableTypes.Int:
-                        break;
+                        StringBuilder sb = new StringBuilder();
+                        
+                        if(Value is Container val)
+                        {
+                            for(int i = 0;  i < val.Children.Count; i++)
+                            {
+                                if (val.Children[i] is VariableNode)
+                                {
+                                    sb.Append(Encoding.UTF8.GetString(ByteManipulation.IntToChars(ByteManipulation.GetValue(val.Children[i]))));
+                                }
+                                else
+                                {
+                                    sb.Append(Encoding.UTF8.GetString(ByteManipulation.GetValue(val.Children[i])));
+                                }
+                            }
+                        }
+
+                        return Encoding.UTF8.GetBytes(sb.ToString());
 
                     case VariableSetup.VariableTypes.Boolean: 
                         break;
@@ -55,6 +73,18 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
 
             public AstNode Value { get; set; }
             public VariableSetup.VariableTypes Type { get; set; }
+        }
+
+        public class Container : AstNode
+        {
+            public Container(List<AstNode> children)
+            {
+                Children = children;
+            }
+
+            public override object? Execute() { return null; }
+
+            public List<AstNode> Children { get; set;}
         }
     }
 }
