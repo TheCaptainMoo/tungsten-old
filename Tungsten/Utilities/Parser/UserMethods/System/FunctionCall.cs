@@ -59,10 +59,18 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             public override object? Execute()
             {
                 ProcessAstNode();
+                object? result = null; 
 
                 for (int i = 0; i < FunctNode.Body.Count; i++)
                 {
-                    FunctNode.Body[i].Execute();
+                    if (FunctNode.Body[i] is System.Return.ReturnNode output)
+                    {
+                        result = output.Execute();
+                    }
+                    else
+                    {
+                        FunctNode.Body[i].Execute();
+                    }
                 }
 
                 for (int i = 0; i < Parameters.Count; i++)
@@ -70,7 +78,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                     VariableSetup.RemoveEntry(FunctNode.Parameters[i].Name);
                 }
 
-                return null;
+                return result;
             }
 
             private void ProcessAstNode()

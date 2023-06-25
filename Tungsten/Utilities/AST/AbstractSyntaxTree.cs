@@ -26,9 +26,9 @@ namespace Tungsten_Interpreter.Utilities.AST
                 {
                     for (int i = 0; i < Values.Count; i++)
                     {
-                        if (Values[i] is VariableNode)
+                        if (Values[i] is VariableNode vn)
                         {
-                            VariableNode vn = (VariableNode)Values[i];
+                            //VariableNode vn = (VariableNode)Values[i];
                             Memory<byte> memory = (Memory<byte>)Values[i].Execute();
 
                             switch (VariableSetup.globalVar[vn.Name].type)
@@ -160,6 +160,7 @@ namespace Tungsten_Interpreter.Utilities.AST
                             }
 
                             bytes.Add((byte[])Value[i].Execute());
+                            //bytes.Add((byte[])Encoding.UTF8.GetBytes((string)Value[i].Execute()));
                         }
 
                         byte[] output = bytes.SelectMany(bytes => bytes).ToArray();

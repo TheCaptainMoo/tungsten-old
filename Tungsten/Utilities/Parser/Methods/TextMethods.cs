@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using Microsoft.VisualBasic;
+using System.Text;
 using System.Text.RegularExpressions;
+using Tungsten_Interpreter.Utilities.Parser.UserMethods;
 using Tungsten_Interpreter.Utilities.Variables;
 
 namespace Tungsten_Interpreter.Utilities.Parser.Methods
@@ -240,6 +242,121 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             }
 
             return nodes;
+        }
+
+        public static ContextualReturn NewParameterAstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            int i;
+
+            bool insideString = false;
+            bool stringProtection = false;
+            string[] contents = CalcStringForward(String.Join(' ', para), '<', '>').Split(' ');
+
+            for (i = startIndex; i < contents.Length; i++)
+            {
+                //string word = para[i].Replace("<", "").Replace(">", "");
+                string word = contents[i];
+
+                if (word.StartsWith('['))
+                {
+                    insideString = true;
+                    stringProtection = false;
+                }
+                else if (word.EndsWith(']'))
+                {
+                    insideString = false;
+                    stringProtection = false;
+                    continue;
+                }
+
+                if (!insideString)
+                {
+                    if (word.Length > 0)
+                        nodes.Add(new AST.AbstractSyntaxTree.VariableNode(word));
+                }
+                else if (stringProtection == false)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", contents, i, contents.Length - i), '[', ']'))));
+                    stringProtection = true;
+                }
+            }
+
+            return new ContextualReturn(nodes, i);
+        }
+
+        public static ContextualReturn NewStringAstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            int i;
+
+            bool insideString = false;
+            bool stringProtection = false;
+
+            for (i = startIndex; i < para.Length; i++)
+            {
+                if (para[i].StartsWith('['))
+                {
+                    insideString = true;
+                }
+                else if (para[i].EndsWith(']'))
+                {
+                    insideString = false;
+                    stringProtection = false;
+                    continue;
+                }
+
+                if (!insideString)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                }
+                else if (stringProtection == false)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    stringProtection = true;
+                }
+            }
+
+            return new ContextualReturn(nodes, i);
+        }
+
+        public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex)
+        {
+            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            
+            for (int i = startIndex; i < para.Length; i++) {
+                if (para[i] == "CALL_LITERAL")
+                {
+                    var temp = NewParameterAstParse(para, 0);
+                    for (int j = 0; j < temp.Nodes.Count; j++)
+                    {
+                        nodes.Add(new CallLiteral.FunctionCallNode(para[i + 1], temp.Nodes));
+                    }
+                    i += temp.ExitPosition + 1;
+                }
+                else if (para[i].StartsWith('['))
+                {
+                    var temp = NewStringAstParse(para, i);
+                    for(int j = 0; j < temp.Nodes.Count; j++)
+                    {
+                        nodes.Add(temp.Nodes[j]);
+                    }
+                    i += temp.ExitPosition + 1;
+                }
+            }
+            return nodes;
+        }
+
+        public struct ContextualReturn
+        {
+            public ContextualReturn(List<AST.AbstractSyntaxTree.AstNode> nodes, int position)
+            {
+                Nodes = nodes;
+                ExitPosition = position;
+            }
+
+            public List<AST.AbstractSyntaxTree.AstNode> Nodes { get; set; }
+            public int ExitPosition { get; set; }
         }
     }
 }

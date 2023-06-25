@@ -13,8 +13,10 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
         {
             //VariableSetup.nodes.Add(new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.String, para[1], Encoding.UTF8.GetBytes(TextMethods.ParseText(para, 3, '[', ']'))));
             //return new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.String, para[1], Encoding.UTF8.GetBytes(TextMethods.ParseText(para, 3, '[', ']')));            
+            
+            return new AST.AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.String, para[1], TextMethods.AstParse(para, 3));
 
-            return new AST.AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.String, para[1], TextMethods.StringAstParse(para, 3));
+            ////return new AST.AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.String, para[1], TextMethods.StringAstParse(para, 3));
         }
     }
 }
