@@ -13,7 +13,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
 
         public AbstractSyntaxTree.AstNode AstConstructor(string[] para)
         {
-            return new AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[1], TextMethods.IntAstParse(para, 3));
+            return new AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.Int, para[1], TextMethods.AstParse(para, 3, VariableSetup.VariableTypes.Int));
         }
     }
 }

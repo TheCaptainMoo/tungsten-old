@@ -47,7 +47,7 @@ namespace Tungsten_Interpreter
                     callableFunctions.Add(callable.FunctionName, callable);
                 }
             }
-            
+
             // Loop For Each Script
             while (true)
             {

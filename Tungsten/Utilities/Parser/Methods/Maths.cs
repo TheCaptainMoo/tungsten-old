@@ -1,22 +1,15 @@
-﻿namespace Tungsten_Interpreter.Utilities.Parser.Methods
+﻿using System;
+
+namespace Tungsten_Interpreter.Utilities.Parser.Methods
 {
     public class Maths : AST.AbstractSyntaxTree.AstNode
     {
-        /*public static double Evaluate(string expression)
-        {
-            System.Data.DataTable table = new System.Data.DataTable();
-            table.Columns.Add("expression", string.Empty.GetType(), expression);
-            System.Data.DataRow row = table.NewRow();
-            table.Rows.Add(row);
-            return double.Parse((string)row["expression"]);
-        }*/
-
         private string input;
         private int pos;
 
         public Maths(string input)
         {
-            this.input = input;
+            this.input = input.Trim();
             pos = 0;
         }
 

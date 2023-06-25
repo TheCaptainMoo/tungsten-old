@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods;
@@ -345,7 +346,25 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                     break;
 
                 case VariableSetup.VariableTypes.Int:
-                    
+                    string expression = String.Join("", para, startIndex, para.Length - startIndex);
+
+                    for (int i = 0; i < expression.Length; i++)
+                    {
+                        if (Regex.IsMatch(expression[i].ToString(), @"[0-9]|\+|\-|\/|\*|\(|\)"))
+                        {
+                            nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(expression[i].ToString())));
+                        }
+                        else
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            while (!Regex.IsMatch(expression[i].ToString(), @"\+|\-|\/|\*|\(|\)"))
+                            {
+                                sb.Append(expression[i++]);
+                            }
+                            i--;
+                            nodes.Add(new AST.AbstractSyntaxTree.VariableNode(sb.ToString()));
+                        }
+                    }
                     break;
 
                 case VariableSetup.VariableTypes.Boolean:
