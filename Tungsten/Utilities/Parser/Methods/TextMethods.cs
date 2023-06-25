@@ -293,47 +293,70 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             for (int i = startIndex; i < para.Length; i++)
             {
+                if (stringProtection == false)
+                {
+                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    stringProtection = true;
+                }
+
                 if (para[i].EndsWith(']'))
                 {
                     stringProtection = false;
                     output = i;
                     break;
                 }
-
-                if (stringProtection == false)
-                {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
-                    stringProtection = true;
-                }
             }
 
             return new ContextualReturn(nodes, output);
         }
 
-        public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex)
+        public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex, VariableSetup.VariableTypes type)
         {
             List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
-            
-            for (int i = startIndex; i < para.Length; i++) {
-                if (para[i] == "CALL_LITERAL")
-                {
-                    var temp = NewParameterAstParse(para, i);
-                    for (int j = 0; j < temp.Nodes.Count; j++)
+
+            switch (type)
+            {
+                case VariableSetup.VariableTypes.String:
+                    for (int i = startIndex; i < para.Length; i++)
                     {
-                        nodes.Add(new CallLiteral.FunctionCallNode(para[i + 1], temp.Nodes));
+                        if (para[i] == "CALL_LITERAL")
+                        {
+                            var temp = NewParameterAstParse(para, i);
+                            for (int j = 0; j < temp.Nodes.Count; j++)
+                            {
+                                nodes.Add(new CallLiteral.FunctionCallNode(para[i + 1], temp.Nodes));
+                            }
+                            i += temp.ExitPosition + 1;
+                        }
+                        else if (para[i].StartsWith('['))
+                        {
+                            var temp = NewStringAstParse(para, i);
+                            for (int j = 0; j < temp.Nodes.Count; j++)
+                            {
+                                nodes.Add(temp.Nodes[j]);
+                            }
+                            i = temp.ExitPosition;
+                        }
+                        else
+                        {
+                            nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                        }
                     }
-                    i += temp.ExitPosition + 1;
-                }
-                else if (para[i].StartsWith('['))
-                {
-                    var temp = NewStringAstParse(para, i);
-                    for(int j = 0; j < temp.Nodes.Count; j++)
-                    {
-                        nodes.Add(temp.Nodes[j]);
-                    }
-                    i = temp.ExitPosition;
-                }
+                    break;
+
+                case VariableSetup.VariableTypes.Int:
+                    
+                    break;
+
+                case VariableSetup.VariableTypes.Boolean:
+
+                    break;
+
+                default:
+
+                    break;
             }
+            
             return nodes;
         }
 

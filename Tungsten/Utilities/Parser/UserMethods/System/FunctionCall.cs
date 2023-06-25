@@ -95,7 +95,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
                             break;
 
                     }
-                    
                 }
             }
 

@@ -11,8 +11,6 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.Functions
         {
             try
             {
-                //AbstractSyntaxTree.VariableNode node = (AbstractSyntaxTree.VariableNode)para[0];
-                //VariableSetup.RemoveEntry(node.Name);
                 for(int i = 0;  i < para.Count; i++)
                 {
                     AbstractSyntaxTree.VariableNode node = (AbstractSyntaxTree.VariableNode)para[i];
