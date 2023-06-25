@@ -251,9 +251,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             bool insideString = false;
             bool stringProtection = false;
-            string[] contents = CalcStringForward(String.Join(' ', para), '<', '>').Split(' ');
+            string[] contents = CalcStringForward(String.Join(' ', para, startIndex, para.Length - startIndex), '<', '>').Split(' ');
 
-            for (i = startIndex; i < contents.Length; i++)
+            for (i = 0; i < contents.Length; i++)
             {
                 //string word = para[i].Replace("<", "").Replace(">", "");
                 string word = contents[i];
@@ -288,36 +288,26 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         public static ContextualReturn NewStringAstParse(string[] para, int startIndex)
         {
             List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
-            int i;
-
-            bool insideString = false;
+            int output = 0;
             bool stringProtection = false;
 
-            for (i = startIndex; i < para.Length; i++)
+            for (int i = startIndex; i < para.Length; i++)
             {
-                if (para[i].StartsWith('['))
+                if (para[i].EndsWith(']'))
                 {
-                    insideString = true;
-                }
-                else if (para[i].EndsWith(']'))
-                {
-                    insideString = false;
                     stringProtection = false;
-                    continue;
+                    output = i;
+                    break;
                 }
 
-                if (!insideString)
-                {
-                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
-                }
-                else if (stringProtection == false)
+                if (stringProtection == false)
                 {
                     nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                     stringProtection = true;
                 }
             }
 
-            return new ContextualReturn(nodes, i);
+            return new ContextualReturn(nodes, output);
         }
 
         public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex)
@@ -327,7 +317,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             for (int i = startIndex; i < para.Length; i++) {
                 if (para[i] == "CALL_LITERAL")
                 {
-                    var temp = NewParameterAstParse(para, 0);
+                    var temp = NewParameterAstParse(para, i);
                     for (int j = 0; j < temp.Nodes.Count; j++)
                     {
                         nodes.Add(new CallLiteral.FunctionCallNode(para[i + 1], temp.Nodes));
@@ -341,7 +331,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                     {
                         nodes.Add(temp.Nodes[j]);
                     }
-                    i += temp.ExitPosition + 1;
+                    i = temp.ExitPosition;
                 }
             }
             return nodes;
