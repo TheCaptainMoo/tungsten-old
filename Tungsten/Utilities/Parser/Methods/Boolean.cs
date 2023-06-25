@@ -126,5 +126,34 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
             return false;
         }
+
+        public static bool Comparsion(bool val1, string op, bool val2)
+        {
+            switch (op)
+            {
+                // AND
+                case "&&":
+                    if (val1 == true && val2 == true)
+                        return true;
+                    else
+                        return false;
+
+                // OR
+                case "||":
+                    if (val1 == true || val2 == true)
+                        return true;
+                    else
+                        return false;
+
+                // eXclusive OR
+                case "?|":
+                    if ((val1 == true || val2 == true) && !(val1 == true && val2 == true))
+                        return true;
+                    else
+                        return false;
+            }
+
+            return false;
+        }
     }
 }
