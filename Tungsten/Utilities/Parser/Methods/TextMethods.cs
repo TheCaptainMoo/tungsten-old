@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Tungsten_Interpreter.Utilities.Parser.UserMethods;
 using Tungsten_Interpreter.Utilities.Variables;
+using static Tungsten_Interpreter.Utilities.AST.AbstractSyntaxTree;
 
 namespace Tungsten_Interpreter.Utilities.Parser.Methods
 {
@@ -98,9 +99,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         /// <summary>
         /// [Gentime]
         /// </summary>
-        public static List<AST.AbstractSyntaxTree.AstNode> StringAstParse(string[] para, int startIndex)
+        public static List<AstNode> StringAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
             bool insideString = false;
             bool stringProtection = false;
 
@@ -119,11 +120,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
                 if (!insideString)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                    nodes.Add(new VariableNode(para[i]));
                 }
                 else if (stringProtection == false)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                     stringProtection = true;
                 }
             }
@@ -134,24 +135,24 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         /// <summary>
         /// [Gentime]
         /// </summary>
-        public static List<AST.AbstractSyntaxTree.AstNode> IntAstParse(string[] para, int startIndex)
+        public static List<AstNode> IntAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
 
             for (int i = startIndex; i < para.Length; i++)
             {
                 if (Regex.IsMatch(para[i], @"^[0-9]+$"))
                 {
                     //nodes.Add(new AST.AbstractSyntaxTree.ValueNode(BitConverter.GetBytes(Convert.ToInt32(para[i]))));
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(para[i])));
                 }
                 else if (para[i] == "+" || para[i] == "-" || para[i] == "(" || para[i] == ")" || para[i] == "*" || para[i] == "/")
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(para[i])));
                 }
                 else
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                    nodes.Add(new VariableNode(para[i]));
                 }
             }
 
@@ -161,9 +162,9 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
         /// <summary>
         /// [Gentime]
         /// </summary>
-        public static List<AST.AbstractSyntaxTree.AstNode> GenericAstParse(string[] para, int startIndex)
+        public static List<AstNode> GenericAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
             bool insideString = false;
 
 
@@ -183,16 +184,16 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
                 if (insideString)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                 }
                 else if (para[i].ToLower() == "true" || para[i].ToLower() == "false")
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(BitConverter.GetBytes(Convert.ToBoolean(para[i]))));
+                    nodes.Add(new ValueNode(BitConverter.GetBytes(Convert.ToBoolean(para[i]))));
                 }
                 // Integers
                 else if (Regex.IsMatch(para[i], @"^[0-9]+$"))
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(para[i])));
                 }
                 else if (para[i] == "==" || para[i] == "<=" || para[i] == ">=" || para[i] == "<" || para[i] == ">" || para[i] == "!=")
                 {
@@ -200,16 +201,16 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 }
                 else
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                    nodes.Add(new VariableNode(para[i]));
                 }
             }
 
             return nodes;
         }
 
-        public static List<AST.AbstractSyntaxTree.AstNode> ParameterAstParse(string[] para, int startIndex)
+        public static List<AstNode> ParameterAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
 
             bool insideString = false;
             bool stringProtection = false;
@@ -233,11 +234,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 if (!insideString)
                 {
                     if (word.Length > 0)
-                        nodes.Add(new AST.AbstractSyntaxTree.VariableNode(word));
+                        nodes.Add(new VariableNode(word));
                 }
                 else if (stringProtection == false)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                     stringProtection = true;
                 }
             }
@@ -247,7 +248,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
         public static ContextualReturn NewParameterAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
             int i;
 
             bool insideString = false;
@@ -274,11 +275,11 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                 if (!insideString)
                 {
                     if (word.Length > 0)
-                        nodes.Add(new AST.AbstractSyntaxTree.VariableNode(word));
+                        nodes.Add(new VariableNode(word));
                 }
                 else if (stringProtection == false)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", contents, i, contents.Length - i), '[', ']'))));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", contents, i, contents.Length - i), '[', ']'))));
                     stringProtection = true;
                 }
             }
@@ -288,7 +289,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
         public static ContextualReturn NewStringAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
             int output = 0;
             bool stringProtection = false;
 
@@ -296,7 +297,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             {
                 if (stringProtection == false)
                 {
-                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(CalcStringForward(String.Join(" ", para, i, para.Length - i), '[', ']'))));
                     stringProtection = true;
                 }
 
@@ -311,9 +312,38 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             return new ContextualReturn(nodes, output);
         }
 
-        public static List<AST.AbstractSyntaxTree.AstNode> AstParse(string[] para, int startIndex, VariableSetup.VariableTypes type)
+        public static ContextualReturn BooleanAstParse(string[] para, int startIndex)
         {
-            List<AST.AbstractSyntaxTree.AstNode> nodes = new List<AST.AbstractSyntaxTree.AstNode>();
+            List<AstNode> nodes = new List<AstNode>();
+            int output = 0;
+
+            for (int i = startIndex; i < para.Length; i++)
+            {
+                if (para[i].StartsWith('['))
+                {
+                    var temp = NewStringAstParse(para, i);
+                    for (int j = 0; j < temp.Nodes.Count; j++)
+                    {
+                        nodes.Add(temp.Nodes[j]);
+                    }
+                    i = temp.ExitPosition;
+                }
+                else if (Regex.IsMatch(para[i], @"[0-9]|==|!=|<|>|<=|>="))
+                {
+                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(para[i])));
+                }
+                else
+                {
+                    nodes.Add(new VariableNode(para[i]));
+                }
+            }
+
+            return new ContextualReturn(nodes, output);
+        }
+
+        public static List<AstNode> AstParse(string[] para, int startIndex, VariableSetup.VariableTypes type)
+        {
+            List<AstNode> nodes = new List<AstNode>();
 
             switch (type)
             {
@@ -340,7 +370,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                         }
                         else
                         {
-                            nodes.Add(new AST.AbstractSyntaxTree.VariableNode(para[i]));
+                            nodes.Add(new VariableNode(para[i]));
                         }
                     }
                     break;
@@ -363,7 +393,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                             {
                                 if (Regex.IsMatch(para[i][j].ToString(), @"[0-9]|\+|\-|\/|\*|\(|\)"))
                                 {
-                                    nodes.Add(new AST.AbstractSyntaxTree.ValueNode(Encoding.UTF8.GetBytes(para[i][j].ToString())));
+                                    nodes.Add(new ValueNode(Encoding.UTF8.GetBytes(para[i][j].ToString())));
                                 }
                                 else
                                 {
@@ -379,7 +409,7 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                                     catch (Exception e) { ErrorHandling.Alert("Something went wrong: " + e, ConsoleColor.Red); }
 
                                     j--;
-                                    nodes.Add(new AST.AbstractSyntaxTree.VariableNode(sb.ToString()));
+                                    nodes.Add(new VariableNode(sb.ToString()));
                                 }
                             }
                         }
@@ -387,7 +417,38 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
                     break;
 
                 case VariableSetup.VariableTypes.Boolean:
-
+                    for(int i = startIndex; i < para.Length; i++)
+                    {
+                        if (para[i] == "CALL_LITERAL")
+                        {
+                            var temp = NewParameterAstParse(para, i);
+                            for (int j = 0; j < temp.Nodes.Count; j++)
+                            {
+                                nodes.Add(new CallLiteral.FunctionCallNode(para[i + 1], temp.Nodes));
+                            }
+                            i += temp.ExitPosition + 1;
+                        }
+                        else
+                        {
+                            try
+                            {
+                                nodes.Add(new ValueNode(BitConverter.GetBytes(Convert.ToBoolean(para[startIndex]))));
+                            }
+                            catch
+                            {
+                                var temp = BooleanAstParse(para, i);
+                                if(temp.Nodes.Count == 3)
+                                {
+                                    nodes.Add(new ConditionNode(temp.Nodes[0], Encoding.UTF8.GetString(ByteManipulation.GetValue(temp.Nodes[1])), temp.Nodes[2]));
+                                }
+                                else
+                                {
+                                    ErrorHandling.Alert("3 arguments expected at: " + String.Join(" ", para), ConsoleColor.Red);
+                                }
+                                i += temp.ExitPosition + 2;
+                            }
+                        }
+                    }
                     break;
 
                 default:
@@ -400,13 +461,13 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
 
         public struct ContextualReturn
         {
-            public ContextualReturn(List<AST.AbstractSyntaxTree.AstNode> nodes, int position)
+            public ContextualReturn(List<AstNode> nodes, int position)
             {
                 Nodes = nodes;
                 ExitPosition = position;
             }
 
-            public List<AST.AbstractSyntaxTree.AstNode> Nodes { get; set; }
+            public List<AstNode> Nodes { get; set; }
             public int ExitPosition { get; set; }
         }
     }

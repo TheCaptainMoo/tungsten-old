@@ -13,8 +13,23 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             int? iv2 = null;
             if (op == "==" || op == "!=")
             {
-                v1 = Encoding.UTF8.GetString(val1);
-                v2 = Encoding.UTF8.GetString(val2);
+                try
+                {
+                    v1 = Encoding.UTF8.GetString(val1);
+                }
+                catch
+                {
+                    v1 = Encoding.UTF8.GetString(ByteManipulation.IntToChars(val1));
+                }
+
+                try
+                {
+                    v2 = Encoding.UTF8.GetString(val2);
+                }
+                catch
+                {
+                    v2 = Encoding.UTF8.GetString(ByteManipulation.IntToChars(val2));
+                }
 
                 switch (op)
                 {
@@ -41,8 +56,22 @@ namespace Tungsten_Interpreter.Utilities.Parser.Methods
             }
             else
             {
-                iv1 = BitConverter.ToInt32(val1);
-                iv2 = BitConverter.ToInt32(val2);
+                try
+                {
+                    iv1 = BitConverter.ToInt32(val1);
+                }
+                catch
+                {
+                    iv1 = BitConverter.ToInt32(ByteManipulation.CharsToInt(val1));
+                }
+                try
+                {
+                    iv2 = BitConverter.ToInt32(val2);
+                }
+                catch
+                {
+                    iv2 = BitConverter.ToInt32(ByteManipulation.CharsToInt(val2));
+                }
 
                 switch (op)
                 {

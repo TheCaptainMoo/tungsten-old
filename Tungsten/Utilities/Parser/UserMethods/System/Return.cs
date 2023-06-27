@@ -16,14 +16,13 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
             switch (para[1])
             {
                 case "STRING":
-                    //return new ReturnNode(new StringAnalysisNode(TextMethods.StringAstParse(para, 1)), VariableSetup.VariableTypes.String);
                     return new ReturnNode(new StringAnalysisNode(TextMethods.AstParse(para, 2, VariableSetup.VariableTypes.String)), VariableSetup.VariableTypes.String);
 
                 case "INT":
                     return new ReturnNode(new Container(TextMethods.AstParse(para, 2, VariableSetup.VariableTypes.Int)), VariableSetup.VariableTypes.Int);
 
                 case "BOOL":
-                    break;
+                    return new ReturnNode(new Container(TextMethods.AstParse(para, 2, VariableSetup.VariableTypes.Boolean)), VariableSetup.VariableTypes.Boolean);
             }
 
             return null;
@@ -61,11 +60,25 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods.System
                                 }
                             }
                         }
+                        else
+                        {
+                            ErrorHandling.Alert("Invalid return format! Should use 'Container' struct.", ConsoleColor.Red);
+                            return null;
+                        }
 
                         return Encoding.UTF8.GetBytes(sb.ToString());
 
-                    case VariableSetup.VariableTypes.Boolean: 
-                        break;
+                    case VariableSetup.VariableTypes.Boolean:
+                        if (Value is Container boolVal)
+                        {
+                            return BitConverter.GetBytes(Convert.ToBoolean(boolVal.Children[0].Execute()));
+                        }
+                        else
+                        {
+                            ErrorHandling.Alert("Invalid return format! Should use 'Container' struct.", ConsoleColor.Red);
+                            return null;
+                        }
+
                 }
 
                 return null;

@@ -40,6 +40,10 @@ namespace Tungsten_Interpreter.Utilities.AST
                                 case VariableSetup.VariableTypes.Int:
                                     sb.Append(BitConverter.ToInt32(memory.Span).ToString());
                                     break;
+
+                                case VariableSetup.VariableTypes.Boolean:
+                                    sb.Append(BitConverter.ToBoolean(memory.Span).ToString());
+                                    break;
                             }
                         }
                         else
@@ -69,10 +73,10 @@ namespace Tungsten_Interpreter.Utilities.AST
 
             public override object? Execute()
             {
-                byte[] ls;
-                byte[] rs;
+                byte[] ls = ByteManipulation.GetValue(LeftStatement);
+                byte[] rs = ByteManipulation.GetValue(RightStatement);
 
-                if (LeftStatement is VariableNode)
+                /*if (LeftStatement is VariableNode)
                 {
                     Memory<byte> memory = (Memory<byte>)LeftStatement.Execute();
                     ls = memory.Span.ToArray();
@@ -104,7 +108,7 @@ namespace Tungsten_Interpreter.Utilities.AST
                     {
                         rs = (byte[])RightStatement.Execute();
                     }
-                }
+                }*/
 
                 return Check.Operation(ls, Condition, rs);
             }
@@ -160,7 +164,6 @@ namespace Tungsten_Interpreter.Utilities.AST
                             }
 
                             bytes.Add((byte[])Value[i].Execute());
-                            //bytes.Add((byte[])Encoding.UTF8.GetBytes((string)Value[i].Execute()));
                         }
 
                         byte[] output = bytes.SelectMany(bytes => bytes).ToArray();
@@ -184,6 +187,14 @@ namespace Tungsten_Interpreter.Utilities.AST
                         }
 
                         VariableSetup.AddEntry(Name, Type, BitConverter.GetBytes((int)new Maths(sb1.ToString()).Execute()));
+                        break;
+
+                    case VariableSetup.VariableTypes.Boolean:
+                        VariableSetup.AddEntry(Name, Type, (byte[])Value[0].Execute());
+                        break;
+
+                    default:
+                        ErrorHandling.Alert("Unaccepted type for VariableNodedAssignNode", ConsoleColor.Red);
                         break;
                 }
 

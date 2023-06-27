@@ -14,7 +14,8 @@ namespace Tungsten_Interpreter.Utilities.Parser.UserMethods
             try
             {
                 //VariableSetup.nodes.Add(new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Boolean, para[1], BitConverter.GetBytes(Convert.ToBoolean(para[3]))));
-                return new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Boolean, para[1], BitConverter.GetBytes(Convert.ToBoolean(para[3])));
+                //return new AST.AbstractSyntaxTree.VariableAssignNode(VariableSetup.VariableTypes.Boolean, para[1], BitConverter.GetBytes(Convert.ToBoolean(para[3])));
+                return new AST.AbstractSyntaxTree.VariableNodedAssignNode(VariableSetup.VariableTypes.Boolean, para[1], TextMethods.AstParse(para, 3, VariableSetup.VariableTypes.Boolean));
             }
             catch
             {
