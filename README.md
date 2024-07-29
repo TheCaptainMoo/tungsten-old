@@ -1,3 +1,6 @@
+# NOTE
+This C# version of Tungsten is being archived in favour of a more performant, generally more syntactically friendly language (well at least I hope so) written in Rust.
+
 # Tungsten
 **Tungsten is an Interpreted Programming Language Created Using C#.** It offers both strongly typed and loosely typed variables and has a similar structure to C# or C++. Before using Tungsten, please note the syntax is **highly strict** and **potentially buggy**, **performance** for demanding tasks is not great and errors may cause it to **crash without warning**. On a positive note, Tungsten is open source and is actively being improved and developed.
 
